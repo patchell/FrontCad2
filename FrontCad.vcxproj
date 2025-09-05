@@ -1,0 +1,307 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props')" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName />
+    <SccLocalPath />
+    <Keyword>MFCProj</Keyword>
+    <ProjectGuid>{CCAC4A6E-79F1-42D7-8B52-BABC0F781E49}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <MinimalRebuild>false</MinimalRebuild>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\Debug\FrontCad.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <ObjectFileName>.\Debug\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\Debug\FrontCad.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug\FrontCad.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>.\Debug\FrontCad.exe</OutputFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\Release\FrontCad.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <ObjectFileName>.\Release\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\Release\FrontCad.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release\FrontCad.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>.\Release\FrontCad.exe</OutputFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="ArcTan.cpp" />
+    <ClCompile Include="ButtonMsg.cpp" />
+    <ClCompile Include="CadArc.cpp" />
+    <ClCompile Include="CadArcCentered.cpp" />
+    <ClCompile Include="CadArrow.cpp" />
+    <ClCompile Include="CadBitmap.cpp" />
+    <ClCompile Include="CadCircle.cpp" />
+    <ClCompile Include="CadDimension.cpp" />
+    <ClCompile Include="CadDrawing.cpp" />
+    <ClCompile Include="CadElipse.cpp" />
+    <ClCompile Include="CadHoleRnd1Flat.cpp" />
+    <ClCompile Include="CadHoleRnd2Flat.cpp" />
+    <ClCompile Include="CadHoleRound.cpp" />
+    <ClCompile Include="CadLibObject.cpp" />
+    <ClCompile Include="CadLibrary.cpp" />
+    <ClCompile Include="CadLine.cpp" />
+    <ClCompile Include="CadObject.cpp" />
+    <ClCompile Include="CadOrigin.cpp" />
+    <ClCompile Include="CadPolygon.cpp" />
+    <ClCompile Include="CadPrintRect.cpp" />
+    <ClCompile Include="CadRect.cpp" />
+    <ClCompile Include="CadRectHole.cpp" />
+    <ClCompile Include="CadRoundRect.cpp" />
+    <ClCompile Include="CadText.cpp" />
+    <ClCompile Include="ComboBoxFontWeight.cpp" />
+    <ClCompile Include="ComboBoxHoleType.cpp" />
+    <ClCompile Include="ComboBoxLibPartSelector.cpp" />
+    <ClCompile Include="ComboBoxLibrary.cpp" />
+    <ClCompile Include="ComboBoxPrintRect.cpp" />
+    <ClCompile Include="DialogChoose.cpp" />
+    <ClCompile Include="DialogGridSettings.cpp" />
+    <ClCompile Include="DialogRenderEnable.cpp" />
+    <ClCompile Include="EditDecimal.cpp" />
+    <ClCompile Include="FileParser.cpp" />
+    <ClCompile Include="FrontCad.cpp" />
+    <ClCompile Include="FrontCadDoc.cpp" />
+    <ClCompile Include="FrontCadView.cpp" />
+    <ClCompile Include="HorzScrollBar.cpp" />
+    <ClCompile Include="LibFormView.cpp" />
+    <ClCompile Include="LibSplitterWnd.cpp" />
+    <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="MoveObjects.cpp" />
+    <ClCompile Include="MyBitmap.cpp" />
+    <ClCompile Include="MyComboBox.cpp" />
+    <ClCompile Include="MyEdit.cpp" />
+    <ClCompile Include="MyTabCtrl.cpp" />
+    <ClCompile Include="NewLibDialog.cpp" />
+    <ClCompile Include="RepeatDlg.cpp" />
+    <ClCompile Include="ruler.cpp" />
+    <ClCompile Include="SaveToLibDlg.cpp" />
+    <ClCompile Include="Scale.cpp" />
+    <ClCompile Include="ScaleWizDialog.cpp" />
+    <ClCompile Include="ScaleWizTabOne.cpp" />
+    <ClCompile Include="SplitterUtility.cpp" />
+    <ClCompile Include="StaticBitmap.cpp" />
+    <ClCompile Include="StaticPreview.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="UtilView.cpp" />
+    <ClCompile Include="WizTab2Dialog.cpp" />
+    <ClCompile Include="WizTab3Dialog.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FrontCad.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ButtonMsg.h" />
+    <ClInclude Include="CadArc.h" />
+    <ClInclude Include="CadArcCentered.h" />
+    <ClInclude Include="CadArrow.h" />
+    <ClInclude Include="CadBitmap.h" />
+    <ClInclude Include="CadCircle.h" />
+    <ClInclude Include="CadDimension.h" />
+    <ClInclude Include="CadDrawing.h" />
+    <ClInclude Include="CadElipse.h" />
+    <ClInclude Include="CadHoleRnd1Flat.h" />
+    <ClInclude Include="CadHoleRnd2Flat.h" />
+    <ClInclude Include="CadHoleRound.h" />
+    <ClInclude Include="CadLibObject.h" />
+    <ClInclude Include="CadLibrary.h" />
+    <ClInclude Include="CadLine.h" />
+    <ClInclude Include="CadObject.h" />
+    <ClInclude Include="CadOrigin.h" />
+    <ClInclude Include="CadPolygon.h" />
+    <ClInclude Include="CadPrintRect.h" />
+    <ClInclude Include="CadRect.h" />
+    <ClInclude Include="CadRectHole.h" />
+    <ClInclude Include="CadRoundRect.h" />
+    <ClInclude Include="CadText.h" />
+    <ClInclude Include="ComboBoxFontWeight.h" />
+    <ClInclude Include="ComboBoxHoleType.h" />
+    <ClInclude Include="ComboBoxLibPartSelector.h" />
+    <ClInclude Include="ComboBoxLibrary.h" />
+    <ClInclude Include="ComboBoxPrintRect.h" />
+    <ClInclude Include="DialogChoose.h" />
+    <ClInclude Include="DialogGridSettings.h" />
+    <ClInclude Include="DialogRenderEnable.h" />
+    <ClInclude Include="EditDecimal.h" />
+    <ClInclude Include="Exception.h" />
+    <ClInclude Include="FileParser.h" />
+    <ClInclude Include="FrontCad.h" />
+    <ClInclude Include="FrontCadDefines.h" />
+    <ClInclude Include="FrontCadDoc.h" />
+    <ClInclude Include="FrontCadView.h" />
+    <ClInclude Include="HorzScrollBar.h" />
+    <ClInclude Include="LibFormView.h" />
+    <ClInclude Include="LibSplitterWnd.h" />
+    <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MoveObjects.h" />
+    <ClInclude Include="MyBitmap.h" />
+    <ClInclude Include="MyComboBox.h" />
+    <ClInclude Include="MyEdit.h" />
+    <ClInclude Include="MyTabCtrl.h" />
+    <ClInclude Include="NewLibDialog.h" />
+    <ClInclude Include="RepeatDlg.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="ruler.h" />
+    <ClInclude Include="SaveToLibDlg.h" />
+    <ClInclude Include="Scale.h" />
+    <ClInclude Include="ScaleWizDialog.h" />
+    <ClInclude Include="ScaleWizTabOne.h" />
+    <ClInclude Include="SplitterUtility.h" />
+    <ClInclude Include="StaticBitmap.h" />
+    <ClInclude Include="StaticPreview.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="UtilView.h" />
+    <ClInclude Include="WizTab2Dialog.h" />
+    <ClInclude Include="WizTab3Dialog.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\FrontCad.ico" />
+    <Image Include="res\FrontCadDoc.ico" />
+    <Image Include="res\Toolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="FrontCad.reg" />
+    <CustomBuild Include="res\FrontCad.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="readme.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="CadObject.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="FrontCad.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+  </Target>
+</Project>

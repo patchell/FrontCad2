@@ -1,0 +1,892 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\FrontCad.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#include ""afxprint.rc""       // printing/print preview resources\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\FrontCad.ico"
+
+IDR_FRONTCTYPE          ICON                    "res\\FrontCadDoc.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR 32, 32
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    BUTTON      ID_TOOLBAR_SELECTREGION
+    SEPARATOR
+    BUTTON      ID_BUTTON_PRINT_RECTANGLE
+    BUTTON      ID_FILE_PRINT
+    SEPARATOR
+    BUTTON      ID_TOOLBAR_SELECT
+    BUTTON      ID_TOOLBAR_LINE
+    BUTTON      ID_TOOLBAR_RECT
+    BUTTON      ID_TOOLBAR_ELLIPSE
+    BUTTON      ID_TOOLBAR_CIRCLE
+    BUTTON      ID_TOOLBAR_ARC
+    BUTTON      ID_TOOLBAR_ARC_CENTER
+    BUTTON      ID_TOOLBAR_RNDRECT
+    BUTTON      ID_TOOLBAR_POLYGON
+    BUTTON      ID_TOOLBAR_DRAWTEXT
+    BUTTON      ID_BUTTON_ARROWOBJ
+    BUTTON      ID_TOOLBAR_LIBPART
+    BUTTON      ID_TOOLBAR_BITMAP
+    BUTTON      ID_BUTTON_ORIGIN
+    BUTTON      ID_BUTTON_DIMENSION
+    BUTTON      ID_TOOLBAR_SCALEWIZ
+    BUTTON      ID_TOOLBAR_GRIDONOFF
+    BUTTON      ID_TOOLBAR_GRIDSETTINGS
+    SEPARATOR
+    BUTTON      ID_TOOLBAR_HOLERND
+    BUTTON      ID_TOOLBAR_RND_1FLAT
+    BUTTON      ID_TOOLBAR_TWOFLATS
+    BUTTON      ID_TOOLBAR_RECTHOLE
+    SEPARATOR
+    BUTTON      ID_TOOLBAR_ZOOMIN
+    BUTTON      ID_TOOLBAR_ZOOMOUT
+    BUTTON      ID_TOOLBAR_TOGGLERULER
+    SEPARATOR
+    BUTTON      ID_APP_ABOUT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
+        MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT
+        MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
+        MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP
+        MENUITEM "Print To Clipboard",          ID_FILE_PRINTTOCLIPBOARD
+        MENUITEM SEPARATOR
+        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
+        MENUITEM SEPARATOR
+        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
+        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
+    END
+    POPUP "Align"
+    BEGIN
+        MENUITEM "Centers Vertical",            ID_ALIGN_CENTERSVERTICAL
+        MENUITEM "Centers Horizontal",          ID_ALIGN_CENTERSHORIZONTAL
+        MENUITEM "Centers",                     ID_ALIGN_CENTERS
+        MENUITEM "Left",                        ID_ALIGN_LEFT
+        MENUITEM "Right",                       ID_ALIGN_RIGHT
+        MENUITEM "Top",                         ID_ALIGN_TOP
+        MENUITEM "Bottom",                      ID_ALIGN_BOTTOM
+        MENUITEM SEPARATOR
+        MENUITEM "Size X",                      ID_ALIGN_SIZEX
+        MENUITEM "Size Y",                      ID_ALIGN_SIZEY
+        MENUITEM "Size Both",                   ID_ALIGN_SIZEBOTH
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+        MENUITEM SEPARATOR
+        MENUITEM "Render Enable",               ID_VIEW_RENDERENABLE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About FrontCad...",          ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY 
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 235, 68
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About FrontCad"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+    CTEXT           "Static",IDC_STATIC_ABOUT_VERSION,34,7,119,54
+END
+
+IDD_DIALOG_LINE_PROPERTIES DIALOG 0, 0, 186, 98
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Line Properties"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    LTEXT           "START",IDC_STATIC,15,13,25,8
+    LTEXT           "END",IDC_STATIC,15,29,16,8
+    LTEXT           "WIDTH",IDC_STATIC,15,46,26,8
+    LTEXT           "COLOR",IDC_STATIC,15,62,26,8
+    LTEXT           "FILL",IDC_STATIC,15,78,15,8
+    EDITTEXT        IDC_EDIT_LINEPROP_X1,51,10,29,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_LINEPROP_Y1,87,10,29,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_LINEPROP_X2,51,26,29,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_LINEPROP_Y2,87,26,29,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_LINEPROP_WIDTH,51,43,29,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_STATIC_LINEPROP_LINECOLOR,"Static",SS_BITMAP,51,61,15,13
+    CONTROL         "",IDC_STATIC_LINEPROP_FILLCOLOR,"Static",SS_BITMAP,51,76,15,13
+END
+
+IDD_DIALOG_UTILITY DIALOGEX 0, 0, 683, 64
+STYLE DS_SETFONT | WS_CHILD
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_EDIT_UTIL_X1,31,8,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_UTIL_Y1,31,23,40,14,ES_AUTOHSCROLL
+    LTEXT           "X1",IDC_STATIC_UTIL_X1,12,11,16,8
+    LTEXT           "Y1",IDC_STATIC_UTIL_Y1,12,26,16,8
+    LTEXT           "X2",IDC_STATIC_UTIL_X2,73,11,14,8
+    LTEXT           "Y2",IDC_STATIC_UTIL_Y2,73,26,16,8
+    EDITTEXT        IDC_EDIT_UTIL_X2,91,8,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_UTIL_Y2,91,23,40,14,ES_AUTOHSCROLL
+    LTEXT           "X3",IDC_STATIC_UTIL_X3,137,11,38,8
+    LTEXT           "Y3",IDC_STATIC_UTIL_Y3,137,26,38,8
+    EDITTEXT        IDC_EDIT_UTIL_X3,179,8,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_UTIL_Y3,179,23,40,14,ES_AUTOHSCROLL
+    LTEXT           "Line Color",IDC_STATIC_UTIL_LINECOLORTEXT,221,11,32,8
+    LTEXT           "Fill Color",IDC_STATIC_UTIL_FILLCOLORTEXT,221,26,27,8
+    CONTROL         "",IDC_STATIC_UTIL_LINECOLOR,"Static",SS_BITMAP | SS_NOTIFY | WS_BORDER,260,8,15,13
+    CONTROL         "",IDC_STATIC_UTIL_FILL_COLOR,"Static",SS_BITMAP | SS_NOTIFY | WS_BORDER,260,23,15,13
+    LTEXT           "Line Thickness",IDC_STATIC_UTIL_LINEWIDTH,279,11,49,8
+    EDITTEXT        IDC_EDIT_UTIL_LINETHICKNESS,333,8,40,14,ES_AUTOHSCROLL
+    LTEXT           "Hole Radius",IDC_STATIC_UTIL_RADIUSHOLE,279,26,40,8
+    EDITTEXT        IDC_EDIT_UTIL_HOLERADIUS,333,23,40,14,ES_AUTOHSCROLL
+    LTEXT           "Flat to Cent Dist",IDC_STATIC_UTIL_FLATTOCENT,377,11,54,8
+    EDITTEXT        IDC_EDIT_UTIL_FLATTOCENT,431,8,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_UTIL_TEXT,31,40,180,14,ES_AUTOHSCROLL
+    LTEXT           "Text",IDC_STATIC_UTIL_TEXTTEXT,14,43,15,8
+    LTEXT           "Font Hieght",IDC_STATIC_UTIL_FONTHIEGHT,279,43,38,8
+    EDITTEXT        IDC_EDIT_UTIL_FONTHIEGHT,333,40,40,14,ES_AUTOHSCROLL
+    LTEXT           "Font Width",IDC_STATIC_UTIL_FONTWIDTH,377,43,36,8
+    EDITTEXT        IDC_EDIT_UTIL_FONTWIDTH,431,40,40,14,ES_AUTOHSCROLL
+    LTEXT           "Angle",IDC_STATIC_UTIL_TEXTANGLE,492,11,19,8
+    EDITTEXT        IDC_EDIT_UTIL_TEXTANGLE,538,8,40,14,ES_AUTOHSCROLL
+    LTEXT           "Text Color",IDC_STATIC_UTIL_TEXTCOLORTEXT,377,26,33,8
+    CONTROL         "",IDC_STATIC_UTIL_TEXTCOLOR,"Static",SS_BITMAP | SS_NOTIFY | WS_BORDER,431,23,16,14
+    COMBOBOX        IDC_COMBO_UTILITY_FONTWEIGHT,539,24,66,71,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Font",IDC_BUTTON_UTILITY_FONT,490,24,45,14
+    CONTROL         "",IDC_STATIC_UTIL_TEXTBKCOLOR,"Static",SS_BITMAP | SS_NOTIFY | WS_BORDER,464,23,16,14
+    LTEXT           "FG",IDC_STATIC_FG,418,26,10,8
+    LTEXT           "BK",IDC_STATIC_BK,451,26,10,8
+    CONTROL         "",IDC_STATIC_UTIL_BACKGROUNDCOLOR,"Static",SS_BITMAP | SS_NOTIFY | WS_BORDER,596,40,16,14
+    LTEXT           "Background",IDC_STATIC,546,43,40,8
+    CHECKBOX        "Transparent",IDC_CHECK_TRANSPARENT,490,42,54,10
+    COMBOBOX        IDC_COMBO_UTIL_PRINTRECTSIZE,620,7,48,62,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CHECKBOX        "Transparent",IDC_CHECK_UTIL_TRANSPARENT,220,42,54,10
+END
+
+IDD_DIALOG_LIBVIEW DIALOGEX 0, 0, 126, 352
+STYLE DS_SETFONT | WS_CHILD
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    COMBOBOX        IDC_COMBO_LIBVIEW_LIBRARY,7,22,111,88,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_LIBVIEW_COMPONENT,7,56,111,75,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_STATIC_LIBVIEW_PREVIEW,"Static",SS_BLACKFRAME | WS_BORDER,7,242,111,103
+    PUSHBUTTON      "Create from Selected",IDC_BUTTON_LIBVIEW_CREATECOMP,7,114,111,14
+    LTEXT           "Library",IDC_STATIC,41,10,22,8
+    LTEXT           "Part",IDC_STATIC,41,46,14,8
+    PUSHBUTTON      "Place",IDC_BUTTON_LIBVIEW_PLACE,7,98,52,14
+    PUSHBUTTON      "New Library",IDC_BUTTON_LIBVIEW_NEWLIB,7,82,52,14
+    PUSHBUTTON      "Add Library",IDC_BUTTON_ADDLIBRARY,62,81,52,14
+    PUSHBUTTON      "Remove Library",IDC_BUTTON_LIBVIEW_REMOVE,62,98,52,14
+    PUSHBUTTON      "Delete Part",IDC_BUTTON_LIBVIEW_DELETEPART,7,131,50,14
+    PUSHBUTTON      "Save Library",IDC_BUTTON_LIBVIEW_SAVELIBRARY,66,131,50,14
+    PUSHBUTTON      "Button1",IDC_BUTTON_LIB_EDIT,8,151,50,14
+END
+
+IDD_DIALOG_SCALEWIZ DIALOG 0, 0, 426, 257
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Pot Scale Wizard"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,7,236,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,59,236,50,14
+    CONTROL         "",IDC_STATIC_SCALEWIZ_PREVIEW,"Static",SS_BLACKFRAME | SS_NOTIFY | WS_BORDER,201,120,218,130
+    CONTROL         "Tab1",IDC_TAB_SCALEWIZ,"SysTabControl32",0x0,7,7,412,108
+    LTEXT           "Part Name",IDC_STATIC,9,126,34,8
+    EDITTEXT        IDC_EDIT_WIZ_PARTNAME,45,126,86,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Save To Library",IDC_BUTTON_WIZ_SAVETOLIB,15,156,60,14
+    COMBOBOX        IDC_COMBO_SCALEWIZ_LIBSEL,83,158,83,74,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Create New Library",IDC_BUTTON_SCALEWIZ_NEWLIB,15,175,70,14
+    PUSHBUTTON      "Set Reference Point",IDC_BUTTON_SCALEWIZ_SETREF,15,191,70,14
+    EDITTEXT        IDC_EDIT_SCALEWIZ_XREF,101,191,29,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_SCALEWIZ_YREF,146,191,29,14,ES_AUTOHSCROLL
+    LTEXT           "X=",IDC_STATIC,91,194,10,8
+    LTEXT           "Y=",IDC_STATIC,133,194,10,8
+END
+
+IDD_DIALOG_WIZ_TAB1 DIALOG 0, 0, 406, 99
+STYLE DS_SETFONT | WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Start Angle",IDC_STATIC,11,17,36,8
+    EDITTEXT        IDC_EDIT_TAB1_STARTANGLE,61,14,40,14,ES_AUTOHSCROLL
+    LTEXT           "End Angle",IDC_STATIC,11,31,34,8
+    EDITTEXT        IDC_EDIT_TAB1_ENDANGLE,61,28,40,14,ES_AUTOHSCROLL
+    LTEXT           "Divisions",IDC_STATIC,216,19,29,8
+    EDITTEXT        IDC_EDIT_TAB1_DIVISIONS,256,16,40,14,ES_AUTOHSCROLL
+    LTEXT           "Arc Line Width",IDC_STATIC,11,60,48,8
+    EDITTEXT        IDC_EDIT_TAB1_ARCWIDTH,61,57,40,14,ES_AUTOHSCROLL
+    LTEXT           "Line Width",IDC_STATIC,216,53,35,8
+    EDITTEXT        IDC_EDIT_TAB1_DIVLINEWD,256,50,40,14,ES_AUTOHSCROLL
+    LTEXT           "Arc Radius",IDC_STATIC,11,45,36,8
+    EDITTEXT        IDC_EDIT_TAB1_ARCRADIUS,61,42,40,14,ES_AUTOHSCROLL
+    LTEXT           "Line Len",IDC_STATIC,216,36,28,8
+    EDITTEXT        IDC_EDIT_TAB1_DIVLINELEN,256,33,40,14,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBO_TAB1_HOLETYPE,156,14,48,57,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Hole Type",IDC_STATIC,114,16,34,8
+    LTEXT           "Hole Radius",IDC_STATIC,112,33,40,8
+    EDITTEXT        IDC_EDIT_TAB1_HOLERADIUS,165,30,40,14,ES_AUTOHSCROLL
+    LTEXT           "Flat Dist",IDC_STATIC,115,52,26,8
+    EDITTEXT        IDC_EDIT_TAB1_FLATDIST,163,49,40,14,ES_AUTOHSCROLL
+    LTEXT           "Divisions",IDC_STATIC,310,19,29,8
+    LTEXT           "Line Len",IDC_STATIC,310,36,28,8
+    EDITTEXT        IDC_EDIT_TAB1_SUBDIVSIONS,354,16,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_TAB1_SUBTICKLEN,354,33,40,14,ES_AUTOHSCROLL
+    LTEXT           "Line Wdth",IDC_STATIC,310,53,34,8
+    EDITTEXT        IDC_EDIT_TAB1_SUBLINEWIDTH,354,50,40,14,ES_AUTOHSCROLL
+    LTEXT           "Arc Color",IDC_STATIC,11,77,30,8
+    LTEXT           "Color",IDC_STATIC,216,72,17,8
+    LTEXT           "Color",IDC_STATIC,310,72,17,8
+    CONTROL         "",IDC_STATIC_TAB1_ARCCOLOR,"Static",SS_BITMAP | SS_NOTIFY | WS_BORDER,61,74,16,14
+    CONTROL         "",IDC_STATIC_TAB1_DIVCOLOR,"Static",SS_BITMAP | SS_NOTIFY | WS_BORDER,256,69,16,14
+    CONTROL         "",IDC_STATIC_TAB_SUBCOLOR,"Static",SS_BITMAP | SS_NOTIFY | WS_BORDER,354,69,16,14
+    GROUPBOX        "ARC",IDC_STATIC,7,7,100,85
+    GROUPBOX        "Hole",IDC_STATIC,111,7,97,60
+    GROUPBOX        "Main Divisions",IDC_STATIC,210,7,92,85
+    GROUPBOX        "Subdivisions",IDC_STATIC,304,7,95,85
+END
+
+IDD_DIALOG_WIZ_TAB2 DIALOG 0, 0, 359, 90
+STYLE DS_SETFONT | WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Font Size",IDC_STATIC,214,51,30,8
+    EDITTEXT        IDC_EDIT_TAB2_FONTSIZE,274,48,40,14,ES_AUTOHSCROLL
+    LTEXT           "Font Weight",IDC_STATIC,214,65,40,8
+    SCROLLBAR       IDC_SCROLLBAR_TAB2_LABSELECT,156,16,40,11
+    EDITTEXT        IDC_EDIT_TAB2_LABVALUE,156,35,40,14,ES_AUTOHSCROLL
+    CTEXT           "Static",IDC_STATIC_TAB2_LABLENUMBER,156,61,40,14,SS_CENTERIMAGE | WS_BORDER
+    CHECKBOX        "Rotate Text",IDC_CHECK_TAB2_ROTATETEXT,7,33,53,10
+    COMBOBOX        IDC_COMBO_TAB2_FONTWEIGHT,274,63,68,68,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Select Font",IDC_BUTTON_TAB2_SELFONT,212,17,50,14
+    LTEXT           "Static",IDC_STATIC_TAB2_FONT,212,34,58,12,SS_CENTERIMAGE | WS_BORDER
+    CONTROL         "",IDC_STATIC_SWTAB2_FGCOLOR,"Static",SS_BITMAP | SS_NOTIFY | WS_BORDER,333,17,16,14
+    CONTROL         "",IDC_STATIC_SWTAB2_BKCOLOR,"Static",SS_BITMAP | SS_NOTIFY | WS_BORDER,333,33,16,14
+    LTEXT           "Color Forground",IDC_STATIC,274,20,51,8
+    LTEXT           "Color Background",IDC_STATIC,274,36,58,8
+    LTEXT           "Distance To Tick",IDC_STATIC,7,16,56,8
+    EDITTEXT        IDC_EDIT_TAB2_DISTTOTICK,69,13,40,14,ES_AUTOHSCROLL
+    GROUPBOX        "Change Labels",IDC_STATIC,125,7,79,76
+    LTEXT           "Index",IDC_STATIC,129,64,18,8
+    LTEXT           "Label",IDC_STATIC,129,38,18,8
+    GROUPBOX        "Font",IDC_STATIC,209,7,143,76
+END
+
+IDD_DIALOG_WIZ_TAB3 DIALOG 0, 0, 186, 90
+STYLE DS_SETFONT | WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+END
+
+IDD_DIALOG_SAVETOLIBRARY DIALOG 0, 0, 186, 90
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Save Part to Library"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+END
+
+IDD_DIALOG_NEWLIBRARY DIALOG 0, 0, 186, 90
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Create New Library"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    EDITTEXT        IDC_EDIT_NEWLIB_NAME,13,49,159,14,ES_AUTOHSCROLL
+END
+
+IDD_DIALOG_GRIDSETTINGS DIALOG 0, 0, 186, 90
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Grid Settings"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    GROUPBOX        "Grid Settings",IDC_STATIC,7,7,75,76
+    GROUPBOX        "Snap Grid",IDC_STATIC,89,41,90,42
+    EDITTEXT        IDC_EDIT1,100,57,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT2,22,22,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_STATIC_GRID_COLOR,"Static",SS_BITMAP | SS_NOTIFY,43,39,20,20
+END
+
+IDD_DIALOG_CHOOSE_LIB DIALOG 0, 0, 124, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "So, just What do you Want to do?"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Create A New Library",IDC_BUTTON_CHOOSE_CREATE,21,12,79,14
+    PUSHBUTTON      "Load A Library",IDC_BUTTON_CHOOSE_LOADLIB,21,33,79,14
+END
+
+IDD_DIALOG_RENDER_ENABLE DIALOGEX 0, 0, 222, 178
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Render Object Enables"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,108,157,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,165,157,50,14
+    CONTROL         "Line Enable",IDC_CHECK_LINEENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,26,53,10
+    CONTROL         "Rectangle Enable",IDC_CHECK_RECTENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,39,72,10
+    CONTROL         "Rounded Rect Enable",IDC_CHECK_ROUNDEDRECTENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,52,85,10
+    CONTROL         "Ellipse Enable",IDC_CHECK_ELLISPEENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,65,61,10
+    CONTROL         "Polygon Enable",IDC_CHECK_POLYGONENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,78,65,10
+    CONTROL         "Filled Polygon Enable",IDC_CHECK_FILLEDPOLYENABLE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,91,85,10
+    CONTROL         "Arc Enable",IDC_CHECK_ARCENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,105,51,10
+    CONTROL         "Arc Centered Enable",IDC_CHECK_ARCCENTEREDENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,118,83,10
+    CONTROL         "Text Enabled",IDC_CHECK_TEXTENABLED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,132,58,10
+    CONTROL         "Round Hole Enable",IDC_CHECK_ROUNDHOLEENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,130,52,77,10
+    CONTROL         "Round Hole 1 Flat",IDC_CHECK_ONEFLATENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,130,78,74,10
+    CONTROL         "Round Hole 2 Flats",IDC_CHECK_TWOFLATENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,130,91,77,10
+    CONTROL         "Rect Hole Enable",IDC_CHECK_RECTHOLEENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,130,105,71,10
+    CONTROL         "Arrow Enable",IDC_CHECK_ARROWENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,130,26,60,10
+    CONTROL         "Origin Enable",IDC_CHECK_ORIGINENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,130,39,59,10
+    CONTROL         "Dimension Enable",IDC_CHECK_DIMENSIONENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,130,65,74,10
+    CONTROL         "Enable Shape Fill",IDC_CHECKBOX_SHAPE_FILL_ENABLE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,130,132,69,10
+    CONTROL         "Circle",IDC_CHECK_RENDER_CIRCLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,130,118,33,10
+END
+
+IDD_DIALOG_REPEAT DIALOGEX 0, 0, 259, 71
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,27,50,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,202,50,50,14
+    LTEXT           " X Repeat Increment",IDC_STATIC,11,13,68,8
+    LTEXT           " Y Repeaat Increment",IDC_STATIC,11,33,72,8
+    LTEXT           "Number of Repeats",IDC_STATIC,132,13,64,8
+    EDITTEXT        IDC_EDIT_REPEAT_X,89,10,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_REPEAT_Y,89,30,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_REPEAT_REPEATS,202,10,40,14,ES_AUTOHSCROLL
+    LTEXT           "Number of Repeats",IDC_STATIC,132,33,64,8
+    EDITTEXT        IDC_EDIT_REPEAT_YCOUNT,202,30,40,14,ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,10,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileDescription", "FrontCad MFC Application"
+            VALUE "FileVersion", "1.0.10.1"
+            VALUE "InternalName", "FrontCad"
+            VALUE "LegalCopyright", "Copyright (C) 2015"
+            VALUE "OriginalFilename", "FrontCad.EXE"
+            VALUE "ProductName", "FrontCad Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 61
+    END
+
+    IDD_DIALOG_LINE_PROPERTIES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 91
+    END
+
+    IDD_DIALOG_UTILITY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 676
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 54
+    END
+
+    IDD_DIALOG_LIBVIEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 118
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 345
+    END
+
+    IDD_DIALOG_SCALEWIZ, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 419
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 250
+    END
+
+    IDD_DIALOG_WIZ_TAB1, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 399
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 92
+    END
+
+    IDD_DIALOG_WIZ_TAB2, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 352
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+
+    IDD_DIALOG_WIZ_TAB3, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+
+    IDD_DIALOG_SAVETOLIBRARY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+
+    IDD_DIALOG_NEWLIBRARY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+
+    IDD_DIALOG_GRIDSETTINGS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+
+    IDD_DIALOG_CHOOSE_LIB, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 117
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_DIALOG_RENDER_ENABLE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 215
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 171
+    END
+
+    IDD_DIALOG_REPEAT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 252
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 64
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_UTILITY AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_RENDER_ENABLE AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_REPEAT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_LIBVIEW AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME           "FrontCad\n\nuntitled\nFrontC Files (*.fpc)\n.fpc\nFrontCad.Document\nFrontC Document"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_APP_TITLE       "FrontCad"
+    AFX_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+    ID_INDICATOR_XY         "%15s"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_NEW             "Create a new document\nNew"
+    ID_FILE_OPEN            "Open an existing document\nOpen"
+    ID_FILE_CLOSE           "Close the active document\nClose"
+    ID_FILE_SAVE            "Save the active document\nSave"
+    ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
+    ID_FILE_PAGE_SETUP      "Change the printing options\nPage Setup"
+    ID_FILE_PRINT_SETUP     "Change the printer and printing options\nPrint Setup"
+    ID_FILE_PRINT           "Print the active document\nPrint"
+    ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
+END
+
+STRINGTABLE
+BEGIN
+    ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
+    ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_MRU_FILE1       "Open this document"
+    ID_FILE_MRU_FILE2       "Open this document"
+    ID_FILE_MRU_FILE3       "Open this document"
+    ID_FILE_MRU_FILE4       "Open this document"
+    ID_FILE_MRU_FILE5       "Open this document"
+    ID_FILE_MRU_FILE6       "Open this document"
+    ID_FILE_MRU_FILE7       "Open this document"
+    ID_FILE_MRU_FILE8       "Open this document"
+    ID_FILE_MRU_FILE9       "Open this document"
+    ID_FILE_MRU_FILE10      "Open this document"
+    ID_FILE_MRU_FILE11      "Open this document"
+    ID_FILE_MRU_FILE12      "Open this document"
+    ID_FILE_MRU_FILE13      "Open this document"
+    ID_FILE_MRU_FILE14      "Open this document"
+    ID_FILE_MRU_FILE15      "Open this document"
+    ID_FILE_MRU_FILE16      "Open this document"
+END
+
+STRINGTABLE
+BEGIN
+    ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
+    ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
+END
+
+STRINGTABLE
+BEGIN
+    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
+END
+
+STRINGTABLE
+BEGIN
+    ID_EDIT_CLEAR           "Erase the selection\nErase"
+    ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
+    ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
+    ID_EDIT_CUT             "Cut the selection and put it on the Clipboard\nCut"
+    ID_EDIT_FIND            "Find the specified text\nFind"
+    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
+    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
+    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
+    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
+    ID_EDIT_UNDO            "Undo the last action\nUndo"
+    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE
+BEGIN
+    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCSIZE          "Change the window size"
+    AFX_IDS_SCMOVE          "Change the window position"
+    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
+    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
+    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
+    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activate Task List"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_PREVIEW_CLOSE   "Close print preview mode\nCancel Preview"
+END
+
+STRINGTABLE
+BEGIN
+    ID_TOOLBAR_LINE         "Draw lINE"
+    ID_TOOLBAR_RECT         "Draw Rectangle"
+    ID_TOOLBAR_ELLIPSE      "Draw Ellipse"
+    ID_TOOLBAR_SELECT       "SELECT"
+    ID_TOOLBAR_ZOOMIN       "Zoom In"
+    ID_TOOLBAR_ZOOMOUT      "Zoom Out"
+    ID_TOOLBAR_TOGGLERULER  "Toggle Rulers"
+    ID_TOOLBAR_RNDRECT      "Rounded Rectangle"
+    ID_TOOLBAR_POLYGON      "Draw Polygon"
+    ID_TOOLBAR_LIBPART      "Place Library Part/Pattern"
+END
+
+STRINGTABLE
+BEGIN
+    ID_TOOLBAR_SCALEWIZ     "Pot Scale Wizard"
+    ID_TOOLBAR_GRIDONOFF    "Toggle Grid"
+    ID_TOOLBAR_GRIDSETTINGS "Grid Setting"
+    ID_TOOLBAR_ARC          "Arc Bounded by Rectangle"
+    ID_TOOLBAR_POLYWITHFILL "Draw Polygon with fill"
+    ID_TOOLBAR_ARC_CENTER   "Arc from Center Point"
+    ID_TOOLBAR_HOLERND      "Place Round Hole"
+    ID_TOOLBAR_RECTHOLE     "Place Rectangular Hole"
+    ID_TOOLBAR_RND_1FLAT    "Round Hole with one flat"
+    ID_TOOLBAR_TWOFLATS     "Place Round Hole with two flats"
+    ID_TOOLBAR_DRAWTEXT     "Place Text Objects"
+    ID_BUTTON_SELECTREGION  "Select A Region"
+    ID_TOOLBAR_BITMAP       "Place Bitmap"
+    ID_BUTTON_ARROWOBJ      "Add Arrow To Drawing"
+END
+
+STRINGTABLE
+BEGIN
+    ID_ALIGN_CENTERSVERTICAL "Align Centers Y"
+    ID_ALIGN_CENTERSHORIZONTAL "Align Centers X"
+    ID_ALIGN_CENTERS        "Align Both (Make Concentric)"
+    ID_ALIGN_SIZEX          "Make Widths All The Same"
+    ID_ALIGN_SIZEY          "Make Heights All The Same"
+    ID_ALIGN_SIZEBOTH       "Make the Same Size"
+    ID_ALIGN_LEFT           "Align Left Edge"
+    ID_ALIGN_RIGHT          "Align Right Edge"
+    ID_ALIGN_TOP            "Align Top Edge"
+    ID_ALIGN_BOTTOM         "Aling Bottom Edge"
+END
+
+STRINGTABLE
+BEGIN
+    ID_TOOLBAR_CIRCLE       "Circle from Center"
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\FrontCad.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#include "afxprint.rc"       // printing/print preview resources
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
