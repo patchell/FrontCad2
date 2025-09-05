@@ -28,6 +28,12 @@ CCadArcCentered::~CCadArcCentered()
 {
 }
 
+CCadObject* CCadArcCentered::Copy()
+{
+	CCadArcCentered* pNew = new CCadArcCentered(*this);
+	return (CCadObject*)pNew;
+}
+
 void CCadArcCentered::Draw(CDC *pDC, ObjectMode mode,CPoint O,CScale Scale)
 {
 	CPen *pOld, penLine, penPoint;

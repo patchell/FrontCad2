@@ -21,12 +21,6 @@ CCadArc::CCadArc(CCadArc &arc):CCadObject(OBJECT_TYPE_ARC)
 	SetP2(arc.GetP1());
 	SetP2(arc.GetP2());
 	GetAttributes()->CopyFrom(arc.GetAttributes());
-	m_atrb.m_End = arc.m_atrb.m_End;
-	m_atrb.m_EndAngle = arc.m_atrb.m_EndAngle;
-	m_atrb.m_LineColor = arc.m_atrb.m_LineColor;
-	m_atrb.m_Start = arc.m_atrb.m_Start;
-	m_atrb.m_StartAngle = arc.m_atrb.m_StartAngle;
-	m_atrb.m_LineWidth = arc.m_atrb.m_LineWidth;
 }
 
 CCadArc::~CCadArc()

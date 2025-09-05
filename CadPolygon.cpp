@@ -40,6 +40,12 @@ CCadPolygon::~CCadPolygon()
 {
 }
 
+CCadObject* CCadPolygon::Copy()
+{
+	CCadPolygon* pNew = new CCadPolygon(*this);
+	return (CCadObject*)pNew;
+}
+
 void CCadPolygon::Draw(CDC* pDC, ObjectMode mode,CPoint Offset,CScale Scale)
 {
 	//---------------------------------------------

@@ -6,17 +6,20 @@ CCadArrow::CCadArrow() :CCadObject(OBJECT_TYPE_ARROW)
 
 CCadArrow::CCadArrow(CCadArrow &ca):CCadObject(OBJECT_TYPE_ARROW)
 {
-	m_Attrib.m_Len = ca.m_Attrib.m_Len;
-	m_Attrib.m_ArrowWidth = ca.m_Attrib.m_ArrowWidth;
-	m_Attrib.m_LineColor = ca.m_Attrib.m_LineColor;
-	m_Attrib.m_FillColor = ca.m_Attrib.m_FillColor;
 	SetP1(ca.GetP1());
 	SetP2(ca.GetP2());
+	GetAttributes()->CopyFrom(ca.GetAttributes());
 }
 
 
 CCadArrow::~CCadArrow()
 {
+}
+
+CCadObject* CCadArrow::Copy()
+{
+	CCadArrow* pNew = new CCadArrow(*this);
+	return (CCadObject*)pNew;
 }
 
 void CCadArrow::Move(CPoint p)

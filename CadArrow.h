@@ -16,7 +16,22 @@ struct ArrowAttributes {
 		m_ArrowWidth = 10;
 		m_bTransparent = FALSE;
 	}
-
+	void CopyFrom(ArrowAttributes* pA) {
+		m_LineWidth = pA->m_LineWidth;
+		m_LineColor = pA->m_LineColor;
+		m_FillColor = pA->m_FillColor;
+		m_Len = pA->m_Len;
+		m_ArrowWidth = pA->m_ArrowWidth;
+		m_bTransparent = pA->m_bTransparent;
+	}
+	void CopyTo(ArrowAttributes* pA) {
+		pA->m_LineWidth = m_LineWidth;
+		pA->m_LineColor = m_LineColor;
+		pA->m_FillColor = m_FillColor;
+		pA->m_Len = m_Len;
+		pA->m_ArrowWidth = m_ArrowWidth;
+		pA->m_bTransparent = m_bTransparent;
+	}
 };
 
 class CFileParser;
@@ -34,6 +49,7 @@ public:
 	CCadArrow();
 	CCadArrow(CCadArrow &ca);
 	virtual ~CCadArrow();
+	virtual CCadObject* Copy() = 0;
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
 	virtual void Move(CPoint p);
