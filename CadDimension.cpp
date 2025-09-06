@@ -3,41 +3,43 @@
 
 CCadDimension::CCadDimension():CCadObject(OBJECT_TYPE_DIMENSION)
 {
-	m_pText = new CCadText;
 	TextAttributes* pAtrb;
 	
-	pAtrb = m_pText->GetAttributes();
-	pAtrb->m_Angle = 0;
-	pAtrb->m_BkColor = RGB(255, 255, 255);
-	pAtrb->m_Color = RGB(0, 0, 0);
-	pAtrb->m_FontHeight = 200;
-	pAtrb->m_FontWidth = 0;
-	pAtrb->m_Format = DT_BOTTOM | DT_SINGLELINE;
-	pAtrb->m_pFontName = new char[LF_FACESIZE];
-	strcpy_s(pAtrb->m_pFontName, LF_FACESIZE, "Arial");
-	pAtrb->m_pText = new char[32];
-	pAtrb->m_Transparent = 1;
-	pAtrb->m_Weight = FW_DEMIBOLD;
+	//pAtrb = m_pText->GetAttributes();
+	//pAtrb->m_Angle = 0;
+	//pAtrb->m_BkColor = RGB(255, 255, 255);
+	//pAtrb->m_Color = RGB(0, 0, 0);
+	//pAtrb->m_FontHeight = 200;
+	//pAtrb->m_FontWidth = 0;
+	//pAtrb->m_Format = DT_BOTTOM | DT_SINGLELINE;
+	//pAtrb->m_pFontName = new char[LF_FACESIZE];
+	//strcpy_s(pAtrb->m_pFontName, LF_FACESIZE, "Arial");
+	//pAtrb->m_pText = new char[32];
+	//pAtrb->m_Transparent = 1;
+	//pAtrb->m_Weight = FW_DEMIBOLD;
 }
 
 CCadDimension::CCadDimension(CCadDimension &cd) :CCadObject(OBJECT_TYPE_DIMENSION)
 {
 	SetP1(cd.GetP1());
 	SetP2(cd.GetP2());
-	m_pText = new CCadText(*cd.m_pText);
+	m_Atrib.CopyFrom(&cd.m_Atrib);
 }
 
 CCadDimension::~CCadDimension()
 {
-	if (m_pText) delete m_pText;
+}
+
+CCadObject* CCadDimension::Copy()
+{
+	CCadDimension* pNew = new CCadDimension(*this);
+	return (CCadObject*)pNew;
 }
 
 CCadDimension CCadDimension::operator=(CCadDimension &v)
 {
-	SetP1(v.GetP1());
-	SetP2(v.GetP2());
-	*m_pText = *v.m_pText;
-	return *this;
+	CCadDimension* pNew = new CCadDimension(*this);
+	return *pNew;
 }
 
 void CCadDimension::Move(CPoint p)
@@ -46,7 +48,7 @@ void CCadDimension::Move(CPoint p)
 	Diff = p - GetP1();
 	SetP1(GetP1() + Diff);
 	SetP2(GetP2() + Diff);
-	m_pText->Move(m_pText->GetP1() + Diff);
+	GetAttributes()->m_pText->Move(GetAttributes()->m_pText->GetP1() + Diff);
 }
 
 Tokens CCadDimension::Parse(
@@ -86,16 +88,16 @@ Tokens CCadDimension::Parse(
 			LookAHeadToken = pParser->Point(Tokens::POINT_2, pIN, GetP2(), LookAHeadToken);
 			break;
 		case Tokens::WIDTH:
-			LookAHeadToken = pParser->DecimalValue(Tokens::WIDTH, pIN, GetAttrib().m_LineWidth, LookAHeadToken);
+			LookAHeadToken = pParser->DecimalValue(Tokens::WIDTH, pIN, GetAttributes()->m_LineWidth, LookAHeadToken);
 			break;
 		case Tokens::LINE_WIDTH:
-			LookAHeadToken = pParser->DecimalValue(Tokens::LINE_WIDTH, pIN, GetAttrib().m_LineWidth, LookAHeadToken);
+			LookAHeadToken = pParser->DecimalValue(Tokens::LINE_WIDTH, pIN, GetAttributes()->m_LineWidth, LookAHeadToken);
 			break;
 		case Tokens::COLOR:
-			LookAHeadToken = pParser->Color(Tokens::COLOR, pIN, GetAttrib().m_Color, LookAHeadToken);
+			LookAHeadToken = pParser->Color(Tokens::COLOR, pIN, GetAttributes()->m_Color, LookAHeadToken);
 			break;
 		case Tokens::LINE_COLOR:
-			LookAHeadToken = pParser->Color(Tokens::LINE_COLOR, pIN, GetAttrib().m_Color, LookAHeadToken);
+			LookAHeadToken = pParser->Color(Tokens::LINE_COLOR, pIN, GetAttributes()->m_Color, LookAHeadToken);
 			break;
 		case Tokens(','):
 			LookAHeadToken = pParser->Expect(Tokens(','), LookAHeadToken, pIN);
@@ -142,7 +144,7 @@ void CCadDimension::Save(FILE *pO,  int Indent)
 		CFileParser::SaveDecimalValue(s3,64,Tokens::LINE_WIDTH, m_Atrib.m_LineWidth),
 		CFileParser::SaveColor(s4,64, m_Atrib.m_Color,Tokens::LINE_COLOR)
 	);
-	m_pText->Save(pO,Indent+4);
+	GetAttributes()->m_pText->Save(pO,Indent+4);
 	fprintf(pO, "%s}\n",s);
 	delete[]s4;
 	delete[]s3;
@@ -204,7 +206,7 @@ void CCadDimension::Draw(CDC *pDC, ObjectMode mode, CPoint Offset, CScale Scale)
 		case ObjectMode::Final:
 			pDC->MoveTo(P1);
 			pDC->LineTo(P2);
-			m_pText->Draw(pDC, mode, Offset, Scale);
+			GetAttributes()->m_pText->Draw(pDC, mode, Offset, Scale);
 			break;
 		case ObjectMode::Sketch:
 			pDC->MoveTo(P1);
@@ -241,7 +243,7 @@ int CCadDimension::CheckSelected(CPoint p,CSize O)
 	rect.SetRect(P1, P2);
 	rect.NormalizeRect();
 	rV = rect.PtInRect(p);
-	rV |= m_pText->CheckSelected(p);
+	rV |= GetAttributes()->m_pText->CheckSelected(p);
 	return rV;
 }
 
@@ -253,7 +255,7 @@ CPoint CCadDimension::GetReference()
 void CCadDimension::SetSelected(int Flag)
 {
 	CCadObject::SetSelected(Flag);
-	m_pText->SetSelected(Flag);
+	GetAttributes()->m_pText->SetSelected(Flag);
 }
 
 void CCadDimension::AdjustRefernce(CPoint Ref)
@@ -269,7 +271,7 @@ void CCadDimension::AdjustRefernce(CPoint Ref)
 	//-----------------------------------------
 	SetP1(GetP1() - Ref);
 	SetP2(GetP2() - Ref);
-	m_pText->AdjustRefernce(Ref);
+	GetAttributes()->m_pText->AdjustRefernce(Ref);
 	CPoint Org = ((CFrontCadApp *)AfxGetApp())->GetMainView()->GetOrigin();
 	UpdateText(Org);
 }
@@ -293,8 +295,8 @@ void CCadDimension::UpdateText(CPoint Org)
 	{
 		Dim = P1.x - Org.x;
 		SetValue(Dim, 3);
-		m_pText->SetAngle(-900);
-		rect = m_pText->GetRect();
+		GetAttributes()->m_pText->SetAngle(-900);
+		rect = GetAttributes()->m_pText->GetRect();
 		if (P1.y > P2.y)
 			ofx = -(rect.Width() + 60);
 		else
@@ -305,14 +307,14 @@ void CCadDimension::UpdateText(CPoint Org)
 	{
 		Dim = -(P2.y - Org.y);
 		SetValue(Dim, 3);
-		rect = m_pText->GetRect();
+		rect = GetAttributes()->m_pText->GetRect();
 		if (P1.x > P2.x)
 			ofx = rect.Width()+60;
 		else
 			ofx = -60;
 		off = CSize(ofx, rect.Height() / 2);
 	}
-	m_pText->SetP1(P2 - off);
+	GetAttributes()->m_pText->SetP1(P2 - off);
 }
 
 void CCadDimension::SetValue(int v, int dp)
@@ -330,7 +332,7 @@ void CCadDimension::SetValue(int v, int dp)
 	Fracpart = int(((double)Fracpart / (double)Div) * double(Div));
 	char *s = new char[32];
 	sprintf_s(s,32, "%d.%03d", Intpart,Fracpart);
-	m_pText->SetText(s);
+	GetAttributes()->m_pText->SetText(s);
 	delete[] s;
 
 }
@@ -338,7 +340,7 @@ void CCadDimension::AddObject(CCadObject *pO)
 {
 	if (pO->GetType() == OBJECT_TYPE_TEXT)
 	{
-		m_pText = (CCadText *)pO;
+		GetAttributes()->m_pText = (CCadText *)pO;
 	}
 	else
 	{
@@ -350,8 +352,8 @@ void CCadDimension::RemoveObject(CCadObject *pO)
 {
 	if (pO->GetType() == OBJECT_TYPE_TEXT)
 	{
-		delete m_pText;
-		m_pText = 0;
+		delete GetAttributes()->m_pText;
+		GetAttributes()->m_pText = 0;
 	}
 	else
 	{
@@ -403,11 +405,11 @@ void CCadDimension::ChangeSize(CSize Sz)
 
 void CCadDimension::SetFontName(char * pN)
 {
-	m_pText->SetFontName(pN);
+	GetAttributes()->m_pText->SetFontName(pN);
 }
 
 
 char * CCadDimension::GetFontName()
 {
-	return m_pText->GetFontName();
+	return GetAttributes()->m_pText->GetFontName();
 }

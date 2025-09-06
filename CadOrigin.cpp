@@ -17,6 +17,12 @@ CCadOrigin::~CCadOrigin()
 {
 }
 
+CCadObject* CCadOrigin::Copy()
+{
+	CCadOrigin* pO = new CCadOrigin(*this);
+	return pO;
+}
+
 void CCadOrigin::Move(CPoint p)
 {
 	SetP1(p);

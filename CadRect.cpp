@@ -33,6 +33,12 @@ CCadRect::~CCadRect()
 {
 }
 
+CCadObject* CCadRect::Copy()
+{
+	CCadRect* pNew = new CCadRect(*this);
+	return (CCadObject*)pNew;
+}
+
 void CCadRect::Draw(CDC *pDC, ObjectMode mode,CPoint Offset,CScale Scale)
 {
 	//---------------------------------------------

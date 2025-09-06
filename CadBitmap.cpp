@@ -52,6 +52,12 @@ CCadBitmap::~CCadBitmap()
 	delete[] m_pFilename;
 }
 
+CCadObject* CCadBitmap::Copy()
+{
+	CCadBitmap *pNew = new CCadBitmap(*this);
+	return (CCadObject*)pNew;
+}
+
 void CCadBitmap::Move(CPoint p)
 {
 	CSize Diff = p - GetP1();

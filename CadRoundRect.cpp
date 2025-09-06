@@ -34,6 +34,12 @@ CCadRoundRect::~CCadRoundRect()
 {
 }
 
+CCadObject* CCadRoundRect::Copy()
+{
+	CCadRoundRect* pNew = new CCadRoundRect(*this);
+	return (CCadObject*)pNew;
+}
+
 void CCadRoundRect::Draw(CDC *pDC, ObjectMode mode,CPoint Offset,CScale Scale)
 {
 	//---------------------------------------------

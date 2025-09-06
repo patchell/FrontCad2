@@ -33,6 +33,12 @@ CCadHoleRnd1Flat::~CCadHoleRnd1Flat()
 {
 }
 
+CCadObject* CCadHoleRnd1Flat::Copy()
+{
+	CCadHoleRnd1Flat* pNew = new CCadHoleRnd1Flat(*this);
+	return (CCadObject*)pNew;
+}
+
 void CCadHoleRnd1Flat::Draw(CDC *pDC, ObjectMode mode,CPoint Offset,CScale Scale)
 {
 	//---------------------------------------------

@@ -19,6 +19,11 @@ CCadPrintRect::~CCadPrintRect()
 {
 }
 
+CCadObject* CCadPrintRect::Copy()
+{
+	CCadPrintRect* pNew = new CCadPrintRect(*this);
+	return (CCadObject*)pNew;
+}
 
 void CCadPrintRect::Draw(CDC *pDC, ObjectMode mode, CPoint Offset, CScale Scale)
 {

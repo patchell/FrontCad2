@@ -39,6 +39,12 @@ CCadHoleRound::~CCadHoleRound()
 {
 }
 
+CCadObject* CCadHoleRound::Copy()
+{
+	CCadHoleRound* pNew = new CCadHoleRound(*this);
+	return (CCadObject*)pNew;
+}
+
 void CCadHoleRound::Draw(CDC *pDC, ObjectMode mode,CPoint O,CScale Scale)
 {
 	//---------------------------------------------

@@ -28,6 +28,12 @@ CCadHoleRnd2Flat::~CCadHoleRnd2Flat()
 {
 }
 
+CCadObject* CCadHoleRnd2Flat::Copy()
+{
+	CCadHoleRnd2Flat* pNew = new CCadHoleRnd2Flat(*this);
+	return pNew;
+}
+
 void CCadHoleRnd2Flat::AdjustRefernce(CPoint p)
 {
 	//-----------------------------------------

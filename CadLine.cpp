@@ -27,6 +27,12 @@ CCadLine::~CCadLine()
 {
 }
 
+CCadObject* CCadLine::Copy()
+{
+	CCadLine* pNew = new CCadLine(*this);
+	return (CCadObject*)pNew;
+}
+
 void CCadLine::Draw(CDC *pDC, ObjectMode mode,CPoint O,CScale Scale)
 {
 	//---------------------------------------------
@@ -282,7 +288,7 @@ CCadLine CCadLine::operator=(CCadLine &v)
 	GetAttributes()->m_LineColor = v.GetAttributes()->m_LineColor;
 	GetAttributes()->m_LineWidth = v.GetAttributes()->m_LineWidth;
 	if((m_pPoly == NULL) && (v.m_pPoly != NULL))
-		m_pPoly = (CCadPolygon *)v.m_pPoly->CopyObject();
+		m_pPoly = (CCadPolygon *)v.m_pPoly->Copy();
 	return *this;
 }
 

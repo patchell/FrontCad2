@@ -33,6 +33,56 @@ struct TextAttributes {
 		m_pFontName = 0;
 		m_pText = 0;
 	}
+	~TextAttributes() {
+		if (m_pFontName)
+			delete[] m_pFontName;
+		if (m_pText)
+			delete[] m_pText;
+	}
+	void SetText(const char *s) {
+		if (m_pText)
+			delete[] m_pText;
+		if (s) {
+			m_pText = new char[strlen(s) + 1];
+			strcpy_s(m_pText, strlen(s) + 1, s);
+		}
+		else
+			m_pText = 0;
+	}
+	void SetFontName(const char* s) {
+		if (m_pFontName)
+			delete[] m_pFontName;
+		if (s) {
+			m_pFontName = new char[strlen(s) + 1];
+			strcpy_s(m_pFontName, strlen(s) + 1, s);
+		}
+		else
+			m_pFontName = 0;
+	}
+	void CopyFrom(TextAttributes *s) {
+		m_Color = s->m_Color;
+		m_BkColor = s->m_BkColor;
+		m_FontHeight = s->m_FontHeight;
+		m_FontWidth = s->m_FontWidth;
+		m_Angle = s->m_Angle;
+		m_Transparent = s->m_Transparent;
+		m_Weight = s->m_Weight;
+		m_Format = s->m_Format;
+		SetFontName(s->m_pFontName);
+		SetText(s->m_pText);
+	}
+	void CopyTo(TextAttributes* s) {
+		s->m_Color = m_Color;
+		s->m_BkColor = m_BkColor;
+		s->m_FontHeight = m_FontHeight;
+		s->m_FontWidth = m_FontWidth;
+		s->m_Angle = m_Angle;
+		s->m_Transparent = m_Transparent;
+		s->m_Weight = m_Weight;
+		s->m_Format = m_Format;
+		s->SetFontName(m_pFontName);
+		s->SetText(m_pText);
+	}
 };
 
 
@@ -46,6 +96,7 @@ public:
 	CCadText();
 	CCadText(CCadText& v);
 	virtual ~CCadText();
+	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
 	virtual CRect GetRect(void);
@@ -68,7 +119,7 @@ public:
 	COLORREF GetColor(void){return m_atrb.m_Color;}
 	void SetBkColor(COLORREF c){m_atrb.m_BkColor = c;}
 	COLORREF GetBkColor(void){return m_atrb.m_BkColor;}
-	void SetText(char *s);
+	void SetText(const char *s);
 	void GetText(char *s,int n);
 	void SetFormat(UINT f){m_atrb.m_Format = f;}
 	UINT GetFormat(void){return m_atrb.m_Format;}

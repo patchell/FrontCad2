@@ -17,9 +17,6 @@ extern FILE *pO;
 
 CCadText::CCadText():CCadObject(OBJECT_TYPE_TEXT)
 {
-	m_atrb.m_pText = 0;
-	m_atrb.m_pFontName = new char[LF_FACESIZE];
-	m_atrb.m_Transparent = 1;
 }
 
 CCadText::CCadText(CCadText& v):CCadObject(OBJECT_TYPE_TEXT)
@@ -34,8 +31,21 @@ CCadText::CCadText(CCadText& v):CCadObject(OBJECT_TYPE_TEXT)
 
 CCadText::~CCadText()
 {
-	if(m_atrb.m_pText) delete[] m_atrb.m_pText;
-	if(m_atrb.m_pFontName) delete[] m_atrb.m_pFontName;
+}
+
+CCadObject* CCadText::Copy()
+{
+	//---------------------------------------
+	// Copy
+	//		This function creates a copy of
+	// the object and returns a pointer to
+	// the new object.
+	//
+	// returns:
+	//		pointer to the new object
+	//---------------------------------------
+	CCadText *pNew = new CCadText(*this);
+	return (CCadObject*)pNew;
 }
 
 void CCadText::Draw(CDC *pDC, ObjectMode mode,CPoint Offset,CScale Scale)
@@ -111,7 +121,7 @@ void CCadText::Draw(CDC *pDC, ObjectMode mode,CPoint Offset,CScale Scale)
 	}
 }
 
-void CCadText::SetText(char *s)
+void CCadText::SetText(const char *s)
 {
 	//----------------------------------------
 	// SetText
@@ -121,10 +131,7 @@ void CCadText::SetText(char *s)
 	// parameter:
 	//		s......pointer to string to display
 	//----------------------------------------
-	if(m_atrb.m_pText) delete[] m_atrb.m_pText;
-	int len = strlen(s) + 1;
-	m_atrb.m_pText = new char[len];
-	strcpy_s(m_atrb.m_pText,len,s);
+	GetAttributes()->SetText(s);
 	// create the selection rectangle
 	CRect rect = GetTextRectangle();
 	Rotate(m_atrb.m_Angle,rect,m_SelRect);
@@ -142,7 +149,7 @@ void CCadText::SetAngle(int e)
 	//----------------------------------------
 	m_atrb.m_Angle = e;
 	CRect rect = GetTextRectangle();
-	this->Rotate(m_atrb.m_Angle,rect,this->m_SelRect);
+	Rotate(m_atrb.m_Angle,rect,this->m_SelRect);
 }
 
 void CCadText::GetText(char *s,int n)

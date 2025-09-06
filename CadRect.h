@@ -27,6 +27,7 @@ public:
 	CCadRect();
 	CCadRect(CCadRect &r);
 	virtual ~CCadRect();
+	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
 	virtual void Draw(CDC *pDC, ObjectMode mode , CPoint Offset = CPoint(0, 0), CScale Scale = CScale(0.1, 0.1));

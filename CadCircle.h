@@ -22,6 +22,7 @@ public:
 	CCadCircle();
 	CCadCircle(CCadCircle& e);
 	virtual ~CCadCircle();
+	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
 	virtual void SetP2(CPoint p);

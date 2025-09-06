@@ -37,6 +37,27 @@ CCadDrawing::~CCadDrawing()
 	}
 }
 
+CCadObject* CCadDrawing::Copy()
+{
+	//-----------------------------------------
+	// Copy
+	//		This function makes a copy of the
+	// drawing and all objects in it.
+	//
+	// return:
+	//		pointer to new drawing
+	//-----------------------------------------
+	CCadDrawing *pNew = new CCadDrawing();
+	pNew->m_BkColor = m_BkColor;
+	CCadObject *pO = m_pHead;
+	while(pO)
+	{
+		pNew->AddObject(pO->Copy());
+		pO = pO->GetNext();
+	}
+	return (CCadObject*)pNew;
+}
+
 void CCadDrawing::AddObject(CCadObject *pLO)
 {
 	//----------------------------------------

@@ -33,6 +33,12 @@ CCadElipse::~CCadElipse()
 {
 }
 
+CCadObject* CCadElipse::Copy()
+{
+	CCadElipse* pE = new CCadElipse(*this);
+	return pE;
+}
+
 void CCadElipse::Draw(CDC *pDC, ObjectMode mode,CPoint Offset,CScale Scale)
 {
 	//---------------------------------------------

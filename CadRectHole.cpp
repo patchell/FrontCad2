@@ -35,6 +35,12 @@ CCadRectHole::~CCadRectHole()
 {
 }
 
+CCadObject* CCadRectHole::Copy()
+{
+	CCadRectHole* pNew = new CCadRectHole(*this);
+	return (CCadObject*)pNew;
+}
+
 void CCadRectHole::Draw(CDC *pDC, ObjectMode mode,CPoint Offset,CScale Scale)
 {
 	//---------------------------------------------

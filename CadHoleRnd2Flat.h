@@ -28,6 +28,7 @@ public:
 	CCadHoleRnd2Flat();
 	CCadHoleRnd2Flat(CCadHoleRnd2Flat & h);
 	virtual ~CCadHoleRnd2Flat();
+	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
 	virtual CRect GetRect(void);

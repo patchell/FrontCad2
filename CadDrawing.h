@@ -26,10 +26,11 @@ class CCadDrawing : public CCadObject
 	CCadObject *m_pHead;
 	CCadObject *m_pTail;
 	COLORREF m_BkColor;
-public:
 	int m_Error;
+public:
 	CCadDrawing();
 	virtual ~CCadDrawing();
+	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
 	void CheckPrev(void);

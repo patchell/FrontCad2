@@ -21,6 +21,12 @@ CCadCircle::~CCadCircle()
 {
 }
 
+CCadObject* CCadCircle::Copy()
+{
+	CCadCircle* pNew = new CCadCircle(*this);
+	return (CCadObject*)pNew;
+}
+
 void CCadCircle::SetP2(CPoint p)
 {
 	CCadObject::SetP2(p);

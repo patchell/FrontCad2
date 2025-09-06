@@ -21,104 +21,15 @@ CCadLibObject::CCadLibObject(CCadObject *pChain): CCadObject(OBJECT_TYPE_LIBCOMP
 	CCadObject *pLobj = pChain;
 	while(pLobj)
 	{
-		switch(pLobj->GetType())
-		{
-			case OBJECT_TYPE_LINE:
-				{
-					CCadLine *pL;
-					pL = (CCadLine *)((CCadLine *)pLobj)->CopyObject();
-					AddObjectToEnd(pL);
-				}
-				break;
-			case OBJECT_TYPE_RECT:
-				{
-					CCadRect *pR = new CCadRect;
-					*pR = *(CCadRect *)pLobj;
-					AddObjectToEnd(pR);
-				}
-				break;
-			case OBJECT_TYPE_ELLIPSE:
-				{
-					CCadElipse *pE = new CCadElipse;
-					*pE = *(CCadElipse *)pLobj;
-					AddObjectToEnd(pE);
-				}
-				break;
-			case OBJECT_TYPE_RNDRECT:
-				{
-					CCadRoundRect *pR = new CCadRoundRect;
-					*pR = *(CCadRoundRect *)pLobj;
-					AddObjectToEnd(pR);
-				}
-				break;
-			case OBJECT_TYPE_POLY:
-				{
-					CCadPolygon *pP = new CCadPolygon;
-					*pP = *(CCadPolygon *)pLobj;
-					AddObjectToEnd(pP);
-				}
-				break;
-			case OBJECT_TYPE_LIBCOMP:
-				{
-				}
-				break;
-			case OBJECT_TYPE_HOLEROUND:
-				{
-					CCadHoleRound *pH = new CCadHoleRound;
-					*pH = *(CCadHoleRound *)pLobj;
-					AddObjectToEnd(pH);
-				}
-				break;
-			case OBJECT_TYPE_HOLERECT:
-				{
-					CCadRectHole *pH = new CCadRectHole;
-					*pH = *(CCadRectHole *)pLobj;
-					AddObjectToEnd(pH);
-				}
-				break;
-			case OBJECT_TYPE_HOLERND1FLAT:
-				{
-					CCadHoleRnd1Flat *pH = new CCadHoleRnd1Flat;
-					*pH = *(CCadHoleRnd1Flat *)pLobj;
-					AddObjectToEnd(pH);
-				}
-				break;
-			case OBJECT_TYPE_HOLERND2FLAT:
-				{
-					CCadHoleRnd2Flat *pH = new CCadHoleRnd2Flat;
-					*pH = *(CCadHoleRnd2Flat *)pLobj;
-					AddObjectToEnd(pH);
-				}
-				break;
-			case OBJECT_TYPE_TEXT:
-				{
-					CCadText *pT = new CCadText;
-					*pT = *(CCadText *)pLobj;
-					AddObjectToEnd(pT);
-				}
-				break;
-			case OBJECT_TYPE_ARC:
-				{
-					CCadArc *pH = new CCadArc;
-					*pH = *(CCadArc *)pLobj;
-					AddObjectToEnd(pH);
-				}
-				break;
-			case OBJECT_TYPE_ARCCENTERED:
-				{
-					CCadArcCentered *pH = new CCadArcCentered;
-					*pH = *(CCadArcCentered *)pLobj;
-					AddObjectToEnd(pH);
-				}
-				break;
-			case OBJECT_TYPE_ARROW:
-				{
-
-				}
-				break;
-		}
+		AddObjectToEnd(pLobj->Copy());
 		pLobj = pLobj->GetNext();
 	}
+}
+
+CCadObject* CCadLibObject::Copy()
+{
+	CCadLibObject *pNew = new CCadLibObject(*this);
+	return (CCadObject *)pNew;
 }
 
 CCadLibObject::CCadLibObject(CCadLibObject &LibObj):CCadObject(OBJECT_TYPE_LIBCOMP)
@@ -128,96 +39,7 @@ CCadLibObject::CCadLibObject(CCadLibObject &LibObj):CCadObject(OBJECT_TYPE_LIBCO
 	CCadObject *pLobj = LibObj.GetHead();
 	while(pLobj)
 	{
-		switch(pLobj->GetType())
-		{
-			case OBJECT_TYPE_LINE:
-				{
-					CCadLine *pL = new CCadLine;
-					*pL = *(CCadLine *)pLobj;
-					AddObjectToEnd(pL);
-				}
-				break;
-			case OBJECT_TYPE_RECT:
-				{
-					CCadRect *pR = new CCadRect;
-					*pR = *(CCadRect *)pLobj;
-					AddObjectToEnd(pR);
-				}
-				break;
-			case OBJECT_TYPE_ELLIPSE:
-				{
-					CCadElipse *pE = new CCadElipse;
-					*pE = *(CCadElipse *)pLobj;
-					AddObjectToEnd(pE);
-				}
-				break;
-			case OBJECT_TYPE_POLY:
-				{
-					CCadPolygon *pP = new CCadPolygon;
-					*pP = *(CCadPolygon *)pLobj;
-					AddObjectToEnd(pP);
-				}
-				break;
-			case OBJECT_TYPE_LIBCOMP:
-				{
-				}
-				break;
-			case OBJECT_TYPE_HOLEROUND:
-				{
-					CCadHoleRound *pH = new CCadHoleRound;
-					*pH = *(CCadHoleRound *)pLobj;
-					AddObjectToEnd(pH);
-				}
-				break;
-			case OBJECT_TYPE_HOLERECT:
-				{
-					CCadRectHole *pH = new CCadRectHole;
-					*pH = *(CCadRectHole *)pLobj;
-					AddObjectToEnd(pH);
-				}
-				break;
-			case OBJECT_TYPE_HOLERND1FLAT:
-				{
-					CCadHoleRnd1Flat *pH = new CCadHoleRnd1Flat;
-					*pH = *(CCadHoleRnd1Flat *)pLobj;
-					AddObjectToEnd(pH);
-				}
-				break;
-			case OBJECT_TYPE_HOLERND2FLAT:
-				{
-					CCadHoleRnd2Flat *pH = new CCadHoleRnd2Flat;
-					*pH = *(CCadHoleRnd2Flat *)pLobj;
-					AddObjectToEnd(pH);
-				}
-				break;
-			case OBJECT_TYPE_TEXT:
-				{
-					CCadText *pT = new CCadText;
-					*pT = *(CCadText *)pLobj;
-					AddObjectToEnd(pT);
-				}
-				break;
-			case OBJECT_TYPE_ARC:
-				{
-					CCadArc *pH = new CCadArc;
-					*pH = *(CCadArc *)pLobj;
-					AddObjectToEnd(pH);
-				}
-				break;
-			case OBJECT_TYPE_ARCCENTERED:
-				{
-					CCadArcCentered *pH = new CCadArcCentered;
-					*pH = *(CCadArcCentered *)pLobj;
-					AddObjectToEnd(pH);
-				}
-				break;
-			case OBJECT_TYPE_ARROW:
-				{
-
-				}
-				break;
-
-		}
+		AddObjectToEnd(pLobj->Copy());
 		pLobj = pLobj->GetNext();
 	}
 }
@@ -226,15 +48,13 @@ CCadLibObject::~CCadLibObject()
 {
 	CCadObject *pO,*pNO;
 
-	pO = m_pStart;
+	pO = GetHead();
 	while(pO)
 	{
 		pNO = pO->GetNext();
 		delete pO;
 		pO = pNO;
 	}
-	if(m_pName) delete[] m_pName;
-	if(m_pRefPen) delete m_pRefPen;
 }
 
 void CCadLibObject::Draw(CDC *pDC, ObjectMode mode,CPoint Offset,CScale Scale)
@@ -252,8 +72,10 @@ void CCadLibObject::Draw(CDC *pDC, ObjectMode mode,CPoint Offset,CScale Scale)
 	//---------------------------------------------
 	if (CCadLibObject::m_RenderEnable)
 	{
-		CCadObject *pO = m_pStart;
+		CCadObject *pO = GetHead();
 		CPoint p1;
+		CPen RefPen;
+		RefPen.CreatePen(PS_SOLID, 3, RGB(255, 0, 0));
 		p1 = Scale * GetP1();
 		CPoint Doff = p1 + Offset;
 		while (pO)
@@ -264,14 +86,9 @@ void CCadLibObject::Draw(CDC *pDC, ObjectMode mode,CPoint Offset,CScale Scale)
 		//--------------------------
 		// mark the reference point
 		//--------------------------
-		if (m_pRefPen == 0)
-		{
-			m_pRefPen = new CPen;
-			m_pRefPen->CreatePen(PS_SOLID, 3, RGB(255, 0, 0));
-		}
 		CPen *pOldPen;
-		CPoint Ref = m_Ref + Offset + GetP1();
-		pOldPen = pDC->SelectObject(m_pRefPen);
+		CPoint Ref = GetAttributes()->m_Ref + Offset + GetP1();
+		pOldPen = pDC->SelectObject(&RefPen);
 		pDC->MoveTo(Ref.x - 2, Ref.y);
 		pDC->LineTo(Ref.x + 2, Ref.y);
 		pDC->MoveTo(Ref.x, Ref.y - 2);
@@ -404,11 +221,11 @@ void CCadLibObject::Save(FILE* pO, int Indent)
 	fprintf(pO, "%s%s(\"%s\",%s,%s ){\n",
 		theApp.IndentString(s, 256, Indent),
 		CFileParser::LookupKeyword(Tokens::LIBPART),
-		m_pName,
-		CFileParser::SavePoint(pRefString, 64, Tokens::REFERENCE, m_Ref),
+		GetAttributes()->m_pName,
+		CFileParser::SavePoint(pRefString, 64, Tokens::REFERENCE, GetAttributes()->m_Ref),
 		CFileParser::SavePoint(pPointString, 64, Tokens::POINT_1, GetP1())
 	);
-	CCadObject* pOb = m_pStart;
+	CCadObject* pOb = GetHead();
 	while (pOb)
 	{
 		pOb->Save(pO, Indent + 4);
@@ -426,7 +243,7 @@ void CCadLibObject::SetVertex(int Vi, CPoint p)
 
 CPoint CCadLibObject::GetReference()
 {
-	return GetP1() + m_Ref;
+	return GetP1() + GetAttributes()->m_Ref;
 }
 
 void CCadLibObject::AdjustRefernce(CPoint Ref)

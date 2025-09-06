@@ -38,6 +38,7 @@ public:
 	CCadHoleRound(CCadHoleRound &h);
 	CCadHoleRound();
 	virtual ~CCadHoleRound();
+	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
 	virtual CRect GetRect(void);

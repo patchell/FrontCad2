@@ -32,6 +32,7 @@ class CCadHoleRnd1Flat : public CCadObject
 public:
 	CCadHoleRnd1Flat();
 	virtual ~CCadHoleRnd1Flat();
+	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
 	virtual CRect GetRect(void);

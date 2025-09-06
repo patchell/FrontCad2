@@ -121,11 +121,6 @@ void CCadObject::Save(FILE *pO, int Indent)
 
 }
 
-CCadObject CCadObject::operator=(CCadObject &v)
-{
-	return *this;
-}
-
 void CCadObject::Move(CPoint p)
 {
 }

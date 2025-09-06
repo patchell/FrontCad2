@@ -30,6 +30,7 @@ public:
 	CCadRoundRect(CCadRoundRect &r);
 	CCadRoundRect();
 	virtual ~CCadRoundRect();
+	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
 	virtual CPoint GetReference();
