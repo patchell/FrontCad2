@@ -49,6 +49,7 @@ public:
 	CCadArrow();
 	CCadArrow(CCadArrow &ca);
 	virtual ~CCadArrow();
+	BOOL Create(CPoint ptPos, ArrowAttributes* pArrowAttributes);	
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }

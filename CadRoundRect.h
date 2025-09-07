@@ -17,19 +17,39 @@ struct RndRectAttb {
 		m_P3 = { 0,0 };
 		m_bTransparent = FALSE;
 	}
+	~RndRectAttb() {
+	}
+	void CopyTo(RndRectAttb* pA) {
+		if (pA) {
+			pA->m_FillColor = m_FillColor;
+			pA->m_LineColor = m_LineColor;
+			pA->m_LineWidth = m_LineWidth;
+			pA->m_P3 = m_P3;
+			pA->m_bTransparent = m_bTransparent;
+		}
+	}
+	void CopyFrom(RndRectAttb* pA) {
+		if (pA) {
+			m_FillColor = pA->m_FillColor;
+			m_LineColor = pA->m_LineColor;
+			m_LineWidth = pA->m_LineWidth;
+			m_P3 = pA->m_P3;
+			m_bTransparent = pA->m_bTransparent;
+		}
+	}
 } ;
 
 class CFileParser;
 
 class CCadRoundRect : public CCadObject
 {
-	friend CFileParser;
 	inline static int m_RenderEnable = 1;
 	RndRectAttb m_attrib;
 public:
 	CCadRoundRect(CCadRoundRect &r);
 	CCadRoundRect();
 	virtual ~CCadRoundRect();
+	BOOL Create(CPoint ptPos, RndRectAttb* pRndRectAttributes);
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }

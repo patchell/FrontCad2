@@ -84,6 +84,7 @@ public:
 	CCadLibObject(CCadObject* pChain);
 	CCadLibObject(CCadLibObject& LibObj);
 	virtual ~CCadLibObject();
+	BOOL Create(CPoint ptPos, StPartAttributes* pAttributes);
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }

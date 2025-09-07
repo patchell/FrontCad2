@@ -287,7 +287,9 @@ struct SCALEWIZattributes {
 #include "CadHoleRnd2Flat.h"
 #include "CadHoleRound.h"
 #include "CadLibObject.h"
+
 #include "CadOrigin.h"
+
 #include "CadPolygon.h"
 #include "CadArrow.h"
 #include "CadLine.h"

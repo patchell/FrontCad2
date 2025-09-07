@@ -27,6 +27,18 @@ CCadLine::~CCadLine()
 {
 }
 
+BOOL CCadLine::Create(CPoint m_Pos, LineAttrib* pLineAttributes)
+{
+	BOOL rV = TRUE;
+	SetP1(m_Pos);
+	SetP2(m_Pos);
+	if (pLineAttributes)
+		GetAttributes()->CopyFrom(pLineAttributes);
+	else
+		rV = FALSE;
+    return rV;
+}
+
 CCadObject* CCadLine::Copy()
 {
 	CCadLine* pNew = new CCadLine(*this);

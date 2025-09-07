@@ -33,6 +33,20 @@ CCadRect::~CCadRect()
 {
 }
 
+BOOL CCadRect::Create(CPoint ptPos, RectAttributes* pRectAttributes)
+{
+	BOOL rV = TRUE;
+	SetP1(ptPos);
+	SetP2(ptPos);
+	if (pRectAttributes)
+		m_atrb.CopyFrom(pRectAttributes);
+	else
+	{
+		rV = FALSE;
+	}
+	return rV;
+}
+
 CCadObject* CCadRect::Copy()
 {
 	CCadRect* pNew = new CCadRect(*this);

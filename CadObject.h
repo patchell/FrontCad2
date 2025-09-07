@@ -78,7 +78,6 @@ public:
 	virtual const char* GetTypeString(void);
 	void SetType(int t) { m_Type = t; }
 	int GetType(void) const { return m_Type; }
-	virtual CCadObject operator=(CCadObject& v) = 0;
 	CPoint ScalePoint(CPoint p, int Scale, int ScaleDiv);
 	virtual CCadObject* Copy() = 0;
 	void SetRect(CRect& rect, CPoint P1, CPoint P2, CSize Lw);

@@ -3,9 +3,9 @@
 
 CCadDimension::CCadDimension():CCadObject(OBJECT_TYPE_DIMENSION)
 {
-	TextAttributes* pAtrb;
+	//TextAttributes* pAtrb;
 	
-	//pAtrb = m_pText->GetAttributes();
+	//pAtrb = m_Text.GetAttributes();
 	//pAtrb->m_Angle = 0;
 	//pAtrb->m_BkColor = RGB(255, 255, 255);
 	//pAtrb->m_Color = RGB(0, 0, 0);
@@ -30,6 +30,16 @@ CCadDimension::~CCadDimension()
 {
 }
 
+BOOL CCadDimension::Create(CPoint ptPos, DimAttrib* pDimAttributes)
+{
+	BOOL rV = TRUE;
+
+	SetP1(ptPos);
+	SetP2(ptPos);
+	rV = GetAttributes()->Create(pDimAttributes);
+    return rV;
+}
+
 CCadObject* CCadDimension::Copy()
 {
 	CCadDimension* pNew = new CCadDimension(*this);
@@ -48,7 +58,7 @@ void CCadDimension::Move(CPoint p)
 	Diff = p - GetP1();
 	SetP1(GetP1() + Diff);
 	SetP2(GetP2() + Diff);
-	GetAttributes()->m_pText->Move(GetAttributes()->m_pText->GetP1() + Diff);
+	GetAttributes()->m_Text.Move(GetAttributes()->m_Text.GetP1() + Diff);
 }
 
 Tokens CCadDimension::Parse(
@@ -144,7 +154,7 @@ void CCadDimension::Save(FILE *pO,  int Indent)
 		CFileParser::SaveDecimalValue(s3,64,Tokens::LINE_WIDTH, m_Atrib.m_LineWidth),
 		CFileParser::SaveColor(s4,64, m_Atrib.m_Color,Tokens::LINE_COLOR)
 	);
-	GetAttributes()->m_pText->Save(pO,Indent+4);
+	GetAttributes()->m_Text.Save(pO,Indent+4);
 	fprintf(pO, "%s}\n",s);
 	delete[]s4;
 	delete[]s3;
@@ -206,7 +216,7 @@ void CCadDimension::Draw(CDC *pDC, ObjectMode mode, CPoint Offset, CScale Scale)
 		case ObjectMode::Final:
 			pDC->MoveTo(P1);
 			pDC->LineTo(P2);
-			GetAttributes()->m_pText->Draw(pDC, mode, Offset, Scale);
+			GetAttributes()->m_Text.Draw(pDC, mode, Offset, Scale);
 			break;
 		case ObjectMode::Sketch:
 			pDC->MoveTo(P1);
@@ -243,7 +253,7 @@ int CCadDimension::CheckSelected(CPoint p,CSize O)
 	rect.SetRect(P1, P2);
 	rect.NormalizeRect();
 	rV = rect.PtInRect(p);
-	rV |= GetAttributes()->m_pText->CheckSelected(p);
+	rV |= GetAttributes()->m_Text.CheckSelected(p);
 	return rV;
 }
 
@@ -255,7 +265,7 @@ CPoint CCadDimension::GetReference()
 void CCadDimension::SetSelected(int Flag)
 {
 	CCadObject::SetSelected(Flag);
-	GetAttributes()->m_pText->SetSelected(Flag);
+	GetAttributes()->m_Text.SetSelected(Flag);
 }
 
 void CCadDimension::AdjustRefernce(CPoint Ref)
@@ -271,7 +281,7 @@ void CCadDimension::AdjustRefernce(CPoint Ref)
 	//-----------------------------------------
 	SetP1(GetP1() - Ref);
 	SetP2(GetP2() - Ref);
-	GetAttributes()->m_pText->AdjustRefernce(Ref);
+	GetAttributes()->m_Text.AdjustRefernce(Ref);
 	CPoint Org = ((CFrontCadApp *)AfxGetApp())->GetMainView()->GetOrigin();
 	UpdateText(Org);
 }
@@ -295,8 +305,8 @@ void CCadDimension::UpdateText(CPoint Org)
 	{
 		Dim = P1.x - Org.x;
 		SetValue(Dim, 3);
-		GetAttributes()->m_pText->SetAngle(-900);
-		rect = GetAttributes()->m_pText->GetRect();
+		GetAttributes()->m_Text.SetAngle(-900);
+		rect = GetAttributes()->m_Text.GetRect();
 		if (P1.y > P2.y)
 			ofx = -(rect.Width() + 60);
 		else
@@ -307,14 +317,14 @@ void CCadDimension::UpdateText(CPoint Org)
 	{
 		Dim = -(P2.y - Org.y);
 		SetValue(Dim, 3);
-		rect = GetAttributes()->m_pText->GetRect();
+		rect = GetAttributes()->m_Text.GetRect();
 		if (P1.x > P2.x)
 			ofx = rect.Width()+60;
 		else
 			ofx = -60;
 		off = CSize(ofx, rect.Height() / 2);
 	}
-	GetAttributes()->m_pText->SetP1(P2 - off);
+	GetAttributes()->m_Text.SetP1(P2 - off);
 }
 
 void CCadDimension::SetValue(int v, int dp)
@@ -332,34 +342,16 @@ void CCadDimension::SetValue(int v, int dp)
 	Fracpart = int(((double)Fracpart / (double)Div) * double(Div));
 	char *s = new char[32];
 	sprintf_s(s,32, "%d.%03d", Intpart,Fracpart);
-	GetAttributes()->m_pText->SetText(s);
+	GetAttributes()->m_Text.SetText(s);
 	delete[] s;
 
-}
-void CCadDimension::AddObject(CCadObject *pO)
-{
-	if (pO->GetType() == OBJECT_TYPE_TEXT)
-	{
-		GetAttributes()->m_pText = (CCadText *)pO;
-	}
-	else
-	{
-		MessageBox(NULL, "Only TEXT objects in DIMENSION", "ERROR", MB_OK | MB_ICONHAND);
-	}
 }
 
 void CCadDimension::RemoveObject(CCadObject *pO)
 {
-	if (pO->GetType() == OBJECT_TYPE_TEXT)
-	{
-		delete GetAttributes()->m_pText;
-		GetAttributes()->m_pText = 0;
-	}
-	else
-	{
 		MessageBox(NULL, "Remove Only TEXT objects in DIMENSION", "ERROR", MB_OK | MB_ICONHAND);
-	}
 }
+
 void CCadDimension::RenderEnable(int e)
 {
 	CCadDimension::m_RenderEnable = e;
@@ -405,11 +397,11 @@ void CCadDimension::ChangeSize(CSize Sz)
 
 void CCadDimension::SetFontName(char * pN)
 {
-	GetAttributes()->m_pText->SetFontName(pN);
+	GetAttributes()->m_Text.SetFontName(pN);
 }
 
 
 char * CCadDimension::GetFontName()
 {
-	return GetAttributes()->m_pText->GetFontName();
+	return GetAttributes()->m_Text.GetFontName();
 }

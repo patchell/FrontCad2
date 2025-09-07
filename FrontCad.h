@@ -21,7 +21,7 @@
 
 class CFrontCadApp : public CWinApp
 {
-	const char *fname;
+	const char* fname;
 	CFrontCadView* m_pMainView;
 	CLibFormView* m_pLibView;
 	CUtilView* m_UtilView;
@@ -52,10 +52,10 @@ public:
 	CFrontCadApp();
 	void SaveSettings(void);
 	void LoadSettings(void);
-	void WriteToLogFile(char * pS);
-	CMainFrame *GetMainFrame(void) { return (CMainFrame *)m_pMainWnd; }
+	void WriteToLogFile(char* pS);
+	CMainFrame* GetMainFrame(void) { return (CMainFrame*)m_pMainWnd; }
 	char* IndentString(char* s, int Size, int Indent);
-    char* ConvertCStringToChar(char* cpDest, CString& csSource);
+	char* ConvertCStringToChar(char* cpDest, CString& csSource);
 	void SetLibView(CLibFormView* pLFV) { m_pLibView = pLFV; }
 	CLibFormView* GetLibView() {
 		return m_pLibView;
@@ -78,6 +78,26 @@ public:
 			rV = TRUE;
 		return rV;
 	}
+	//------------------------------------------------------
+	// Update Default Attributes Methods
+	//------------------------------------------------------
+	void UpdateDimAttributes(CUtilView* pUV);
+	void UpdateLineAttributes(CUtilView* pUV);
+	void UpdateRectAttributes(CUtilView* pUV);
+	void UpdateCircleAttributes(CUtilView* pUV);
+	void UpdateEllipseAttributes(CUtilView* pUV);
+	void UpdatePolyAttributes(CUtilView* pUV);
+	void UpdateArcAttributes(CUtilView* pUV);
+	void UpdateHoleRoundAttributes(CUtilView* pUV);
+	void UpdateHoleRnd2FlatAttributes(CUtilView* pUV);
+	void UpdateHoleRnd1FlatAttributes(CUtilView* pUV);
+	void UpdateRectHoleAttributes(CUtilView* pUV);
+	void UpdateTextAttributes(CUtilView* pUV);
+	void UpdateScaleWizAttributes(CUtilView* pUV);
+	void UpdateArrowAttributes(CUtilView* pUV);
+	void UpdateRndRectAttributes(CUtilView* pUV);
+	void UpdateLineAttrib(CUtilView* pUV);
+	void UpdateOriginAttrib(CUtilView* pUV);
 };
 
 extern CFrontCadApp theApp;

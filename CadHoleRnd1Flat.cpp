@@ -33,6 +33,19 @@ CCadHoleRnd1Flat::~CCadHoleRnd1Flat()
 {
 }
 
+BOOL CCadHoleRnd1Flat::Create(CPoint ptPos, HoleRnd1FlatAttributes* pHoleRnd1FlatAttributes)
+{
+	BOOL rV = TRUE;
+
+	SetP1(ptPos);
+	SetP2(ptPos);
+	if (pHoleRnd1FlatAttributes)
+		pHoleRnd1FlatAttributes->CopyFrom(pHoleRnd1FlatAttributes);
+	else
+		rV = FALSE;
+    return rV;
+}
+
 CCadObject* CCadHoleRnd1Flat::Copy()
 {
 	CCadHoleRnd1Flat* pNew = new CCadHoleRnd1Flat(*this);

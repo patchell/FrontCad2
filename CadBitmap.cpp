@@ -4,12 +4,6 @@
 
 #include "stdafx.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 
 ///////////////////////////////////////////////
 // Construction/Destruction
@@ -29,8 +23,11 @@ CCadBitmap::CCadBitmap(CCadBitmap &v):CCadObject(OBJECT_TYPE_BITMAP)
 	SetP1(v.GetP1());
 	SetP2(v.GetP2());
 	m_pFilename = new char[512];
-	strcpy_s(m_pFilename,512,v.m_pFilename);
-	LoadImage(m_pFilename);
+	if (v.m_pFilename)
+	{
+		strcpy_s(m_pFilename,512,v.m_pFilename);
+		LoadBitmapImage(m_pFilename);
+	}
 	this->m_MaintainAspectRatio = v.m_MaintainAspectRatio;
 }	
 
@@ -41,7 +38,7 @@ CCadBitmap CCadBitmap::operator =(CCadBitmap &v)
 	SetP2(v.GetP2());
 	m_pFilename = new char[512];
 	strcpy_s(m_pFilename,512,v.m_pFilename);
-	LoadImage(m_pFilename);
+	LoadBitmapImage(m_pFilename);
 	this->m_MaintainAspectRatio = v.m_MaintainAspectRatio;
 	return *this;
 }
@@ -50,6 +47,17 @@ CCadBitmap::~CCadBitmap()
 {
 	if(m_pBM) delete m_pBM;
 	delete[] m_pFilename;
+}
+
+BOOL CCadBitmap::Create(CPoint ptPos, char* pFilename, CMyBitmap* pBM)
+{
+	BOOL rV = TRUE;
+
+	SetP1(ptPos);
+	SetP2(ptPos);
+	if (pFilename)
+		rV = LoadBitmapImage(pFilename);
+    return 0;
 }
 
 CCadObject* CCadBitmap::Copy()
@@ -75,7 +83,7 @@ Tokens CCadBitmap::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawi
 	LookAHeadToken = pParser->Expect(Tokens(','), LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens::FILE, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens('('), LookAHeadToken, pIN);
-	LoadImage(pParser->GetLexBuff());
+	LoadBitmapImage(pParser->GetLexBuff());
 	LookAHeadToken = pParser->Expect(Tokens::STRING, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens(')'), LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens(')'), LookAHeadToken, pIN);
@@ -246,15 +254,22 @@ CRect CCadBitmap::GetRect(void)
 	return rR;
 }
 
-void CCadBitmap::LoadImage(char *path)
+BOOL CCadBitmap::LoadBitmapImage(char *path)
 {
-	if(m_pBM) delete m_pBM;
-	m_pBM = new CMyBitmap;
-	m_pBM->LoadBitmap(path);
-	strcpy_s(this->m_pFilename,512,path);
-	BITMAP bm;
-	m_pBM->GetBitmap(&bm);
-	m_Size = CSize(bm.bmWidth,bm.bmHeight);
+	BOOL rV = TRUE;
+
+	if(path)
+	{ 
+		if (m_pBM) 
+			delete m_pBM;
+		m_pBM = new CMyBitmap;
+		m_pBM->LoadBitmapImage(path);
+		strcpy_s(this->m_pFilename, 512, path);
+		BITMAP bm;
+		m_pBM->GetBitmap(&bm);
+		m_Size = CSize(bm.bmWidth, bm.bmHeight);
+	}
+	return rV;
 }
 
 void CCadBitmap::RestoreAspectRatio()

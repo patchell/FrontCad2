@@ -27,6 +27,18 @@ CCadArc::~CCadArc()
 {
 }
 
+BOOL CCadArc::Create(CPoint ptPos, ArcAttributes* pArcAttributes)
+{
+	BOOL bRet = TRUE;
+	SetP1(ptPos);
+	SetP2(ptPos);
+	if (pArcAttributes)
+		bRet = GetAttributes()->Create(pArcAttributes);
+	else
+		bRet = FALSE;
+    return bRet;
+}
+
 CCadObject* CCadArc::Copy()
 {
 	CCadArc* pNew = new CCadArc(*this);

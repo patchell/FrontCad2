@@ -28,6 +28,18 @@ CCadArcCentered::~CCadArcCentered()
 {
 }
 
+BOOL CCadArcCentered::Create(CPoint ptPos, ArcAttributes* pArcAttributes)
+{
+	BOOL bRet = TRUE;
+	SetP1(ptPos);
+	SetP2(ptPos);
+	if (pArcAttributes)
+		bRet = GetAttributes()->Create(pArcAttributes);
+	else
+		bRet = FALSE;
+	return bRet;
+}
+
 CCadObject* CCadArcCentered::Copy()
 {
 	CCadArcCentered* pNew = new CCadArcCentered(*this);

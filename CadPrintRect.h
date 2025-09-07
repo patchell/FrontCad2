@@ -9,6 +9,18 @@ struct PrintRectAttributes {
 		m_LineColor = RGB(0, 0, 0);
 		m_Size = CSize(0, 0);
 	}
+	~PrintRectAttributes() {
+	}
+	void CopyTo(PrintRectAttributes* pA) {
+		pA->m_LineWidth = m_LineWidth;
+		pA->m_LineColor = m_LineColor;
+		pA->m_Size = m_Size;
+	}
+	void CopyFrom(PrintRectAttributes* pA) {
+		m_LineWidth = pA->m_LineWidth;
+		m_LineColor = pA->m_LineColor;
+		m_Size = pA->m_Size;
+	}
 };
 
 class CFileParser;
@@ -22,6 +34,7 @@ public:
 	CCadPrintRect();
 	CCadPrintRect(CCadPrintRect &PR);
 	virtual ~CCadPrintRect();
+	BOOL Create(CPoint ptPos, PrintRectAttributes* pPrintRectAttributes);
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }

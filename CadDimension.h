@@ -3,35 +3,38 @@
 struct DimAttrib {
 	int m_LineWidth;
 	COLORREF m_Color;
-	CCadText* m_pText;
+	CCadText m_Text;
 	DimAttrib() {
 		m_LineWidth = 0;
 		m_Color = RGB(0, 0, 0);
-		m_pText = new CCadText;
 	}
 	virtual ~DimAttrib() {
-		if (m_pText)
-			delete m_pText;
-		m_pText = 0;
+	}
+	BOOL Create(DimAttrib* pDimAttributes) {
+		BOOL rV = TRUE;
+
+		if (pDimAttributes)
+		{
+			CopyFrom(pDimAttributes);
+		}
+		else
+		{
+			rV = FALSE;
+		}
+		return rV;
 	}
 	void SetText(const char* s) {
-		if (!m_pText)
-			m_pText = new CCadText;;
-		m_pText->SetText((char*)s);
+		m_Text.SetText((char*)s);
 	}
 	void CopyFrom(DimAttrib* s) {
 		m_LineWidth = s->m_LineWidth;
 		m_Color = s->m_Color;
-		if (!m_pText)
-			m_pText = new CCadText;
-		*m_pText = *(s->m_pText);
+		m_Text = s->m_Text;
 	}
 	void CopyTo(DimAttrib* s) {
 		s->m_LineWidth = m_LineWidth;
 		s->m_Color = m_Color;
-		if (!s->m_pText)
-			s->m_pText = new CCadText;
-		*(s->m_pText) = *m_pText;
+		s->m_Text = m_Text;
 	}
 };
 
@@ -43,6 +46,7 @@ public:
 	CCadDimension();
 	CCadDimension(CCadDimension &cd);
 	virtual ~CCadDimension();
+	BOOL Create(CPoint ptPos, DimAttrib* pDimAttributes);
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
@@ -55,9 +59,8 @@ public:
 	virtual void Draw(CDC *pDC, ObjectMode mode , CPoint Offset = CPoint(0, 0), CScale Scale = CScale(0.1, 0.1));
 	virtual int CheckSelected(CPoint p, CSize Offset = CSize(0, 0));
 	virtual CPoint GetReference();
-	virtual void AddObject(CCadObject *pO);
 	virtual void RemoveObject(CCadObject *pO);
-	virtual CCadObject *GetHead(void) { return (CCadObject *)GetAttributes()->m_pText; }
+	virtual CCadObject *GetHead(void) { return (CCadObject *)&GetAttributes()->m_Text; }
 	virtual void SetSelected(int Flag = 0);
 	virtual void AdjustRefernce(CPoint Ref);
 	virtual CRect GetRect(void);
@@ -68,7 +71,7 @@ public:
 	inline void SetLineWidth(int w) { m_Atrib.m_LineWidth = w; }
 	inline int GetLineWidth(void) { return m_Atrib.m_LineWidth; }
 	inline CCadText *GetText(void) { 
-		return GetAttributes()->m_pText; 
+		return &GetAttributes()->m_Text; 
 	}
 	DimAttrib* GetAttributes(void) { return &m_Atrib; }
 	virtual void RenderEnable(int e);

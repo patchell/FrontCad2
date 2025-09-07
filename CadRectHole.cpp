@@ -35,6 +35,21 @@ CCadRectHole::~CCadRectHole()
 {
 }
 
+BOOL CCadRectHole::Create(CPoint m_Pos, RectHoleAttributes* pRectHoleAttributes)
+{
+	BOOL rV = TRUE;
+	SetP1(m_Pos);
+	SetP2(m_Pos);
+	if (pRectHoleAttributes)
+		m_Attr.CopyFrom(pRectHoleAttributes);
+	else
+	{
+		rV = FALSE;
+	}
+	return rV;
+
+}
+
 CCadObject* CCadRectHole::Copy()
 {
 	CCadRectHole* pNew = new CCadRectHole(*this);

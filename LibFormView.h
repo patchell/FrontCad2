@@ -9,6 +9,7 @@
 
 class CLibFormView : public CFormView
 {
+public:
 	CComboBoxLibPartSelector	m_Combo_SelPart;
 	CComboBoxLibrary	m_Combo_SelLIb;
 	CStaticPreview	m_Static_Preview;

@@ -11,6 +11,27 @@ struct CircleAttributes {
 		m_FillColor = RGB(0, 0, 0);
 		m_bTransparent = 0;
 	}
+	BOOL Create(CircleAttributes* pA) {
+		BOOL rV = TRUE;
+		if (pA) {
+			CopyFrom(pA);
+		}
+		else
+			rV = FALSE;
+		return rV;
+	}
+	void CopyFrom(CircleAttributes* pA) {
+		m_LineWidth = pA->m_LineWidth;
+		m_LineColor = pA->m_LineColor;
+		m_FillColor = pA->m_FillColor;
+		m_bTransparent = pA->m_bTransparent;
+	}
+	void CopyTo(CircleAttributes* pA) {
+		pA->m_LineWidth = m_LineWidth;
+		pA->m_LineColor = m_LineColor;
+		pA->m_FillColor = m_FillColor;
+		pA->m_bTransparent = m_bTransparent;
+	}
 };
 
 class CCadCircle : public CCadObject
@@ -22,6 +43,7 @@ public:
 	CCadCircle();
 	CCadCircle(CCadCircle& e);
 	virtual ~CCadCircle();
+	BOOL Create(CPoint ptPos, CircleAttributes* pCircleAttributes);
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }

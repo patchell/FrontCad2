@@ -21,6 +21,21 @@ struct HoleRoundAttributes {
 		m_LineColor = RGB(0, 0, 0);
 		m_Radius = 50;
 	}
+	~HoleRoundAttributes() {}
+	void CopyTo(HoleRoundAttributes* pAttrDest) {
+		if (pAttrDest) {
+			pAttrDest->m_LineWidth = m_LineWidth;
+			pAttrDest->m_LineColor = m_LineColor;
+			pAttrDest->m_Radius = m_Radius;
+		}
+	}
+	void CopyFrom(HoleRoundAttributes* pAttrSrc) {
+		if (pAttrSrc) {
+			m_LineWidth = pAttrSrc->m_LineWidth;
+			m_LineColor = pAttrSrc->m_LineColor;
+			m_Radius = pAttrSrc->m_Radius;
+		}
+	}
 };
 
 class CCadHoleRound : public CCadObject
@@ -38,6 +53,7 @@ public:
 	CCadHoleRound(CCadHoleRound &h);
 	CCadHoleRound();
 	virtual ~CCadHoleRound();
+	BOOL Create(CPoint m_Pos, HoleRoundAttributes* pHoleRoundAttributes);	
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }

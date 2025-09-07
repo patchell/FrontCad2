@@ -57,6 +57,19 @@ CCadLibObject::~CCadLibObject()
 	}
 }
 
+BOOL CCadLibObject::Create(CPoint ptPos, StPartAttributes* pAttributes)
+{
+	BOOL rV = TRUE;
+
+	SetP1(ptPos);
+	SetP2(ptPos);
+	if (pAttributes)
+		GetAttributes()->CopyFrom(pAttributes);
+	else
+		rV = FALSE;
+    return 0;
+}
+
 void CCadLibObject::Draw(CDC *pDC, ObjectMode mode,CPoint Offset,CScale Scale)
 {
 	//---------------------------------------------

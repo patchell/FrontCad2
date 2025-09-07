@@ -15,6 +15,23 @@ struct HoleRnd2FlatAttributes {
 		m_FlatDist = 50;
 		m_Radius = 50;
 	}
+	~HoleRnd2FlatAttributes() {}
+	void CopyTo(HoleRnd2FlatAttributes* pAttrDest) {
+		if (pAttrDest) {
+			pAttrDest->m_LineWidth = m_LineWidth;
+			pAttrDest->m_FlatDist = m_FlatDist;
+			pAttrDest->m_LineColor = m_LineColor;
+			pAttrDest->m_Radius = m_Radius;
+		}
+	}
+	void CopyFrom(HoleRnd2FlatAttributes* pAttrSrc) {
+		if (pAttrSrc) {
+			m_LineWidth = pAttrSrc->m_LineWidth;
+			m_FlatDist = pAttrSrc->m_FlatDist;
+			m_LineColor = pAttrSrc->m_LineColor;
+			m_Radius = pAttrSrc->m_Radius;
+		}
+	}
 } ;
 
 class CFileParser;
@@ -28,6 +45,7 @@ public:
 	CCadHoleRnd2Flat();
 	CCadHoleRnd2Flat(CCadHoleRnd2Flat & h);
 	virtual ~CCadHoleRnd2Flat();
+	BOOL Create(CPoint m_Pos, HoleRnd2FlatAttributes* pHoleRnd2FlatAttributes);	
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }

@@ -117,7 +117,7 @@ void CMoveObjects::Copy(CMoveObjects & Src)
 	CCadObject *pObj = Src.GetHead();
 	while (pObj)
 	{
-		AddObject(pObj->CopyObject());
+		AddObject(pObj->Copy());
 		pObj = pObj->GetNext();
 	}
 }

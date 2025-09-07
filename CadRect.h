@@ -14,19 +14,37 @@ struct RectAttributes {
 		m_FillColor = RGB(0, 0, 0);
 		m_bTransparentFill = FALSE;
 	}
+	~RectAttributes() {
+	}
+	void CopyTo(RectAttributes* pA) {
+		if(pA) {
+			pA->m_LineWidth = m_LineWidth;
+			pA->m_LineColor = m_LineColor;
+			pA->m_FillColor = m_FillColor;
+			pA->m_bTransparentFill = m_bTransparentFill;
+		}
+	}
+	void CopyFrom(RectAttributes* pA) {
+		if(pA) {
+			m_LineWidth = pA->m_LineWidth;
+			m_LineColor = pA->m_LineColor;
+			m_FillColor = pA->m_FillColor;
+			m_bTransparentFill = pA->m_bTransparentFill;
+		}
+	}
 };
 
 class CFileParser;
 
 class CCadRect : public CCadObject
 {
-	friend CFileParser;
 	RectAttributes m_atrb;
 	inline static int m_RenderEnable = 1;
 public:
 	CCadRect();
 	CCadRect(CCadRect &r);
 	virtual ~CCadRect();
+	BOOL Create(CPoint ptPos, RectAttributes* pRectAttributes);
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }

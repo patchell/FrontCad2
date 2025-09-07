@@ -39,6 +39,19 @@ CCadHoleRound::~CCadHoleRound()
 {
 }
 
+BOOL CCadHoleRound::Create(CPoint m_Pos, HoleRoundAttributes* pHoleRoundAttributes)
+{
+	BOOL rV = TRUE;
+
+	SetP1(m_Pos);
+	SetP2(m_Pos);
+	if (pHoleRoundAttributes)
+		m_atrb.CopyFrom(pHoleRoundAttributes);
+	else
+		rV = FALSE;
+    return rV;
+}
+
 CCadObject* CCadHoleRound::Copy()
 {
 	CCadHoleRound* pNew = new CCadHoleRound(*this);

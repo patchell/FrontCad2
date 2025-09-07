@@ -395,7 +395,7 @@ CCadLibObject *CScaleWizDialog::CreateLibObject(const char *pName)
 				pHR->SetLineColor(RGB(0,0,0));
 				pHR->SetRadius(m_atrb.m_HoleSize);
 				pHR->SetLineWidth(10);
-				pLibObj->AddObject(pHR);
+				pLibObj->AddObjectToEnd(pHR);
 			}
 			break;
 		case OBJECT_TYPE_HOLERECT:
@@ -405,7 +405,7 @@ CCadLibObject *CScaleWizDialog::CreateLibObject(const char *pName)
 				pHR->SetP1(CPoint(0, 0));
 				pHR->SetLineColor(RGB(0,0,0));
 				pHR->SetLineWidth(1);
-				pLibObj->AddObject(pHR);
+				pLibObj->AddObjectToEnd(pHR);
 			}
 			break;
 		case OBJECT_TYPE_HOLERND1FLAT:
@@ -417,7 +417,7 @@ CCadLibObject *CScaleWizDialog::CreateLibObject(const char *pName)
 				pHR->SetLineColor(RGB(0,0,0));
 				pHR->SetRadius(m_atrb.m_HoleSize);
 				pHR->SetLineWidth(1);
-				pLibObj->AddObject(pHR);
+				pLibObj->AddObjectToEnd(pHR);
 			}
 			break;
 		case OBJECT_TYPE_HOLERND2FLAT:
@@ -429,7 +429,7 @@ CCadLibObject *CScaleWizDialog::CreateLibObject(const char *pName)
 				pHR->SetFlatDist(m_atrb.m_FlatDist);
 				pHR->SetRadius(m_atrb.m_HoleSize);
 				pHR->SetLineWidth(1);
-				pLibObj->AddObject(pHR);
+				pLibObj->AddObjectToEnd(pHR);
 			}
 			break;
 	}
@@ -458,7 +458,7 @@ CCadLibObject *CScaleWizDialog::CreateLibObject(const char *pName)
 		pCL->SetP2(p2);
 		pCL->SetLineWidth(m_atrb.m_DivisionLineWidth);
 		pCL->SetLineColor(m_atrb.m_DivLineColor);
-		pLibObj->AddObject(pCL);
+		pLibObj->AddObjectToEnd(pCL);
 		//--------------------------------
 		// Ok, now we will do the sub
 		// divistions
@@ -475,7 +475,7 @@ CCadLibObject *CScaleWizDialog::CreateLibObject(const char *pName)
 				pCL->SetP2(p2);
 				pCL->SetLineWidth(m_atrb.m_SubDivisionLineWidth);
 				pCL->SetLineColor(m_atrb.m_SubDivColor);
-				pLibObj->AddObject(pCL);
+				pLibObj->AddObjectToEnd(pCL);
 				SStartAng -= SubAngle;
 			}
 		}
@@ -523,7 +523,7 @@ CCadLibObject *CScaleWizDialog::CreateLibObject(const char *pName)
 			pCT->SetP1(p2 - CPoint(rSize.cx, rSize.cy));
 			pCT->SetAngle(0);
 		}
-		pLibObj->AddObject(pCT);
+		pLibObj->AddObjectToEnd(pCT);
 	}
 	pDC->SelectObject(pOldFont);
 
@@ -535,7 +535,7 @@ CCadLibObject *CScaleWizDialog::CreateLibObject(const char *pName)
 	pAC->SetEndPoint(CalcXYonArc(m_atrb.m_ArcRadius*2,m_atrb.m_ArcEnd/10));
 	pAC->SetLineWidth(m_atrb.m_ArcLineWidth);
 	pAC->SetLineColor(m_atrb.m_ArcColor);
-	pLibObj->AddObject(pAC);
+	pLibObj->AddObjectToEnd(pAC);
 	return pLibObj;
 }
 

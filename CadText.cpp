@@ -33,6 +33,19 @@ CCadText::~CCadText()
 {
 }
 
+BOOL CCadText::Create(CPoint ptPos, TextAttributes* pTextAttributes)
+{
+	BOOL bRet = TRUE;
+	SetP1(ptPos);
+	if (pTextAttributes){
+		m_atrb.CopyFrom(pTextAttributes);
+	}
+	else {
+		bRet = FALSE;
+	}
+    return 0;
+}
+
 CCadObject* CCadText::Copy()
 {
 	//---------------------------------------
@@ -199,7 +212,7 @@ void CCadText::SetFontName(char *s)
 	// parameter:
 	//		s.....pointer to new font name
 	//-----------------------------------------
-	strcpy_s(m_atrb.m_pFontName,LF_FACESIZE,s);
+	GetAttributes()->SetFontName(s);
 }
 
 int CCadText::CheckSelected(CPoint p,CSize O)

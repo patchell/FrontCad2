@@ -16,6 +16,19 @@ CCadArrow::~CCadArrow()
 {
 }
 
+BOOL CCadArrow::Create(CPoint ptPos, ArrowAttributes* pArrowAttributes)
+{
+	BOOL rV = TRUE;
+
+	SetP1(ptPos);
+	SetP2(ptPos);
+	if (pArrowAttributes)
+		GetAttributes()->CopyFrom(pArrowAttributes);
+	else
+		rV = FALSE;
+    return rV;
+}
+
 CCadObject* CCadArrow::Copy()
 {
 	CCadArrow* pNew = new CCadArrow(*this);

@@ -19,6 +19,21 @@ CCadPrintRect::~CCadPrintRect()
 {
 }
 
+BOOL CCadPrintRect::Create(CPoint ptPos, PrintRectAttributes* pPrintRectAttributes)
+{
+	BOOL rV = TRUE;
+
+	SetP1(ptPos);
+	SetP2(ptPos);
+	if (pPrintRectAttributes)
+		m_Attrib.CopyFrom(pPrintRectAttributes);
+	else
+	{
+		rV = FALSE;
+	}
+    return rV;
+}
+
 CCadObject* CCadPrintRect::Copy()
 {
 	CCadPrintRect* pNew = new CCadPrintRect(*this);

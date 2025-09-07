@@ -20,18 +20,34 @@ struct ElipseAttributes {
 		m_FillColor = RGB(192, 192, 192);
 		m_Transparent = 0;
 	}
-	BOOL GetTransparent() const { return m_Transparent; }
-	void SetTransparent(BOOL t) { m_Transparent = t; }
-	BOOL& GetTransparentRef() { return m_Transparent; }
-	int GetLineWidth() const { return m_LineWidth; }
-	void SetLineWidth(int w) { m_LineWidth = w; }
-	int& GetLineWidthRef() { return m_LineWidth; }
-	COLORREF GetLineColor() const { return m_LineColor; }
-	void SetLineColor(COLORREF c) { m_LineColor = c; }
-	COLORREF& GetLineColorRef() { return m_LineColor; }	
-	COLORREF GetFillColor() const { return m_FillColor; }
-	void SetFillColor(COLORREF c) { m_FillColor = c; }
-	COLORREF& GetFillColorRef() { return m_FillColor; }	
+	BOOL Create(ElipseAttributes* pA) {
+		BOOL rV = TRUE;
+		if (pA) {
+			CopyFrom(pA);
+		}
+		else
+			rV = FALSE;
+		return rV;
+	}
+	void CopyFrom(ElipseAttributes* pA) {
+		if (pA)
+		{
+			m_LineWidth = pA->m_LineWidth;
+			m_LineColor = pA->m_LineColor;
+			m_FillColor = pA->m_FillColor;
+			m_Transparent = pA->m_Transparent;
+		}
+	}
+	void CopyTo(ElipseAttributes* pA) {
+		if(pA)
+		{
+			pA->m_LineWidth = m_LineWidth;
+			pA->m_LineColor = m_LineColor;
+			pA->m_FillColor = m_FillColor;
+			pA->m_Transparent = m_Transparent;
+		}
+	}
+
 };
 
 class CFileParser;
@@ -45,6 +61,7 @@ public:
 	CCadElipse(CCadElipse &e);
 	CCadElipse();
 	virtual ~CCadElipse();
+	BOOL Create(CPoint ptPos, ElipseAttributes* pElipseAttributes);	
 	virtual CCadObject* Copy();
 	CCadElipse operator=(CCadElipse& v);
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
@@ -58,18 +75,18 @@ public:
 	virtual void SetVertex(int Vi,CPoint p);
 	virtual int GrabVertex(CPoint p);
 	virtual void AdjustRefernce(CPoint Ref);
-	int GetLineWidth(void) { return m_atrb.GetLineWidth(); }
-	void SetLineWidth(int w) { m_atrb.SetLineWidth(w); }
+	int GetLineWidth(void) { return m_atrb.m_LineWidth; }
+	void SetLineWidth(int w) { m_atrb.m_LineWidth = w; }
 	void SetLineColor(COLORREF c) {
-		m_atrb.SetLineColor(c);
+		m_atrb.m_LineColor = c;
 	}
-	COLORREF GetLineColor(void) { return m_atrb.GetLineColor(); }	
+	COLORREF GetLineColor(void) { return m_atrb.m_LineColor; }	
 	void SetFillColor(COLORREF c) {
-		m_atrb.SetFillColor(c);
+		m_atrb.m_FillColor = c;
 	}	
-	COLORREF GetFillColor(void) { return m_atrb.GetFillColor(); }	
-	void SetTransparent(BOOL bT) { m_atrb.SetTransparent(bT); }
-	BOOL GetTransparent() { return m_atrb.GetTransparent(); }	
+	COLORREF GetFillColor(void) { return m_atrb.m_FillColor; }	
+	void SetTransparent(BOOL bT) { m_atrb.m_Transparent = bT; }
+	BOOL GetTransparent() { return m_atrb.m_Transparent; }	
 	virtual void RenderEnable(int e);
 	virtual CPoint GetCenter();
 	// Moves the center of the object to the spcified point

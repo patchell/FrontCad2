@@ -33,6 +33,19 @@ CCadElipse::~CCadElipse()
 {
 }
 
+BOOL CCadElipse::Create(CPoint ptPos, ElipseAttributes* pElipseAttributes)
+{
+	BOOL rV = TRUE;
+
+	SetP1(ptPos);
+	SetP2(ptPos);
+	if (pElipseAttributes)
+	{
+		rV = GetAttributes()->Create(pElipseAttributes);
+	}
+	return rV;
+}
+
 CCadObject* CCadElipse::Copy()
 {
 	CCadElipse* pE = new CCadElipse(*this);
@@ -180,16 +193,16 @@ Tokens CCadElipse::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawi
 			LookAHeadToken = pParser->Point(Tokens::POINT_2, pIN, GetP2(), LookAHeadToken);
 			break;
 		case Tokens::LINE_COLOR:
-			LookAHeadToken = pParser->Color(Tokens::LINE_COLOR, pIN, GetAttributes()->GetLineColorRef(), LookAHeadToken);
+			LookAHeadToken = pParser->Color(Tokens::LINE_COLOR, pIN, GetAttributes()->m_LineColor, LookAHeadToken);
 			break;
 		case Tokens::FILL_COLOR:
-			LookAHeadToken = pParser->Color(Tokens::FILL_COLOR, pIN, GetAttributes()->GetFillColorRef(), LookAHeadToken);
+			LookAHeadToken = pParser->Color(Tokens::FILL_COLOR, pIN, GetAttributes()->m_FillColor, LookAHeadToken);
 			break;
 		case Tokens::LINE_WIDTH:
-			LookAHeadToken = pParser->DecimalValue(Tokens::LINE_WIDTH, pIN, GetAttributes()->GetLineWidthRef(), LookAHeadToken);
+			LookAHeadToken = pParser->DecimalValue(Tokens::LINE_WIDTH, pIN, GetAttributes()->m_LineWidth, LookAHeadToken);
 			break;
 		case Tokens::TRANSPARENTbkg:
-			LookAHeadToken = pParser->DecimalValue(Tokens::TRANSPARENTbkg, pIN, GetAttributes()->GetTransparentRef(), LookAHeadToken);
+			LookAHeadToken = pParser->DecimalValue(Tokens::TRANSPARENTbkg, pIN, GetAttributes()->m_Transparent, LookAHeadToken);
 			break;
 		case Tokens(')'):
 			Loop = FALSE;
@@ -221,10 +234,10 @@ void CCadElipse::Save(FILE* pO, int Indent)
 		CFileParser::LookupKeyword(Tokens::ELLIPSE),
 		CFileParser::SavePoint(s1, 64, Tokens::POINT_1, GetP1()),
 		CFileParser::SavePoint(s2, 64, Tokens::POINT_2, GetP2()),
-		CFileParser::SaveColor(s3, 64, GetAttributes()->GetLineColor(), Tokens::LINE_COLOR),
-		CFileParser::SaveColor(s4, 64, GetAttributes()->GetFillColor(), Tokens::FILL_COLOR),
-		CFileParser::SaveDecimalValue(s5,64, Tokens::LINE_WIDTH, GetAttributes()->GetLineWidthRef()),
-		CFileParser::SaveDecimalValue(s6, 64, Tokens::TRANSPARENTbkg, GetAttributes()->GetTransparentRef())
+		CFileParser::SaveColor(s3, 64, GetAttributes()->m_LineColor, Tokens::LINE_COLOR),
+		CFileParser::SaveColor(s4, 64, GetAttributes()->m_FillColor, Tokens::FILL_COLOR),
+		CFileParser::SaveDecimalValue(s5,64, Tokens::LINE_WIDTH, GetAttributes()->m_LineWidth),
+		CFileParser::SaveDecimalValue(s6, 64, Tokens::TRANSPARENTbkg, GetAttributes()->m_Transparent)
 	);
 	delete[] s6;
 	delete[] s5;

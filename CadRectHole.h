@@ -22,18 +22,36 @@ struct RectHoleAttributes {
 		m_W = 100;
 		m_H = 100;
 	}
+	~RectHoleAttributes() {
+	}
+	void CopyTo(RectHoleAttributes* pA) {
+		if (pA) {
+			pA->m_LineWidth = m_LineWidth;
+			pA->m_LineColor = m_LineColor;
+			pA->m_W = m_W;
+			pA->m_H = m_H;
+		}
+	}
+	void CopyFrom(RectHoleAttributes* pA) {
+		if (pA) {
+			m_LineWidth = pA->m_LineWidth;
+			m_LineColor = pA->m_LineColor;
+			m_W = pA->m_W;
+			m_H = pA->m_H;
+		}
+	}
 };
 
 class CFileParser;
 
 class CCadRectHole : public CCadObject  
 {
-	friend CFileParser;
 	inline static int m_RenderEnable = 1;
 	RectHoleAttributes m_Attr;
 public:
 	CCadRectHole();
 	virtual ~CCadRectHole();
+	BOOL Create(CPoint m_Pos, RectHoleAttributes* pRectHoleAttributes);
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }

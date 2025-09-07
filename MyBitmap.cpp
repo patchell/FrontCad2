@@ -27,7 +27,7 @@ CMyBitmap::~CMyBitmap()
 
 }
 
-BOOL CMyBitmap::LoadBitmap(char *filename)
+BOOL CMyBitmap::LoadBitmapImage(char *filename)
 {
 	/********************************************
 	**	LoadBitmap

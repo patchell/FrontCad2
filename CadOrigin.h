@@ -1,9 +1,6 @@
 #pragma once
 
 
-#ifndef ORIGINATRIB
-#define ORIGINATRIB
-
 struct OriginAttrib {
 	int m_LineWidth;
 	COLORREF m_Color;
@@ -11,9 +8,20 @@ struct OriginAttrib {
 		m_LineWidth = 1;
 		m_Color = RGB(0, 0, 0);
 	}
-} ;
-
-#endif
+	~OriginAttrib() {}
+	void CopyTo(OriginAttrib* pAttrDest) {
+		if (pAttrDest) {
+			pAttrDest->m_LineWidth = m_LineWidth;
+			pAttrDest->m_Color = m_Color;
+		}
+	}
+	void CopyFrom(OriginAttrib* pAttrSrc) {
+		if (pAttrSrc) {
+			m_LineWidth = pAttrSrc->m_LineWidth;
+			m_Color = pAttrSrc->m_Color;
+		}
+	}
+};
 
 class CFrontCadView;
 
@@ -26,6 +34,7 @@ public:
 	CCadOrigin();
 	CCadOrigin(CCadOrigin &v);
 	virtual ~CCadOrigin();
+	BOOL Create(CPoint m_Pos, OriginAttrib* pAttributes);
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }

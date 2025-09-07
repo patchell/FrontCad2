@@ -28,6 +28,19 @@ CCadHoleRnd2Flat::~CCadHoleRnd2Flat()
 {
 }
 
+BOOL CCadHoleRnd2Flat::Create(CPoint m_Pos, HoleRnd2FlatAttributes* pHoleRnd2FlatAttributes)
+{
+	BOOL rV = TRUE;
+
+	SetP1(m_Pos);
+	SetP2(m_Pos);
+	if (pHoleRnd2FlatAttributes)
+		m_atrb.CopyFrom(pHoleRnd2FlatAttributes);
+	else
+		rV = FALSE;
+	return rV;
+}
+
 CCadObject* CCadHoleRnd2Flat::Copy()
 {
 	CCadHoleRnd2Flat* pNew = new CCadHoleRnd2Flat(*this);

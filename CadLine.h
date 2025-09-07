@@ -13,7 +13,25 @@ struct LineAttrib {
 		m_LineWidth = 1;
 		m_LineColor = RGB(0, 0, 0);
 	}
-} ;
+	virtual ~LineAttrib() {
+	}
+	BOOL Create(LineAttrib* pLineAttributes) {
+		if (pLineAttributes) {
+			m_LineWidth = pLineAttributes->m_LineWidth;
+			m_LineColor = pLineAttributes->m_LineColor;
+			return TRUE;
+		}
+		return FALSE;
+	}
+	void CopyFrom(LineAttrib* s) {
+		m_LineWidth = s->m_LineWidth;
+		m_LineColor = s->m_LineColor;
+	}
+	void CopyTo(LineAttrib* s) {
+		s->m_LineWidth = m_LineWidth;
+		s->m_LineColor = m_LineColor;
+	}
+};
 
 class CCadLine : public CCadObject
 {
@@ -25,6 +43,7 @@ public:
 	CCadLine();
 	CCadLine(CCadLine &line);
 	virtual ~CCadLine();
+	BOOL Create(CPoint m_Pos, LineAttrib* pLineAttributes);
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }

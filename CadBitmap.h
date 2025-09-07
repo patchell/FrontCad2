@@ -1,15 +1,10 @@
 // CadBitmap.h: interface for the CCadBitmap class.
 //
 ///////////////////////////////////////////////
-
-#if !defined(AFX_CADBITMAP_H__3EC14653_FD58_4A43_B114_7859DFD4EDC6__INCLUDED_)
-#define AFX_CADBITMAP_H__3EC14653_FD58_4A43_B114_7859DFD4EDC6__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
-#include "MyBitmap.h"
+class CMyBitmap;
+class CFileParser;
 
 class CCadBitmap : public CCadObject  
 {
@@ -22,6 +17,7 @@ public:
 	CCadBitmap();
 	CCadBitmap(CCadBitmap &v);
 	virtual ~CCadBitmap();
+	BOOL Create(CPoint ptPos, char* pFilename, CMyBitmap* pBM);
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
@@ -39,7 +35,7 @@ public:
 	virtual void SetSelected(int Flag=0);
 	virtual void AdjustRefernce(CPoint Ref);
 	virtual CRect GetRect(void);
-	void LoadImage(char *path);
+	BOOL LoadBitmapImage(char *path);
 	char *GetFileName(void){return m_pFilename;}
 	void SetBitmap(CMyBitmap *pBM){m_pBM = pBM;}
 	CMyBitmap *GetBitmap(void){return m_pBM;}
@@ -55,5 +51,3 @@ public:
 	void SetMaintainAspectRatio(int a) { m_MaintainAspectRatio = a; }
 	int GetMaintainAspectRatio(void) { return m_MaintainAspectRatio; }
 };
-
-#endif // !defined(AFX_CADBITMAP_H__3EC14653_FD58_4A43_B114_7859DFD4EDC6__INCLUDED_)

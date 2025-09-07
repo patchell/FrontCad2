@@ -23,6 +23,16 @@ struct ArcAttributes {
 		m_StartAngle = 0;
 		m_EndAngle = 0;
 	}
+	BOOL Create(ArcAttributes* pA) {
+		BOOL rV = TRUE;
+
+		if (pA) {
+			CopyFrom(pA);
+		}
+		else
+			rV = FALSE;
+		return rV;
+	}
 	void CopyFrom(ArcAttributes* pA) {
 		m_LineWidth = pA->m_LineWidth;
 		m_LineColor = pA->m_LineColor;
@@ -51,6 +61,7 @@ public:
 	CCadArc();
 	CCadArc(CCadArc& arc);
 	virtual ~CCadArc();
+	BOOL Create(CPoint ptPos, ArcAttributes* pArcAttributes);
 	virtual CCadObject* Copy();
 	virtual CPoint GetReference();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }

@@ -181,17 +181,17 @@ void CFrontCadApp::LoadSettings()
 	//---------- Dimension Attributes ------------------------------
 	m_DimAttrib.m_Color = GetProfileInt("Dimension", "Color", (int)RGB(0, 0, 0));
 	m_DimAttrib.m_LineWidth = GetProfileInt("Dimension", "Width", 10);
-	m_DimAttrib.m_Text.m_Color = GetProfileInt("Dimension", "Color", (int)RGB(0, 0, 0));
-	m_DimAttrib.m_Text.m_BkColor = GetProfileInt("Dimension", "BackColor", (int)RGB(255, 255, 255));
-	m_DimAttrib.m_Text.m_Angle = GetProfileInt("Dimension", "Angle", 0);
-	m_DimAttrib.m_Text.m_FontHeight = GetProfileInt("Dimension", "FontHeight", 200);
-	m_DimAttrib.m_Text.m_FontWidth = GetProfileInt("Dimension", "Width", 0);
-	m_DimAttrib.m_Text.m_Format = GetProfileInt("Dimension", "Format", DT_BOTTOM | DT_SINGLELINE);
-	m_DimAttrib.m_Text.m_Transparent = GetProfileInt("Dimension", "Transparent", 1);
-	m_DimAttrib.m_Text.m_Weight = GetProfileInt("Dimension", "Weight", FW_DEMIBOLD);
-	m_DimAttrib.m_Text.m_pFontName = new char[LF_FACESIZE];
-	strcpy_s(m_DimAttrib.m_Text.m_pFontName, LF_FACESIZE, LPCTSTR(GetProfileString("Dimension", "Font", "Arial")));
-	m_DimAttrib.m_Text.m_pText = 0;
+	m_DimAttrib.m_Text.GetAttributes()->m_Color = GetProfileInt("Dimension", "Color", (int)RGB(0, 0, 0));
+	m_DimAttrib.m_Text.GetAttributes()->m_BkColor = GetProfileInt("Dimension", "BackColor", (int)RGB(255, 255, 255));
+	m_DimAttrib.m_Text.GetAttributes()->m_Angle = GetProfileInt("Dimension", "Angle", 0);
+	m_DimAttrib.m_Text.GetAttributes()->m_FontHeight = GetProfileInt("Dimension", "FontHeight", 200);
+	m_DimAttrib.m_Text.GetAttributes()->m_FontWidth = GetProfileInt("Dimension", "Width", 0);
+	m_DimAttrib.m_Text.GetAttributes()->m_Format = GetProfileInt("Dimension", "Format", DT_BOTTOM | DT_SINGLELINE);
+	m_DimAttrib.m_Text.GetAttributes()->m_Transparent = GetProfileInt("Dimension", "Transparent", 1);
+	m_DimAttrib.m_Text.GetAttributes()->m_Weight = GetProfileInt("Dimension", "Weight", FW_DEMIBOLD);
+	m_DimAttrib.m_Text.GetAttributes()->m_pFontName = new char[LF_FACESIZE];
+	strcpy_s(m_DimAttrib.m_Text.GetAttributes()->m_pFontName, LF_FACESIZE, LPCTSTR(GetProfileString("Dimension", "Font", "Arial")));
+	m_DimAttrib.m_Text.GetAttributes()->m_pText = 0;
 	//---------- Arrow Attributes ------------------------------
 	m_ArrowAttrib.m_LineColor = GetProfileInt("Arrow", "LineColor", (int)RGB(0, 0, 0));
 	m_ArrowAttrib.m_FillColor = GetProfileInt("Arrow", "FillColor", (int)RGB(0, 0, 0));
@@ -304,15 +304,15 @@ void CFrontCadApp::SaveSettings()
 	//----------- Dimension Attributes ------------------------------
 	WriteProfileInt("Dimension", "Color", (int)m_DimAttrib.m_Color);
 	WriteProfileInt("Dimension", "Width", m_DimAttrib.m_LineWidth);
-	WriteProfileInt("Dimension", "Color", (int)m_DimAttrib.m_Text.m_Color);
-	WriteProfileInt("Dimension", "BackColor",(int)m_DimAttrib.m_Text.m_BkColor);
-	WriteProfileInt("Dimension", "Angle", m_DimAttrib.m_Text.m_Angle);
-	WriteProfileInt("Dimension", "FontHeight", m_DimAttrib.m_Text.m_FontHeight);
-	WriteProfileInt("Dimension", "Width", m_DimAttrib.m_Text.m_FontWidth);
-	WriteProfileInt("Dimension", "Format", m_DimAttrib.m_Text.m_Format);
-	WriteProfileInt("Dimension", "Transparent", m_DimAttrib.m_Text.m_Transparent);
-	WriteProfileInt("Dimension", "Weight", m_DimAttrib.m_Text.m_Weight);
-	WriteProfileStringA("Dimension", "Font", m_DimAttrib.m_Text.m_pFontName);
+	WriteProfileInt("Dimension", "Color", (int)m_DimAttrib.m_Text.GetAttributes()->m_Color);
+	WriteProfileInt("Dimension", "BackColor",(int)m_DimAttrib.m_Text.GetAttributes()->m_BkColor);
+	WriteProfileInt("Dimension", "Angle", m_DimAttrib.m_Text.GetAttributes()->m_Angle);
+	WriteProfileInt("Dimension", "FontHeight", m_DimAttrib.m_Text.GetAttributes()->m_FontHeight);
+	WriteProfileInt("Dimension", "Width", m_DimAttrib.m_Text.GetAttributes()->m_FontWidth);
+	WriteProfileInt("Dimension", "Format", m_DimAttrib.m_Text.GetAttributes()->m_Format);
+	WriteProfileInt("Dimension", "Transparent", m_DimAttrib.m_Text.GetAttributes()->m_Transparent);
+	WriteProfileInt("Dimension", "Weight", m_DimAttrib.m_Text.GetAttributes()->m_Weight);
+	WriteProfileStringA("Dimension", "Font", m_DimAttrib.m_Text.GetAttributes()->m_pFontName);
 	//----------- Origin Attributes ------------------------------
 	WriteProfileInt("Origin", "Color", (int)m_OriginAttrib.m_Color);
 	WriteProfileInt("Origin", "Width", m_OriginAttrib.m_LineWidth);
@@ -441,6 +441,202 @@ char* CFrontCadApp::ConvertCStringToChar(char* cpDest, CString& csSource)
 }
 
 
+BOOL CAboutDlg::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+
+	SetVersion();
+	return TRUE;  
+}
+
+void CFrontCadApp::UpdateDimAttributes(CUtilView* pUV)
+{
+	char* s = new char[256];
+	//------------------------------
+	// Line Attributes
+	//------------------------------
+	m_DimAttrib.m_Color = pUV->m_Static_LineColor.GetColor();
+	m_DimAttrib.m_LineWidth = pUV->m_Edit_LineThickness.GetValue();
+	//----------------------------------
+	// Text Attributes
+	//-----------------------------------
+	m_DimAttrib.m_Text.GetAttributes()->m_Angle = pUV->m_Edit_TextAngle.GetValue();
+	m_DimAttrib.m_Text.GetAttributes()->m_FontHeight = pUV->m_Edit_FontHeight.GetValue();
+	m_DimAttrib.m_Text.GetAttributes()->m_FontWidth = pUV->m_Edit_FontWidth.GetValue();
+	m_DimAttrib.m_Text.GetAttributes()->m_Transparent = pUV->m_Check_TransparentFont.GetCheck();
+	m_DimAttrib.m_Text.GetAttributes()->m_Color = pUV->m_Static_TextColor.GetColor();
+	m_DimAttrib.m_Text.GetAttributes()->m_BkColor = pUV->m_Static_BkGrndColor.GetColor();
+	m_DimAttrib.m_Text.GetAttributes()->m_Weight = pUV->m_Combo_FontWeight.GetFontWeight();
+	pUV->m_Button_Font.GetWindowText(s, 255);
+	m_DimAttrib.m_Text.SetFontName(s);
+}
+
+void CFrontCadApp::UpdateLineAttributes(CUtilView* pUV)
+{
+	m_LineAttrib.m_LineWidth = pUV->m_Edit_LineThickness.GetValue();
+	m_LineAttrib.m_LineColor = pUV->m_Static_LineColor.GetColor();
+}
+
+void CFrontCadApp::UpdateRectAttributes(CUtilView* pUV)
+{
+	m_RectAttributes.m_LineWidth = pUV->m_Edit_LineThickness.GetValue();
+	m_RectAttributes.m_LineColor = pUV->m_Static_LineColor.GetColor();
+	m_RectAttributes.m_FillColor = pUV->m_Static_FillColor.GetColor();
+	m_RectAttributes.m_bTransparentFill = pUV->m_Check_TransparentFill.GetCheck();
+}
+
+void CFrontCadApp::UpdateCircleAttributes(CUtilView* pUV)
+{
+	m_CircleAttributs.m_LineWidth = pUV->m_Edit_LineThickness.GetValue();
+	m_CircleAttributs.m_LineColor = pUV->m_Static_LineColor.GetColor();
+	m_CircleAttributs.m_FillColor = pUV->m_Static_FillColor.GetColor();
+	m_CircleAttributs.m_bTransparent = pUV->m_Check_TransparentFill.GetCheck();
+}
+
+void CFrontCadApp::UpdateEllipseAttributes(CUtilView* pUV)
+{
+	if(pUV)
+	{
+		m_EllipseAttributes.m_LineWidth = pUV->m_Edit_LineThickness.GetValue();
+		m_EllipseAttributes.m_LineColor = pUV->m_Static_LineColor.GetColor();
+		m_EllipseAttributes.m_FillColor = pUV->m_Static_FillColor.GetColor();
+		m_EllipseAttributes.m_Transparent = pUV->m_Check_TransparentFill.GetCheck();
+	}
+}
+
+void CFrontCadApp::UpdatePolyAttributes(CUtilView* pUV)
+{
+	if(pUV)
+	{
+		m_PolyAttributes.m_LineWidth = pUV->m_Edit_LineThickness.GetValue();
+		m_PolyAttributes.m_LineColor = pUV->m_Static_LineColor.GetColor();
+		m_PolyAttributes.m_FillColor = pUV->m_Static_FillColor.GetColor();
+		m_PolyAttributes.m_Transparent = pUV->m_Check_TransparentFill.GetCheck();
+	}
+}
+
+void CFrontCadApp::UpdateArcAttributes(CUtilView* pUV)
+{
+	if(pUV)
+	{
+		m_ArcAttributes.m_LineWidth = pUV->m_Edit_LineThickness.GetValue();
+		m_ArcAttributes.m_LineColor = pUV->m_Static_LineColor.GetColor();
+	}
+}
+
+void CFrontCadApp::UpdateHoleRoundAttributes(CUtilView* pUV)
+{
+	if(pUV)
+	{
+		m_HoleRoundAttributes.m_Radius = pUV->m_Edit_HoleRadius.GetValue();
+		m_HoleRoundAttributes.m_LineWidth = pUV->m_Edit_LineThickness.GetValue();
+		m_HoleRoundAttributes.m_LineColor = pUV->m_Static_LineColor.GetColor();
+	}
+}
+
+void CFrontCadApp::UpdateHoleRnd2FlatAttributes(CUtilView* pUV)
+{
+	if(pUV)
+	{
+		m_HoleRnd2FlatAttributes.m_Radius = pUV->m_Edit_HoleRadius.GetValue();
+		m_HoleRnd2FlatAttributes.m_FlatDist = pUV->m_Edit_FlatToCenterDist.GetValue();
+		m_HoleRnd2FlatAttributes.m_LineWidth = pUV->m_Edit_LineThickness.GetValue();
+		m_HoleRnd2FlatAttributes.m_LineColor = pUV->m_Static_LineColor.GetColor();
+	}
+}
+
+void CFrontCadApp::UpdateHoleRnd1FlatAttributes(CUtilView* pUV)
+{
+	if(pUV)
+	{
+		m_HoleRnd1FlatAttributes.m_Radius = pUV->m_Edit_HoleRadius.GetValue();
+		m_HoleRnd1FlatAttributes.m_FlatDist = pUV->m_Edit_FlatToCenterDist.GetValue();
+		m_HoleRnd1FlatAttributes.m_LineWidth = pUV->m_Edit_LineThickness.GetValue();
+		m_HoleRnd1FlatAttributes.m_LineColor = pUV->m_Static_LineColor.GetColor();
+	}
+}
+
+void CFrontCadApp::UpdateRectHoleAttributes(CUtilView* pUV)
+{
+	if(pUV)
+	{
+		m_RectHoleAttributes.m_W = pUV->m_Edit_X2.GetValue();
+		m_RectHoleAttributes.m_H = pUV->m_Edit_Y2.GetValue();
+		m_RectHoleAttributes.m_LineWidth = pUV->m_Edit_LineThickness.GetValue();
+		m_RectHoleAttributes.m_LineColor = pUV->m_Static_LineColor.GetColor();
+	}
+}
+
+void CFrontCadApp::UpdateTextAttributes(CUtilView* pUV)
+{
+	if(pUV)
+	{
+		char* s = new char[256];
+		//------------------------------
+		// Line Attributes
+		//------------------------------
+		m_TextAttributes.m_Color = pUV->m_Static_LineColor.GetColor();
+		m_TextAttributes.m_BkColor = pUV->m_Static_BkGrndColor.GetColor();
+		m_TextAttributes.m_Angle = pUV->m_Edit_TextAngle.GetValue();
+		m_TextAttributes.m_FontHeight = pUV->m_Edit_FontHeight.GetValue();
+		m_TextAttributes.m_FontWidth = pUV->m_Edit_FontWidth.GetValue();
+		m_TextAttributes.m_Transparent = pUV->m_Check_TransparentFont.GetCheck();
+		m_TextAttributes.m_Weight = pUV->m_Combo_FontWeight.GetFontWeight();
+		pUV->m_Button_Font.GetWindowText(s, 255);
+		m_TextAttributes.SetFontName(s);
+		delete[] s;
+	}
+}
+
+void CFrontCadApp::UpdateScaleWizAttributes(CUtilView* pUV)
+{
+}
+
+void CFrontCadApp::UpdateArrowAttributes(CUtilView* pUV)
+{
+	if(pUV)
+	{
+		m_ArrowAttrib.m_LineWidth = pUV->m_Edit_LineThickness.GetValue();
+		m_ArrowAttrib.m_LineColor = pUV->m_Static_LineColor.GetColor();
+		m_ArrowAttrib.m_FillColor = pUV->m_Static_FillColor.GetColor();
+		m_ArrowAttrib.m_bTransparent = pUV->m_Check_TransparentFill.GetCheck();
+		m_ArrowAttrib.m_Len = pUV->m_Edit_X3.GetValue();
+		m_ArrowAttrib.m_ArrowWidth = pUV->m_Edit_Y3.GetValue();
+	}
+}
+
+void CFrontCadApp::UpdateRndRectAttributes(CUtilView* pUV)
+{
+	if(pUV)
+	{
+		m_RndRectAttributes.m_LineWidth = pUV->m_Edit_LineThickness.GetValue();
+		m_RndRectAttributes.m_LineColor = pUV->m_Static_LineColor.GetColor();
+		m_RndRectAttributes.m_FillColor = pUV->m_Static_FillColor.GetColor();
+		m_RndRectAttributes.m_bTransparent = pUV->m_Check_TransparentFill.GetCheck();
+		m_RndRectAttributes.m_P3.x = pUV->m_Edit_X3.GetValue();
+		m_RndRectAttributes.m_P3.y = pUV->m_Edit_Y3.GetValue();
+	}
+}
+
+void CFrontCadApp::UpdateLineAttrib(CUtilView* pUV)
+{
+	if(pUV)
+	{
+		m_LineAttrib.m_LineWidth = pUV->m_Edit_LineThickness.GetValue();
+		m_LineAttrib.m_LineColor = pUV->m_Static_LineColor.GetColor();
+	}
+}
+
+void CFrontCadApp::UpdateOriginAttrib(CUtilView* pUV)
+{
+	if(pUV)
+	{
+		m_OriginAttrib.m_LineWidth = pUV->m_Edit_LineThickness.GetValue();
+		m_OriginAttrib.m_Color = pUV->m_Static_LineColor.GetColor();
+	}
+}
+
+
 void CAboutDlg::SetVersion()
 {
 	char* s = new char[256];
@@ -453,14 +649,6 @@ void CAboutDlg::SetVersion()
 		pBuildDate,
 		pCopyright
 	);
-	m_Statoc_Versopm.SetWindowTextA ((const char*)s);
+	m_Statoc_Versopm.SetWindowTextA((const char*)s);
 	delete[] s;
-}
-
-BOOL CAboutDlg::OnInitDialog()
-{
-	CDialog::OnInitDialog();
-
-	SetVersion();
-	return TRUE;  
 }

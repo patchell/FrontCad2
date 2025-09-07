@@ -17,6 +17,19 @@ CCadOrigin::~CCadOrigin()
 {
 }
 
+BOOL CCadOrigin::Create(CPoint m_Pos, OriginAttrib* pAttributes)
+{
+	BOOL rV = TRUE;
+
+	SetP1(m_Pos);
+	SetP2(m_Pos);
+	if (pAttributes)
+		m_Atrib.CopyFrom(pAttributes);
+	else
+		rV = FALSE;
+    return rV;
+}
+
 CCadObject* CCadOrigin::Copy()
 {
 	CCadOrigin* pO = new CCadOrigin(*this);

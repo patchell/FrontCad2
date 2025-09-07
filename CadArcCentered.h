@@ -17,11 +17,12 @@ class CFileParser;
 class CCadArcCentered : public CCadObject
 {
 	inline static int m_RenderEnable = 1;
-	friend CFileParser;
+	ArcAttributes m_atrb;
 public:
 	CCadArcCentered(CCadArcCentered &arc);
 	CCadArcCentered();
 	virtual ~CCadArcCentered();
+	BOOL Create(CPoint ptPos, ArcAttributes* pArcAttributes);
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
@@ -51,9 +52,7 @@ public:
 	virtual CPoint GetCenter();
 	// Moves the center of the object to the spcified point
 	virtual void ChangeCenter(CSize p);
-private:
-	ArcAttributes m_atrb;
-public:
 	virtual CSize GetSize();
 	virtual void ChangeSize(CSize Sz);
+	ArcAttributes* GetAttributes() { return &m_atrb; }
 };

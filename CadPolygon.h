@@ -5,7 +5,6 @@
 #pragma once
 
 class CFileParser;
-//class CCadText;
 
 constexpr auto POLY_MAX_VERTECIES = 512;
 
@@ -18,6 +17,7 @@ struct PolyAttributes
 	int m_Size;		//size of the array that holds vertex points
 	int m_Count;	//total numbeer of verticies
 	CPoint* m_pVertex;	//array of vertex points
+	CPoint m_StartPoint; //first point placed
 	PolyAttributes()
 	{
 		m_LineWidth = 1;
@@ -45,16 +45,50 @@ struct PolyAttributes
 			m_pVertex[i] = CPoint(0, 0);
 	}
 	void SetPoint(CPoint p) {
+		if(m_Count == 0)
+			m_StartPoint = p;
 		m_pVertex[m_Count] = p;
 	}
 	BOOL AddPoint(CPoint p, BOOL bInc , BOOL bIncSizeToo);
+	void CopyFrom(PolyAttributes* pAttrSrc) {
+		if (pAttrSrc) {
+			m_LineWidth = pAttrSrc->m_LineWidth;
+			m_LineColor = pAttrSrc->m_LineColor;
+			m_FillColor = pAttrSrc->m_FillColor;
+			m_Transparent = pAttrSrc->m_Transparent;
+			m_Size = pAttrSrc->m_Size;
+			m_Count = pAttrSrc->m_Count;
+			if (m_pVertex)
+				delete[] m_pVertex;
+			m_pVertex = new CPoint[POLY_MAX_VERTECIES];		//pointer to array of vertexes;
+			for (int i = 0; i < POLY_MAX_VERTECIES; ++i)
+				m_pVertex[i] = CPoint(0, 0);
+			for (int i = 0; i < m_Count; ++i)
+				m_pVertex[i] = pAttrSrc->m_pVertex[i];
+		}
+	}
+	void CopyTo(PolyAttributes * pAttrDest) {
+		if (pAttrDest) {
+			pAttrDest->m_LineWidth = m_LineWidth;
+			pAttrDest->m_LineColor = m_LineColor;
+			pAttrDest->m_FillColor = m_FillColor;
+			pAttrDest->m_Transparent = m_Transparent;
+			pAttrDest->m_Size = m_Size;
+			pAttrDest->m_Count = m_Count;
+			if (pAttrDest->m_pVertex)
+				delete[] pAttrDest->m_pVertex;
+			pAttrDest->m_pVertex = new CPoint[POLY_MAX_VERTECIES];		//pointer to array of vertexes;
+			for (int i = 0; i < POLY_MAX_VERTECIES; ++i)
+				pAttrDest->m_pVertex[i] = CPoint(0, 0);
+			for (int i = 0; i < m_Count; ++i)
+				pAttrDest->m_pVertex[i] = m_pVertex[i];
+		}
+	}
 };
 
 
 class CCadPolygon:public CCadObject
 {
-//	friend CCadText;
-//	friend CFileParser;
 	inline static int m_RenderEnable = 1;
 	PolyAttributes m_atrb;
 	int m_MaxY;
@@ -65,8 +99,9 @@ public:
 	CCadPolygon();
 	CCadPolygon(CCadPolygon &v);
 	virtual ~CCadPolygon();
+	BOOL Create(CPoint ptPos, PolyAttributes* pPolyAttributes);
 	virtual CCadObject* Copy();
-	CCadPolygon operator=(CCadPolygon& v) = 0;
+	CCadPolygon operator=(CCadPolygon& v);
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
 	virtual void Draw(CDC* pDC,  ObjectMode mode,CPoint Offset=CPoint(0,0),CScale Scale=CScale(0.1,0.1));
@@ -97,7 +132,6 @@ public:
 	void SetTransparent(BOOL t) { GetAttributes()->m_Transparent = t; }
 	COLORREF GetFillColor(void) { return GetAttributes()->m_FillColor; }	
 	void SetFillColor(COLORREF c) { GetAttributes()->m_FillColor = c; }	
-	void Copy(CCadPolygon *pP);
 	BOOL AddPoint(CPoint ptNewPoint, BOOL bInc, BOOL bIncSize);
 	CPoint * GetPoints(void);
 	int CompareToLast(CPoint nP);
@@ -105,7 +139,6 @@ public:
 	int GetCount(void);
 	BOOL PointEnclosed(CPoint,CSize Offset=CSize(0,0));
 	void Create(CPoint *);
-	CCadPolygon operator=(CCadPolygon &v);
 	virtual void RenderEnable(int e);
 	virtual CPoint GetCenter();
 	// Moves the center of the object to the spcified point

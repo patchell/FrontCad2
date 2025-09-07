@@ -4,13 +4,6 @@
 
 #include "stdafx.h"
 
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 ///////////////////////////////////////////////
 // Construction/Destruction
 ///////////////////////////////////////////////
@@ -38,6 +31,24 @@ CCadPolygon::CCadPolygon(CCadPolygon &v) : CCadObject(OBJECT_TYPE_POLY)
 
 CCadPolygon::~CCadPolygon()
 {
+}
+
+BOOL CCadPolygon::Create(CPoint ptPos, PolyAttributes* pPolyAttributes)
+{
+	BOOL rV = TRUE;
+
+	SetP1(ptPos);
+	if (pPolyAttributes)
+	{
+		GetAttributes()->CopyFrom(pPolyAttributes);
+		GetAttributes()->SetPoint(ptPos);
+		UpdateMinMax();
+	}
+	else
+	{
+		rV = FALSE;
+	}
+    return rV;
 }
 
 CCadObject* CCadPolygon::Copy()
@@ -149,11 +160,6 @@ void CCadPolygon::Draw(CDC* pDC, ObjectMode mode,CPoint Offset,CScale Scale)
 		pDC->SelectObject(oldpen);
 		pDC->SelectObject(oldbrush);
 	}
-
-}
-
-void CCadPolygon::Create(CPoint *)
-{
 
 }
 
@@ -285,32 +291,6 @@ CPoint * CCadPolygon::GetPoints()
 	** define the polygon.
 	*************************************/
 	return GetAttributes()->m_pVertex;
-}
-
-void CCadPolygon::Copy(CCadPolygon *pP)
-{
-	/************************************
-	** Copy
-	**
-	** This function is used to copy
-	** another polygon into this polygon
-	**
-	** parameter:
-	**	pP.....pointer of polygon to copy
-	************************************/
-	int i;
-	CPoint *pPA = pP->GetPoints();
-	SetPolySize(pP->GetPolySize());
-	SetCount(pP->GetCount());
-	m_MinX = pP->m_MinX;
-	m_MinY = pP->m_MinY;
-	m_MaxX = pP->m_MaxX;
-	m_MaxY = pP->m_MaxY;
-
-	for(i=0;i< GetAttributes()->m_Count;++i)
-	{
-		GetAttributes()->m_pVertex[i] = pPA[i];
-	}
 }
 
 void CCadPolygon::Reset()
@@ -627,6 +607,8 @@ BOOL PolyAttributes::AddPoint(CPoint p, BOOL bInc, BOOL bIncSizeToo)
 
 	c = m_Count;
 	s = m_Size;
+	if(m_Count == 0)
+		m_StartPoint = p;
 	if (m_Count >= POLY_MAX_VERTECIES)
 		rV = FALSE;
 	else

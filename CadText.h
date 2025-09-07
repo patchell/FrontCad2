@@ -39,6 +39,25 @@ struct TextAttributes {
 		if (m_pText)
 			delete[] m_pText;
 	}
+	BOOL Create(TextAttributes* pTextAttributes) {
+		BOOL rV = TRUE;
+
+		if (pTextAttributes)
+		{
+			m_Color = pTextAttributes->m_Color;
+			m_BkColor = pTextAttributes->m_BkColor;
+			m_FontHeight = pTextAttributes->m_FontHeight;
+			m_FontWidth = pTextAttributes->m_FontWidth;
+			m_Angle = pTextAttributes->m_Angle;
+			m_Transparent = pTextAttributes->m_Transparent;
+			m_Weight = pTextAttributes->m_Weight;
+			m_Format = pTextAttributes->m_Format;
+			SetFontName(pTextAttributes->m_pFontName);
+			SetText(pTextAttributes->m_pText);
+		}
+
+		return rV;
+	}
 	void SetText(const char *s) {
 		if (m_pText)
 			delete[] m_pText;
@@ -96,6 +115,7 @@ public:
 	CCadText();
 	CCadText(CCadText& v);
 	virtual ~CCadText();
+	BOOL Create(CPoint ptPos, TextAttributes* pTextAttributes);
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }

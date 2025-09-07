@@ -21,6 +21,21 @@ CCadCircle::~CCadCircle()
 {
 }
 
+BOOL CCadCircle::Create(CPoint ptPos, CircleAttributes* pCircleAttributes)
+{
+	BOOL rV = TRUE;
+
+	SetP1(ptPos);
+	SetP2(ptPos);
+	if (pCircleAttributes)
+	{
+		GetAttributes()->CopyFrom(pCircleAttributes);
+	}
+	else
+		rV = FALSE;
+	return rV;
+}
+
 CCadObject* CCadCircle::Copy()
 {
 	CCadCircle* pNew = new CCadCircle(*this);

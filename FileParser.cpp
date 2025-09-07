@@ -416,7 +416,7 @@ Tokens CFileParser::PrintRect(FILE* pIN, Tokens Token, CCadObject* pO)
 		}//end of switch token
 	}
 	Token = Expect(Tokens(')'), Token, pIN);
-	pO->AddObject(pPR);
+	pO->AddObjectToEnd(pPR);
 	return Token;
 }
 

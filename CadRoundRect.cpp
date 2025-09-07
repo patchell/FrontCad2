@@ -34,6 +34,18 @@ CCadRoundRect::~CCadRoundRect()
 {
 }
 
+BOOL CCadRoundRect::Create(CPoint ptPos, RndRectAttb* pRndRectAttributes)
+{
+	BOOL rV = TRUE;
+	if (pRndRectAttributes)
+		m_attrib.CopyFrom(pRndRectAttributes);
+	else
+	{
+		rV = FALSE;
+	}
+	return rV;
+}
+
 CCadObject* CCadRoundRect::Copy()
 {
 	CCadRoundRect* pNew = new CCadRoundRect(*this);

@@ -2,12 +2,7 @@
 //
 ///////////////////////////////////////////////
 
-#if !defined(AFX_CADHOLERND1FLAT_H__A9C94EAC_1F36_421C_A9F3_8B94ED066B9B__INCLUDED_)
-#define AFX_CADHOLERND1FLAT_H__A9C94EAC_1F36_421C_A9F3_8B94ED066B9B__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 class CFileParser;
 
@@ -22,6 +17,23 @@ struct HoleRnd1FlatAttributes {
 		m_FlatDist = 50;
 		m_Radius = 50;
 	}
+	~HoleRnd1FlatAttributes() {}
+	void CopyTo(HoleRnd1FlatAttributes* pAttrDest) {
+		if (pAttrDest) {
+			pAttrDest->m_LineWidth = m_LineWidth;
+			pAttrDest->m_FlatDist = m_FlatDist;
+			pAttrDest->m_LineColor = m_LineColor;
+			pAttrDest->m_Radius = m_Radius;
+		}
+	}
+	void CopyFrom(HoleRnd1FlatAttributes* pAttrSrc) {
+		if (pAttrSrc) {
+			m_LineWidth = pAttrSrc->m_LineWidth;
+			m_FlatDist = pAttrSrc->m_FlatDist;
+			m_LineColor = pAttrSrc->m_LineColor;
+			m_Radius = pAttrSrc->m_Radius;
+		}
+	}
 } ;
 
 class CCadHoleRnd1Flat : public CCadObject
@@ -32,6 +44,7 @@ class CCadHoleRnd1Flat : public CCadObject
 public:
 	CCadHoleRnd1Flat();
 	virtual ~CCadHoleRnd1Flat();
+	BOOL Create(CPoint ptPos, HoleRnd1FlatAttributes* pHoleRnd1FlatAttributes);	
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
@@ -65,4 +78,3 @@ public:
 	HoleRnd1FlatAttributes* GetAttributes() { return &atrb; }
 };
 
-#endif // !defined(AFX_CADHOLERND1FLAT_H__A9C94EAC_1F36_421C_A9F3_8B94ED066B9B__INCLUDED_)
