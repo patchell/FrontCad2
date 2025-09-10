@@ -203,6 +203,8 @@ Tokens CCadCircle::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawi
 {
 	BOOL bLoop = TRUE;
 
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	LookAHeadToken = pParser->Expect(Tokens::CIRCLE, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens('('), LookAHeadToken, pIN);
 
@@ -241,7 +243,7 @@ Tokens CCadCircle::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawi
 			break;
 		}
 	}
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
 	return LookAHeadToken;
 }
 

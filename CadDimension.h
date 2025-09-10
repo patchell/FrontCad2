@@ -1,9 +1,10 @@
 #pragma once
 
+TextAttributes;
 struct DimAttrib {
 	int m_LineWidth;
 	COLORREF m_Color;
-	CCadText m_Text;
+	TextAttributes m_TextAtrib;
 	DimAttrib() {
 		m_LineWidth = 0;
 		m_Color = RGB(0, 0, 0);
@@ -23,18 +24,13 @@ struct DimAttrib {
 		}
 		return rV;
 	}
-	void SetText(const char* s) {
-		m_Text.SetText((char*)s);
-	}
 	void CopyFrom(DimAttrib* s) {
 		m_LineWidth = s->m_LineWidth;
 		m_Color = s->m_Color;
-		m_Text = s->m_Text;
 	}
 	void CopyTo(DimAttrib* s) {
 		s->m_LineWidth = m_LineWidth;
 		s->m_Color = m_Color;
-		s->m_Text = m_Text;
 	}
 };
 
@@ -60,8 +56,6 @@ public:
 	virtual int CheckSelected(CPoint p, CSize Offset = CSize(0, 0));
 	virtual CPoint GetReference();
 	virtual void RemoveObject(CCadObject *pO);
-	virtual CCadObject *GetHead(void) { return (CCadObject *)&GetAttributes()->m_Text; }
-	virtual void SetSelected(int Flag = 0);
 	virtual void AdjustRefernce(CPoint Ref);
 	virtual CRect GetRect(void);
 	void UpdateText(CPoint Org);
@@ -70,9 +64,7 @@ public:
 	inline COLORREF GetColor(void) { return m_Atrib.m_Color; }
 	inline void SetLineWidth(int w) { m_Atrib.m_LineWidth = w; }
 	inline int GetLineWidth(void) { return m_Atrib.m_LineWidth; }
-	inline CCadText *GetText(void) { 
-		return &GetAttributes()->m_Text; 
-	}
+	CCadText *GetTextObject(void);
 	DimAttrib* GetAttributes(void) { return &m_Atrib; }
 	virtual void RenderEnable(int e);
 	virtual CPoint GetCenter();

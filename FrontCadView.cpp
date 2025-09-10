@@ -241,48 +241,51 @@ void CFrontCadView::OnDraw(CDC* pDC)
 	//		pDC....pointer to the device context
 	//----------------------------------------
 	ObjectMode mode;
-	CDC *pDCm = new CDC;
-	CBitmap bm;
+	CDC DCm;
+	CBitmap bm,*oldBM = 0;
 	CFrontCadDoc* pDoc = GetDocument();
 	CCadObject *pCO = pDoc->GetDrawing();
-	//	ASSERT_VALID(pDoc);
 	CRect rect;
-	//Set Background Color
-	GetClientRect(&rect);
-	//create a compatable memory device context
-	bm.CreateBitmap(rect.Width(), rect.Height(), 1, 32, NULL);
-	pDCm->CreateCompatibleDC(pDC);
-	pDCm->SelectObject(&bm);
-	CBrush br;
-	br.CreateSolidBrush(((CCadDrawing *)pCO)->GetBkColor());
-	pDCm->FillRect(&rect, &br);
-	pDCm->SetBkColor(((CCadDrawing *)pCO)->GetBkColor());
-	DrawGrid(pDCm, ObjectMode::None, rect);
-	CPoint Off = CPoint(m_HScrollPos, m_VScrollPos);
+	CBrush brushBackground;
+	COLORREF colorOldBk;
 
-	pCO->Draw(pDCm, ObjectMode::Final, -Off, CScale(ZF[m_ZoomLevel], ZF[m_ZoomLevel]));
+	//Create memory DC
+	GetClientRect(&rect);
+	DCm.CreateCompatibleDC(pDC);
+	bm.CreateCompatibleBitmap(pDC, rect.Width(), rect.Height());
+	oldBM = DCm.SelectObject(&bm);
+	// erase background
+	colorOldBk = DCm.SetBkColor(((CCadDrawing*)pCO)->GetBkColor());
+	brushBackground.CreateSolidBrush(((CCadDrawing *)pCO)->GetBkColor());
+	DCm.FillRect(&rect, &brushBackground);
+	//draw the grid
+	DrawGrid(&DCm, ObjectMode::None, rect);
+	// Create an offet point based on the scroll position
+	CPoint Off = CPoint(m_HScrollPos, m_VScrollPos);
+	// Draw the objects
+	pCO->Draw(&DCm, ObjectMode::Final, -Off, CScale(ZF[m_ZoomLevel], ZF[m_ZoomLevel]));
 	if (m_DrawState == DRAWSTATE_MOVE  && m_pDrawObject)
 	{
 		mode = ObjectMode::Sketch;
-		m_pDrawObject->Draw(pDCm, mode, -Off, CScale(ZF[m_ZoomLevel], ZF[m_ZoomLevel]));
+		m_pDrawObject->Draw(&DCm, mode, -Off, CScale(ZF[m_ZoomLevel], ZF[m_ZoomLevel]));
 	}
 	else if ( m_DrawState == DRAWSTATE_ARCSTART)
 	{
 		mode = ObjectMode::ArcStart;
-		m_pDrawObject->Draw(pDCm, mode, -Off, CScale(ZF[m_ZoomLevel], ZF[m_ZoomLevel]));
+		m_pDrawObject->Draw(&DCm, mode, -Off, CScale(ZF[m_ZoomLevel], ZF[m_ZoomLevel]));
 	}
 	else if (m_DrawState == DRAWSTATE_ARCEND)
 	{
 		mode = ObjectMode::ArcEnd;
-		m_pDrawObject->Draw(pDCm, mode, -Off, CScale(ZF[m_ZoomLevel], ZF[m_ZoomLevel]));
+		m_pDrawObject->Draw(&DCm, mode, -Off, CScale(ZF[m_ZoomLevel], ZF[m_ZoomLevel]));
 	}
 	if (m_pMoveObj)
 	{
-		m_pMoveObj->Draw(pDCm, SnapToScreen(m_SnapPos) - Off, CScale(ZF[m_ZoomLevel], ZF[m_ZoomLevel]));
+		m_pMoveObj->Draw(&DCm, SnapToScreen(m_SnapPos) - Off, CScale(ZF[m_ZoomLevel], ZF[m_ZoomLevel]));
 	}
 	if ((m_Drawmode == DrawMode::SELECTREGION) && ((m_MouseState == MOUSESTATE_DOWN)|| (m_nSelRegionLock) ) )
 	{
-		int bkm = pDCm->SetBkMode(TRANSPARENT);
+		int bkm = DCm.SetBkMode(TRANSPARENT);
 		CRect RRect;
 		CSize Offset;
 		CPoint P1, P2;
@@ -294,14 +297,15 @@ void CFrontCadView::OnDraw(CDC* pDC)
 		CPen DotPen;
 		DotPen.CreatePen(PS_DOT,1,RGB(0,0,0));
 		CPen *oP;
-		oP = pDCm->SelectObject(&DotPen);
-		pDCm->DrawDragRect(&RRect,CSize(1,1),NULL,CSize(1,1));
-		pDCm->SelectObject(oP);
-		pDCm->SetBkMode(bkm);
+		oP = DCm.SelectObject(&DotPen);
+		DCm.DrawDragRect(&RRect,CSize(1,1),NULL,CSize(1,1));
+		DCm.SelectObject(oP);
+		DCm.SetBkMode(bkm);
 	}
-	this->DrawCrosshairs(pDCm,&rect, SnapToScreen(m_SnapPos));
-	pDC->BitBlt(0,0,rect.Width(),rect.Height(),pDCm,0,0,SRCCOPY);
-	delete pDCm;
+	DrawCrosshairs(&DCm,&rect, SnapToScreen(m_SnapPos));
+	pDC->BitBlt(0,0,rect.Width(),rect.Height(),&DCm,0,0,SRCCOPY);
+	DCm.SetBkColor(colorOldBk);
+	if (oldBM)DCm.SelectObject(oldBM);
 }
 
 void CFrontCadView::OnInitialUpdate()
@@ -542,7 +546,6 @@ void CFrontCadView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 			m_Drawmode = DrawMode::SELECT;
 			break;
 		case VK_MENU: //alt key
-			//if (theApp.HasConsol()) printf("\nOnKEYUP ALT-KEY:%04x Repeat:%d FLAGS:%04x\n\n", nChar, nRepCnt, nFlags);
 			m_SnapOff = 0; //turn off snap grid
 			break;
 	}
@@ -833,6 +836,8 @@ void CFrontCadView::OnLButtonDown(UINT nFlags, CPoint point)
 				//update text attributes
 				pA->UpdateTextAttributes(pUV);
 				pCT->Create(m_SnapPos, &pA->m_TextAttributes);
+				pUV->m_Edit_Text.GetWindowText(s, 256);
+				pCT->SetText(s);
 				pDoc->AddObject(pCT);
 				delete[] s;
 				Invalidate();
@@ -870,13 +875,9 @@ void CFrontCadView::OnLButtonDown(UINT nFlags, CPoint point)
 						while(pObj)
 						{
 							pDoc->RemoveObject(pObj);
-							pDoc->CheckPrev();
 							RemoveObject(pObj);
-							pDoc->CheckPrev();
 							m_pMoveObj->AddObject(pObj);
-							pDoc->CheckPrev();
 							pObj = GetTopSelection();
-							pDoc->CheckPrev();
 						}
 					}
 					m_pMoveObj->SetRef(m_SnapPos);
@@ -1389,7 +1390,6 @@ void CFrontCadView::OnLButtonUp(UINT nFlags, CPoint point)
 				case DRAWSTATE_DRAG:
 					{
 						CCadObject *pO = m_pMoveObj->GetHead();
-						pDoc->CheckPrev();
 						while(pO)
 						{
 							pO->SetSelected(0);
@@ -1661,18 +1661,15 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 	switch(m_Drawmode)
 	{
 		case DrawMode::NONE:	// OnMouseMove
-			Invalidate();
 			break;
 		case DrawMode::LINE:	// OnMouseMove
 			switch (m_DrawState)
 			{
 				case DRAWSTATE_WAITMOUSE_DOWN:
-					Invalidate();
 					break;
 				case DRAWSTATE_MOVE:
 					if (m_pDrawObject)
 						m_pDrawObject->SetP2(m_SnapPos);
-					Invalidate();
 					break;
 			}
 			break;
@@ -1680,12 +1677,10 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 			switch (m_DrawState)
 			{
 			case DRAWSTATE_WAITMOUSE_DOWN:
-				Invalidate();
 				break;
 			case DRAWSTATE_MOVE:
 				if (m_pDrawObject)
 					m_pDrawObject->SetP2(m_SnapPos);
-				Invalidate();
 				break;
 			}
 			break;
@@ -1695,12 +1690,10 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 			switch (m_DrawState)
 			{
 				case DRAWSTATE_WAITMOUSE_DOWN:
-					Invalidate();
 					break;
 				case DRAWSTATE_MOVE:
 					if (m_pDrawObject)
 						m_pDrawObject->SetP2(m_SnapPos);
-					Invalidate();
 					break;
 			}
 			break;
@@ -1710,11 +1703,9 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 				switch(m_DrawState)
 				{
 					case DRAWSTATE_WAITMOUSE_DOWN:
-						Invalidate();
 						break;
 					case DRAWSTATE_MOVE:
 						pCP->AddPoint(m_SnapPos,FALSE,FALSE);
-						Invalidate();
 						break;
 				}
 			}
@@ -1728,22 +1719,19 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 						if (pCA) {
 							pCA->SetP1(m_SnapPos);
 							pCA->SetP2(m_SnapPos);
-						}Invalidate();
+						}
 						break;
 					case DRAWSTATE_MOVE:
 						{
 							pCA->SetP2(m_SnapPos);
 						}
-						Invalidate();
 						break;
 					case DRAWSTATE_ARCSTART:
 						pCA->SetStartPoint(m_SnapPos);
-						Invalidate();
 						break;
 					case DRAWSTATE_ARCEND:
 						pCA->SetEndPoint(m_SnapPos);
-						Invalidate();
-						break;
+					break;
 				}
 			}
 			break;
@@ -1753,20 +1741,17 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 				switch(m_DrawState)
 				{
 					case DRAWSTATE_WAITMOUSE_DOWN:
-						Invalidate();
 						break;
 					case DRAWSTATE_MOVE:
 						pCA->SetP2(m_SnapPos);
-						Invalidate();
 						break;
 					case DRAWSTATE_ARCSTART:
 						pCA->SetStartPoint(m_SnapPos);
-						Invalidate();
 						break;
 					case DRAWSTATE_ARCEND:
 						pCA->SetEndPoint(m_SnapPos);
 						Invalidate();
-						break;
+					break;
 				}
 			}
 			break;
@@ -1780,7 +1765,6 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 			{
 				m_pSelObjList->SetVertex(m_GrabbedVertex,m_SnapPos);
 			}
-			Invalidate();
 			break;
 		case DrawMode::HOLE_ROUND:	//Mouse Move
 		case DrawMode::HOLE_RECT:
@@ -1798,7 +1782,6 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 						break;
 				}
 			}
-			Invalidate();
 			break;
 		case DrawMode::MOVE:	//mouse move
 			switch (m_DrawState)
@@ -1808,7 +1791,6 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 				case DRAWSTATE_DRAG:
 					break;
 			}
-			Invalidate();
 			break;
 		case DrawMode::COPY:
 		case DrawMode::CUT:
@@ -1819,35 +1801,29 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 				case DRAWSTATE_DRAG:
 					break;
 			}
-			Invalidate();
 			break;
 		case DrawMode::PASTE:	//mouse move
 			switch (m_DrawState)
 			{
 				case DRAWSTATE_PLACE:
-					Invalidate();
 					break;
 				case DRAWSTATE_DRAG:
-					Invalidate();
 					break;
 			}
 			break;
 		case DrawMode::TEXT:
 		case DrawMode::LIBPART:
 		case DrawMode::GETREF:
-			Invalidate();
 			break;
 		case DrawMode::SELECTREGION:
 			if(m_MouseState == MOUSESTATE_DOWN)
 				m_SelRegion_P2 = m_SnapPos;
-			Invalidate();
 			break;
 		case DrawMode::BITMAPIMAGE:
 			if(m_pDrawObject)
 			{
 				m_pDrawObject->SetP2(m_SnapPos);
 			}
-			Invalidate();
 			break;
 		case DrawMode::ARROW:	//mouse move
 			switch (m_DrawState)
@@ -1860,7 +1836,6 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 				m_pDrawObject->SetP2(m_SnapPos);
 				break;
 			}
-			Invalidate();
 			break;
 		case DrawMode::ORIGIN:	//OnMouseMove
 			switch (m_DrawState)
@@ -1874,7 +1849,6 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 				case DRAWSTATE_PLACE:
 					break;
 			}
-			Invalidate();
 			break;
 		case DrawMode::DIMENSION:	//Mouse Move
 		{
@@ -1889,7 +1863,6 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 						pCD->SetP2(m_SnapPos);
 						pCD->SetP1(m_SnapPos);
 					}
-					Invalidate();
 					break;
 				case DRAWSTATE_MOVE:
 					if (m_MouseState == MOUSESTATE_DOWN)
@@ -1910,7 +1883,6 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 						}
 						pCD->SetP2(NewPos);
 					}
-					Invalidate();
 					break;
 			}
 		}
@@ -1919,7 +1891,6 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 			switch (m_DrawState)
 			{
 				case DRAWSTATE_WAITMOUSE_DOWN:
-					Invalidate();
 					break;
 			}
 			break;
@@ -1932,10 +1903,9 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 				m_pDrawObject->SetP1(m_SnapPos);
 				break;
 			}
-			Invalidate();
 			break;
 	}
-
+	Invalidate();
 	CView::OnMouseMove(nFlags, point);
 }
 
@@ -2187,14 +2157,14 @@ void CFrontCadView::OnButtonDimension()
 	//------------------------------------------------
 	// Text Attributes
 	//-------------------------------------------------
-	pUV->m_Edit_TextAngle.SetValue(pA->m_DimAttrib.m_Text.GetAttributes()->m_Angle);
-	pUV->m_Edit_FontHeight.SetValue(pA->m_DimAttrib.m_Text.GetAttributes()->m_FontHeight);
-	pUV->m_Edit_FontWidth.SetValue(pA->m_DimAttrib.m_Text.GetAttributes()->m_FontWidth);
-	pUV->m_Check_TransparentFont.SetCheck(pA->m_DimAttrib.m_Text.GetAttributes()->m_Transparent, 0);
-	pUV->m_Static_TextColor.SetColor(pA->m_DimAttrib.m_Text.GetAttributes()->m_Color);
-	pUV->m_Static_BkGrndColor.SetColor(pA->m_DimAttrib.m_Text.GetAttributes()->m_BkColor);
-	pUV->m_Button_Font.SetWindowText(pA->m_DimAttrib.m_Text.GetAttributes()->m_pFontName);
-	pUV->m_Combo_FontWeight.SetFontWeight(pA->m_DimAttrib.m_Text.GetAttributes()->m_Weight);
+	pUV->m_Edit_TextAngle.SetValue(pA->m_DimAttrib.m_TextAtrib.m_Angle);
+	pUV->m_Edit_FontHeight.SetValue(pA->m_DimAttrib.m_TextAtrib.m_FontHeight);
+	pUV->m_Edit_FontWidth.SetValue(pA->m_DimAttrib.m_TextAtrib.m_FontWidth);
+	pUV->m_Check_TransparentFont.SetCheck(pA->m_DimAttrib.m_TextAtrib.m_Transparent, 0);
+	pUV->m_Static_TextColor.SetColor(pA->m_DimAttrib.m_TextAtrib.m_Color);
+	pUV->m_Static_BkGrndColor.SetColor(pA->m_DimAttrib.m_TextAtrib.m_BkColor);
+	pUV->m_Button_Font.SetWindowText(pA->m_DimAttrib.m_TextAtrib.m_pFontName);
+	pUV->m_Combo_FontWeight.SetFontWeight(pA->m_DimAttrib.m_TextAtrib.m_Weight);
 
 	m_Drawmode = DrawMode::DIMENSION;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
@@ -2972,12 +2942,12 @@ void CFrontCadView::FillInUtilView(CUtilView *pUV, CCadObject *pSel)
 			pUV->m_Edit_LineThickness.SetValue(((CCadDimension *)pSel)->GetLineWidth());
 			pUV->m_Static_LineColor.SetColor(((CCadDimension *)pSel)->GetColor());
 
-			pUV->m_Button_Font.SetWindowText( ( (CCadDimension *)pSel)->GetText()->GetFontName() );
-			pUV->m_Static_BkGrndColor.SetColor(((CCadDimension *)pSel)->GetText()->GetBkColor());
-			pUV->m_Static_TextColor.SetColor(((CCadDimension *)pSel)->GetText()->GetColor());
-			pUV->m_Edit_FontHeight.SetValue(((CCadDimension *)pSel)->GetText()->GetFontHeight());
-			pUV->m_Edit_FontWidth.SetValue(((CCadDimension *)pSel)->GetText()->GetFontWidth());
-			pUV->m_Combo_FontWeight.SetFontWeight(((CCadDimension *)pSel)->GetText()->GetWeight());
+			pUV->m_Button_Font.SetWindowText( ( (CCadDimension *)pSel)->GetAttributes()->m_TextAtrib.m_pFontName );
+			pUV->m_Static_BkGrndColor.SetColor(((CCadDimension *)pSel)->GetAttributes()->m_TextAtrib.m_BkColor);
+			pUV->m_Static_TextColor.SetColor(((CCadDimension *)pSel)->GetAttributes()->m_TextAtrib.m_Color);
+			pUV->m_Edit_FontHeight.SetValue(((CCadDimension *)pSel)->GetAttributes()->m_TextAtrib.m_FontHeight);
+			pUV->m_Edit_FontWidth.SetValue(((CCadDimension *)pSel)->GetAttributes()->m_TextAtrib.m_FontWidth);
+			pUV->m_Combo_FontWeight.SetFontWeight(((CCadDimension *)pSel)->GetAttributes()->m_TextAtrib.m_Weight);
 			break;
 		case OBJECT_TYPE_CIRCLE:
 			pUV->m_Edit_X1.SetValue(((CCadCircle*)pSel)->GetP1().x);
@@ -3267,11 +3237,14 @@ void CFrontCadView::ChangeObject(CUtilView *pUV,CCadObject *pO)
 			case OBJECT_TYPE_DIMENSION:
 				((CCadDimension *)pO)->SetColor(pUV->m_Static_LineColor.GetColor());
 				((CCadDimension *)pO)->SetLineWidth(pUV->m_Edit_LineThickness.GetValue());
-				((CCadDimension *)pO)->GetText()->SetFontHeight(pUV->m_Edit_FontHeight.GetValue());
+				((CCadDimension *)pO)->GetAttributes()->m_TextAtrib.m_FontHeight = pUV->m_Edit_FontHeight.GetValue();
 				pUV->m_Button_Font.GetWindowTextA(s, 255);
-				((CCadDimension *)pO)->GetText()->SetFontName(s);
-				((CCadDimension *)pO)->GetText()->SetFontWidth(pUV->m_Edit_FontWidth.GetValue());
-				((CCadDimension *)pO)->GetText()->SetWeight(pUV->m_Combo_FontWeight.GetFontWeight());
+				((CCadDimension*)pO)->GetAttributes()->m_TextAtrib.SetFontName(s); 
+				((CCadDimension *)pO)->GetAttributes()->m_TextAtrib.m_Color = pUV->m_Static_TextColor.GetColor();
+				((CCadDimension *)pO)->GetAttributes()->m_TextAtrib.m_BkColor = pUV->m_Static_BkGrndColor.GetColor();
+				((CCadDimension*)pO)->GetAttributes()->m_TextAtrib.m_Transparent = pUV->m_Check_TransparentFont.GetCheck();
+				((CCadDimension *)pO)->GetAttributes()->m_TextAtrib.m_FontWidth = pUV->m_Edit_FontWidth.GetValue();
+				((CCadDimension *)pO)->GetAttributes()->m_TextAtrib.m_Weight = pUV->m_Combo_FontWeight.GetFontWeight();
 				((CCadDimension *)pO)->UpdateText(GetOrigin());
 				Invalidate();
 				break;

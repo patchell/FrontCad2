@@ -136,6 +136,8 @@ Tokens CCadPrintRect::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDr
 {
 	BOOL Loop = TRUE;
 
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	LookAHeadToken = pParser->Expect(Tokens::PRINTRECT, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens('('), LookAHeadToken, pIN);
 	while (Loop)
@@ -180,7 +182,7 @@ Tokens CCadPrintRect::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDr
 			break;
 		}
 	}
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
 	return LookAHeadToken;
 }
 

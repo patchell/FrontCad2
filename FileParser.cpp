@@ -84,7 +84,7 @@ int CFileParser::GetChar(FILE *in)
 int CFileParser::UnGetChar(int c)
 {
 	UnGetBuff = c;
-	return 0;
+	return c;
 }
 
 int CFileParser::Open(char *pFileName, CFrontCadDoc *pDoc)

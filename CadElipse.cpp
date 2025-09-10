@@ -180,6 +180,8 @@ Tokens CCadElipse::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawi
 {
 	BOOL Loop = TRUE;
 
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	LookAHeadToken = pParser->Expect(Tokens::ELLIPSE, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens('('), LookAHeadToken, pIN);
 	while (Loop)
@@ -215,7 +217,7 @@ Tokens CCadElipse::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawi
 			break;
 		}
 	}
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
 	return LookAHeadToken;
 }
 

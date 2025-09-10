@@ -4,12 +4,6 @@
 
 #include "stdafx.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 ObjectTypeMembers TypeLUT[] = {
 	{"None",OBJECT_TYPE_NONE},
 	{"Line",OBJECT_TYPE_LINE},
@@ -64,10 +58,14 @@ CCadObject::CCadObject()
 	m_pNext = 0;
 	m_pPrev = 0;
 	m_pSelNext = 0;
+	m_pHead = 0; // Used for library parts and groups of objects
+	m_pTail = 0;
 	SetSelected(0);
 	m_Type = OBJECT_TYPE_NONE;
 	m_P1 = CPoint(0,0);
 	m_P2 = CPoint(0,0);
+	m_CollumnNumber = -1;
+	m_LineNumber = -1;
 }
 
 CCadObject::CCadObject(int type)
@@ -75,10 +73,14 @@ CCadObject::CCadObject(int type)
 	m_pNext = 0;
 	m_pPrev = 0;
 	m_pSelNext = 0;
+	m_pHead = 0; // Used for library parts and groups of objects
+	m_pTail = 0;
 	SetSelected(0);
 	m_Type = type;
 	m_P1 = CPoint(0,0);
 	m_P2 = CPoint(0,0);
+	m_CollumnNumber = -1;
+	m_LineNumber = -1;
 }
 
 CCadObject::~CCadObject()

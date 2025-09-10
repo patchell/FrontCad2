@@ -27,6 +27,13 @@ CCadLine::~CCadLine()
 {
 }
 
+BOOL CCadLine::Create()
+{
+	BOOL rV = TRUE;
+
+	return rV;
+}
+
 BOOL CCadLine::Create(CPoint m_Pos, LineAttrib* pLineAttributes)
 {
 	BOOL rV = TRUE;
@@ -212,6 +219,8 @@ Tokens CCadLine::Parse(
 	BOOL Loop = TRUE;
 	int PointOrder = 0;
 
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	LookAHeadToken = pParser->Expect(Tokens::LINE, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens('('), LookAHeadToken, pIN);
 	while (Loop)
@@ -266,7 +275,7 @@ Tokens CCadLine::Parse(
 			break;
 		}
 	}
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
 	return LookAHeadToken;
 }
 

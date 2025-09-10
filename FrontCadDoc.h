@@ -38,7 +38,6 @@ public:
 	int CheckSelected(CPoint p, CCadObject** ppSelList, int n, int flag = 0) { return m_pDrawing->CheckSelected(p, ppSelList, n, flag); }
 	CCadObject* GetHead(void) { return m_pDrawing->GetHead(); }
 	void Print(CDC* pDC, ObjectMode mode, CPoint Offset, CScale Scale) { m_pDrawing->Print(pDC, mode, Offset, Scale); }
-	void CheckPrev(void) { m_pDrawing->CheckPrev(); }
 	CCadDrawing* GetDrawing() { return m_pDrawing; }
 	CFileParser* GetParser() { return m_pParser; }
 #ifdef _DEBUG

@@ -40,6 +40,8 @@ class CCadObject
 	CCadObject* m_pHead; // Used for library parts and groups of objects
 	CCadObject* m_pTail;
 	CCadObject* m_pSelNext;
+	int m_LineNumber;
+	int m_CollumnNumber;
 	inline static BOOL RenderObjectFillsEnable = TRUE;
 public:
 	CCadObject();
@@ -56,7 +58,17 @@ public:
 	void SetP2X(int x) { m_P2.x = x; }
 	void SetP2Y(int y) { m_P2.y = y; }
 	CPoint& GetP2() { return m_P2; }
-	virtual void SetSelected(int Sel = 0) { m_Selected = Sel; }
+	virtual void SetSelected(int Sel = 0) { 
+		CCadObject* pObj;
+
+		pObj = GetHead();
+
+		while (pObj) {
+			pObj->SetSelected(Sel);
+			pObj = pObj->GetNext();
+		}
+		m_Selected = Sel; 
+	}
 	int GetSelected() const { return m_Selected; }
 	void SetNext(CCadObject* pN) { m_pNext = pN; }
 	CCadObject* GetNext() { return m_pNext; }
@@ -124,6 +136,8 @@ public:
 		return m_pHead;
 	}
 	virtual void AddObjectToEnd(CCadObject* pO) {
+		if(pO->m_LineNumber<0)
+			pO->m_LineNumber = -1;
 		if (m_pTail) {
 			m_pTail->SetNext(pO);
 			pO->SetPrev(m_pTail);
@@ -173,4 +187,32 @@ public:
 		pO->SetNext(0);
 		pO->SetPrev(0);
 	}
+	void InsertObject(CCadObject* pLO)
+	{
+		//----------------------------------------
+		// InsertObject
+		//		This function is used to add a new
+		// object to a drawing.  It puts the
+		// object at the front of the list so
+		// that it will be drawwn first.
+		//
+		// parameters:
+		//		pLO.....pointer to CCad Object
+		//----------------------------------------
+		if (m_pHead == 0)	//nothing in drawing
+		{
+			m_pHead = pLO;
+			m_pTail = pLO;
+		}
+		else				//add object to front
+		{
+			m_pHead->SetPrev(pLO);
+			pLO->SetNext(m_pHead);
+			m_pHead = pLO;
+		}
+	}
+	void SetLineNumber(int n) { m_LineNumber = n; }
+	int GetLineNumber() const { return m_LineNumber; }
+	void SetCollumnNumber(int n) { m_CollumnNumber = n; }
+	int GetCollumnNumber() const { return m_CollumnNumber; }
 };

@@ -223,6 +223,8 @@ Tokens CCadArc::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawing,
 	BOOL bLoop = TRUE;
 	int PointOrder = 0;
 
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	LookAHeadToken = pParser->Expect(Tokens::ARC, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens('('), LookAHeadToken, pIN);
 	while (bLoop)
@@ -299,7 +301,7 @@ Tokens CCadArc::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawing,
 			break;
 		}
 	}
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
 	return LookAHeadToken;
 }
 

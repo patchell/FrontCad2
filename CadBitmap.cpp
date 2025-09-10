@@ -57,7 +57,7 @@ BOOL CCadBitmap::Create(CPoint ptPos, char* pFilename, CMyBitmap* pBM)
 	SetP2(ptPos);
 	if (pFilename)
 		rV = LoadBitmapImage(pFilename);
-    return 0;
+    return rV;
 }
 
 CCadObject* CCadBitmap::Copy()
@@ -75,6 +75,8 @@ void CCadBitmap::Move(CPoint p)
 
 Tokens CCadBitmap::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawing, CFileParser* pParser)
 {
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	LookAHeadToken = pParser->Expect(Tokens::BITMAP, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens('('), LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Point(Tokens::POINT_1, pIN, GetP1(), LookAHeadToken);
@@ -87,7 +89,7 @@ Tokens CCadBitmap::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawi
 	LookAHeadToken = pParser->Expect(Tokens::STRING, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens(')'), LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens(')'), LookAHeadToken, pIN);
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
 	return LookAHeadToken;
 }
 
@@ -224,11 +226,6 @@ void CCadBitmap::AddObject(CCadObject *pO)
 
 void CCadBitmap::RemoveObject(CCadObject *pO)
 {
-}
-
-void CCadBitmap::SetSelected(int Flag)
-{
-	CCadObject::SetSelected(Flag);
 }
 
 void CCadBitmap::AdjustRefernce(CPoint p)

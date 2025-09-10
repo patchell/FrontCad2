@@ -281,17 +281,16 @@ struct SCALEWIZattributes {
 #include "CadObject.h"
 #include "CadArc.h"
 #include "CadArcCentered.h"
+#include "CadArrow.h"
 #include "CadBitmap.h"
 #include "CadCircle.h"
+#include "CadElipse.h"
 #include "CadHoleRnd1Flat.h"
 #include "CadHoleRnd2Flat.h"
 #include "CadHoleRound.h"
 #include "CadLibObject.h"
-
 #include "CadOrigin.h"
-
 #include "CadPolygon.h"
-#include "CadArrow.h"
 #include "CadLine.h"
 #include "CadPrintRect.h"
 #include "CadRect.h"
@@ -301,7 +300,6 @@ struct SCALEWIZattributes {
 #include "CadDimension.h"
 #include "CadDrawing.h"
 #include "CadLibrary.h"
-#include "CadElipse.h"
 
 //controls
 #include "ButtonMsg.h"

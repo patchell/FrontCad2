@@ -26,7 +26,6 @@ CCadText::CCadText(CCadText& v):CCadObject(OBJECT_TYPE_TEXT)
 	m_atrb.m_pFontName = new char[LF_FACESIZE];
 	SetP1(v.GetP1());
 	CopyAttributes(&this->m_atrb,&v.m_atrb);
-	this->m_SelRect = v.m_SelRect;
 }
 
 CCadText::~CCadText()
@@ -43,7 +42,7 @@ BOOL CCadText::Create(CPoint ptPos, TextAttributes* pTextAttributes)
 	else {
 		bRet = FALSE;
 	}
-    return 0;
+    return bRet;
 }
 
 CCadObject* CCadText::Copy()
@@ -75,144 +74,75 @@ void CCadText::Draw(CDC *pDC, ObjectMode mode,CPoint Offset,CScale Scale)
 	//		Scale....Sets Units to Pixels ratio
 	//---------------------------------------------
 	CFont *pOldFont, fontText;
+	CBrush* pOldBrush = 0, brushFill;
 	CPen *pOldPen = 0, penLine;
 	COLORREF OldColor,OldBk;
 	int FontHeight,FontWidth;
-	CPoint P1;
-	int OldMode;
+	CPoint P1, ptSelPoly[4];
+	int OldTransparentMode = 0;
+	BOOL bFontCreated = FALSE;
 
 	if (CCadText::m_RenderEnable)
 	{
 		P1 = (Scale * GetP1()) + Offset;
 		FontHeight = int(Scale.m_ScaleX * m_atrb.m_FontHeight);
 		FontWidth = int(Scale.m_ScaleX * m_atrb.m_FontWidth);
-		CRect rect = GetTextRectangle(pDC, Scale);
-		Rotate(m_atrb.m_Angle, rect, m_SelRect);
+		//--------------------------------
+		// Create the font
+		//--------------------------------
+		bFontCreated = fontText.CreateFontA(
+			FontHeight, 
+			FontWidth, 
+			m_atrb.m_Angle,
+			m_atrb.m_Angle,
+			m_atrb.m_Weight, 
+			FALSE, 
+			FALSE, 
+			0, 
+			DEFAULT_CHARSET,
+			OUT_CHARACTER_PRECIS,
+			CLIP_CHARACTER_PRECIS,
+			PROOF_QUALITY,
+			DEFAULT_PITCH,
+			m_atrb.m_pFontName
+		);
+		pOldFont = pDC->SelectObject(&fontText);
+		OldColor = pDC->SetTextColor(m_atrb.m_Color);
+		OldBk = pDC->SetBkColor(m_atrb.m_BkColor);
+		if (m_atrb.m_Transparent)
+			OldTransparentMode = pDC->SetBkMode(TRANSPARENT);
+		else
+			OldTransparentMode = pDC->SetBkMode(OPAQUE);
 		switch (mode)
 		{
 		case ObjectMode::Selected:
-				penLine.CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
-				[[fallthrough]];
+			penLine.CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+			brushFill.CreateStockObject(NULL_BRUSH);
+			[[fallthrough]];
 		case ObjectMode::Sketch:
 		case ObjectMode::Final:
-			if (Scale.m_ScaleY > 0.0)
-				fontText.CreateFont(FontHeight, FontWidth, m_atrb.m_Angle, m_atrb.m_Angle,
-					m_atrb.m_Weight, 0, 0, 0, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS,
-					CLIP_CHARACTER_PRECIS, PROOF_QUALITY, DEFAULT_PITCH,
-					m_atrb.m_pFontName);
-			else
-				fontText.CreateFont(FontHeight, FontWidth, -m_atrb.m_Angle, -m_atrb.m_Angle,
-					m_atrb.m_Weight, 0, 0, 0, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS,
-					CLIP_CHARACTER_PRECIS, PROOF_QUALITY, DEFAULT_PITCH,
-					m_atrb.m_pFontName);
 
 			break;
 		}
-	
-		OldColor = pDC->SetTextColor(m_atrb.m_Color);
-		OldBk = pDC->SetBkColor(m_atrb.m_BkColor);
-		pOldFont = pDC->SelectObject(&fontText);
-		if (m_atrb.m_Transparent)
-			OldMode = pDC->SetBkMode(TRANSPARENT);
-		else
-			OldMode = pDC->SetBkMode(OPAQUE);
-		pDC->TextOut(P1.x, P1.y, m_atrb.m_pText, strlen(m_atrb.m_pText));
-		pDC->SetBkMode(OldMode);
+		pDC->TextOutA(P1.x, P1.y, m_atrb.m_pText, strlen(m_atrb.m_pText));
+		pDC->SetBkMode(OldTransparentMode);
 		if (mode == ObjectMode::Selected)
 		{
+			GetTextRectangle(pDC, Scale, ptSelPoly);
+			if (GetAttributes()->m_Angle != 0)
+			{
+				Rotate(pDC, ptSelPoly);
+			}
 			pOldPen = pDC->SelectObject(&penLine);
-			pDC->MoveTo(Scale * m_SelRect.GetAttributes()->m_pVertex[0] + Offset);
-			pDC->LineTo(Scale * m_SelRect.GetAttributes()->m_pVertex[1] + Offset);
-			pDC->LineTo(Scale * m_SelRect.GetAttributes()->m_pVertex[2] + Offset);
-			pDC->LineTo(Scale * m_SelRect.GetAttributes()->m_pVertex[3] + Offset);
-			pDC->LineTo(Scale * m_SelRect.GetAttributes()->m_pVertex[0] + Offset);
+			pOldBrush = pDC->SelectObject(&brushFill);
+			pDC->Polygon(ptSelPoly, 4);
 			pDC->SelectObject(pOldPen);
+			pDC->SelectObject(pOldBrush);
 		}
 		pDC->SetBkColor(OldBk);
 		pDC->SetTextColor(OldColor);
 		pDC->SelectObject(pOldFont);
 	}
-}
-
-void CCadText::SetText(const char *s)
-{
-	//----------------------------------------
-	// SetText
-	//		This function changes the text that
-	// is displayed by the CCadTexst oibject
-	//
-	// parameter:
-	//		s......pointer to string to display
-	//----------------------------------------
-	GetAttributes()->SetText(s);
-	// create the selection rectangle
-	CRect rect = GetTextRectangle();
-	Rotate(m_atrb.m_Angle,rect,m_SelRect);
-}
-
-void CCadText::SetAngle(int e)
-{
-	//----------------------------------------
-	// SetAngle
-	//		This function sets the angle to paint
-	// the text at.
-	//
-	// parameters:
-	//		e.....Angle, in tenths of a degree
-	//----------------------------------------
-	m_atrb.m_Angle = e;
-	CRect rect = GetTextRectangle();
-	Rotate(m_atrb.m_Angle,rect,this->m_SelRect);
-}
-
-void CCadText::GetText(char *s,int n)
-{
-	//---------------------------------------
-	// GetText
-	//		This function retrieves the text
-	// thatis being displayed.
-	//
-	// parameters:
-	//		s.....pointer to array to put text into
-	//		n.....maximum number of chars to copy
-	//---------------------------------------
-	strcpy_s(s, n, (const char *)m_atrb.m_pText);
-}
-
-void CCadText::SettAttrib(TextAttributes &atrb)
-{
-	//--------------------------------------
-	// AetAttrib
-	//
-	//		This function sets the CCadText
-	// attributes.
-	//
-	// parameters:
-	//		atrb....reference to attribute structure
-	//--------------------------------------
-	m_atrb.m_Color = atrb.m_Color;
-	m_atrb.m_BkColor = atrb.m_BkColor;
-	m_atrb.m_Angle = atrb.m_Angle;
-	m_atrb.m_FontHeight = atrb.m_FontHeight;
-	m_atrb.m_FontWidth = atrb.m_FontWidth;
-	m_atrb.m_Transparent = atrb.m_Transparent;
-	m_atrb.m_Weight = atrb.m_Weight;
-	SetFontName(atrb.m_pFontName);
-	SetText(atrb.m_pText);
-}
-
-void CCadText::SetFontName(char *s)
-{
-	//-----------------------------------------
-	// SetFontName
-	//		This function is useed to set the
-	// name of the font that is used to paint
-	// the text.
-	//
-	// parameter:
-	//		s.....pointer to new font name
-	//-----------------------------------------
-	GetAttributes()->SetFontName(s);
 }
 
 int CCadText::CheckSelected(CPoint p,CSize O)
@@ -227,7 +157,7 @@ int CCadText::CheckSelected(CPoint p,CSize O)
 	// parameter:
 	//		p......point to check
 	//-------------------------------------------
-	return m_SelRect.PointEnclosed(p);
+	return 0;//m_SelRect.PointEnclosed(p);
 }
 
 Tokens CCadText::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawing, CFileParser* pParser)
@@ -236,16 +166,16 @@ Tokens CCadText::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawing
 	BOOL Loop = TRUE;
 	int ColorOrder = 0;
 
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	LookAHeadToken = pParser->Expect(Tokens::TEXT, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens('('), LookAHeadToken, pIN);
+	GetAttributes()->SetText(pParser->GetLexBuff());
+	LookAHeadToken = pParser->Expect(Tokens::STRING, LookAHeadToken, pIN);
 	while (Loop)
 	{
 		switch (LookAHeadToken)
 		{
-		case Tokens::STRING:
-			strcpy_s(s, 256, pParser->GetLexBuff());
-			LookAHeadToken = pParser->Expect(Tokens::STRING, LookAHeadToken, pIN);
-			break;
 		case Tokens::POINT:
 			LookAHeadToken = pParser->Point(Tokens::POINT, pIN, GetP1(), LookAHeadToken);
 			break;
@@ -312,8 +242,7 @@ Tokens CCadText::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawing
 			break;
 		}
 	}
-	SetText(s);
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
 	delete[]s;
 	return LookAHeadToken;
 }
@@ -375,7 +304,7 @@ TextAttributes * CCadText::GetAttributes()
 	return &m_atrb;
 }
 
-void CCadText::Rotate(int Angle,CRect rect,CCadPolygon &Poly)
+void CCadText::Rotate(CDC* pDC, CPoint* pSimplePoly)
 {
 	//----------------------------------------------
 	// Rotate
@@ -383,27 +312,23 @@ void CCadText::Rotate(int Angle,CRect rect,CCadPolygon &Poly)
 	// rectangle.
 	//
 	//		parameters:
-	//			Angle....Angle to rotate by in tenths of a degree
-	//			rect.....None Rotated Rectangle
-	//			Poly.....Reference to a Polygon that
-	//						The rotated rectangle is put in
+	//			pSimplePoly..... pointer to an array
+	// of points representing the enclosing polygon
 	//----------------------------------------------
-	Poly.Reset();
-	double Ang = double(Angle)/ 10.0;
+	double Ang = double(GetAttributes()->m_Angle)/ 10.0;
 	double Pi = atan(1.0) * 4;
-	Ang = Ang * Pi / 180.0;
-	CPoint p,p1;
-	p.x = (int)(rect.Width() * cos(Ang)) + rect.TopLeft().x;
-	p.y = -(int)(rect.Width() * sin(Ang)) + rect.TopLeft().y;
-	Poly.AddPoint(p, TRUE, TRUE);
-	Poly.AddPoint(rect.TopLeft(), TRUE, TRUE);
-	p1.x = (int)(rect.Height() * sin(Ang)) + rect.TopLeft().x;
-	p1.y = (int)(rect.Height() * cos(Ang)) + rect.TopLeft().y;
-	Poly.AddPoint(p1, TRUE, TRUE);
-	p.x = (int)(rect.Width() * cos(Ang)) + rect.TopLeft().x;
-	p.y = -(int)(rect.Width() * sin(Ang)) + rect.TopLeft().y;
-	p = p + p1 - rect.TopLeft();
-	Poly.AddPoint(p, TRUE, TRUE);
+	double Width, Height;
+
+	Ang *= Pi / 180.0;
+	Width = pSimplePoly[1].x - pSimplePoly[0].x;
+	Height = pSimplePoly[2].y - pSimplePoly[1].y;	
+	//pSimplePoly[0].x = (int)(rect.Width() * cos(Ang)) + rect.TopLeft().x;
+	//pSimplePoly[0].y = -(int)(rect.Width() * sin(Ang)) + rect.TopLeft().y;
+	pSimplePoly[1].x += (int)(Height * sin(Ang));
+	pSimplePoly[1].y += (int)(Height * cos(Ang));
+	pSimplePoly[2].x += (int)(Width * cos(Ang));
+	pSimplePoly[2].y += -(int)(Width * sin(Ang));
+	pSimplePoly[3] = pSimplePoly[0] + pSimplePoly[2];
 }
 
 CCadText CCadText::operator=(CCadText &v)
@@ -417,11 +342,11 @@ CCadText CCadText::operator=(CCadText &v)
 	// parameter:
 	//		v.....reference to CCadText object to copy
 	//-----------------------------------------------
-	m_atrb.m_pText = 0;
-	SetP1(v.GetP1());
-	CopyAttributes(&this->m_atrb,&v.m_atrb);
-	this->m_SelRect =v.m_SelRect;
-	return *this;
+	CCadText* pNewText = new CCadText;
+
+	pNewText->SetP1(v.GetP1());
+	pNewText->GetAttributes()->CopyFrom(&v.m_atrb);
+	return *pNewText;
 }
 
 void CCadText::CopyAttributes(TextAttributes *d, TextAttributes *s)
@@ -435,22 +360,9 @@ void CCadText::CopyAttributes(TextAttributes *d, TextAttributes *s)
 	//		d.....Detination pointer
 	//		s.....Source Pointer
 	//------------------------------------------------
-	d->m_Color = s->m_Color;
-	d->m_BkColor = s->m_BkColor;
-	d->m_Angle = s->m_Angle;
-	d->m_FontHeight = s->m_FontHeight;
-	d->m_FontWidth = s->m_FontWidth;
-	d->m_Format = s->m_Format;
-	d->m_Transparent = s->m_Transparent;
-	d->m_Weight = s->m_Weight;
-	strcpy_s(d->m_pFontName, LF_FACESIZE,s->m_pFontName);
-	if(s->m_pText)
-	{
-		if(d->m_pText) delete[] d->m_pText;
-		int len = strlen(s->m_pText) + 1;
-		d->m_pText = new char[len];
-		strcpy_s(d->m_pText,len,s->m_pText);
-	}
+	d->CopyFrom(s);
+	if (s->m_pText)
+		d->SetText(s->m_pText);
 }
 
 void CCadText::Move(CPoint p)
@@ -463,8 +375,6 @@ void CCadText::Move(CPoint p)
 	//		p.....New location.
 	//-----------------------------------------------
 	SetP1(p);
-	CRect rect = GetTextRectangle();
-	Rotate(m_atrb.m_Angle,rect,m_SelRect);
 }
 
 int CCadText::GrabVertex(CPoint point)
@@ -514,48 +424,7 @@ CPoint CCadText::GetReference()
 	return GetP1();
 }
 
-char * CCadText::GetText()
-{
-	//----------------------------------------
-	// GetText
-	//		This function returns a pointer to
-	// the string that is being displayed by
-	// by the text object
-	//----------------------------------------
-	return this->m_atrb.m_pText;
-}
-
-
-CRect CCadText::GetTextRectangle()
-{
-	//------------------------------------------
-	// GetTextRectangle
-	//		This function is used to get the
-	// rectangle that surrounds the text displayed
-	// bu the text object.
-	//------------------------------------------
-	CWnd *pW = CWnd::GetActiveWindow();
-	CDC *pDC = pW->GetDC();
-	//	CDC *pDC = ((CFrontCadApp *)AfxGetApp())->m_pMainView->GetDC();
-	CFont font,*old;
-	font.CreateFont(m_atrb.m_FontHeight,m_atrb.m_FontWidth,0,0,
-			m_atrb.m_Weight,0,0,0,DEFAULT_CHARSET,OUT_CHARACTER_PRECIS,
-			CLIP_CHARACTER_PRECIS,PROOF_QUALITY,DEFAULT_PITCH,
-			m_atrb.m_pFontName);
-	old = pDC->SelectObject(&font);
-	CSize cz = pDC->GetTextExtent(m_atrb.m_pText,strlen(m_atrb.m_pText));
-	pDC->SelectObject(old);
-	CRect rect;
-	rect.SetRect(GetP1(), GetP1() + CPoint(cz.cx, cz.cy));
-	char *s = new char[256];
-	sprintf_s(s, 256, "Text Rect:p1=%d,%d p2=%d,%d", rect.left, rect.top, rect.right, rect.bottom);
-	((CFrontCadApp *)AfxGetApp())->WriteToLogFile(s);
-
-	delete[] s;
-	return rect;
-}
-
-CRect CCadText::GetTextRectangle(CDC *pDC, CScale Scale)
+void CCadText::GetTextRectangle(CDC *pDC, CScale Scale, CPoint* pSimplePoly)
 {
 	//------------------------------------------
 	// GetTextRectangle
@@ -566,21 +435,21 @@ CRect CCadText::GetTextRectangle(CDC *pDC, CScale Scale)
 	//	parameters:
 	//		pDC.....pointer to the device context
 	//		Scale...Scale factor for display
+	//		pSimplePoly...pointer to an array of 
+	//					  points that define 
+	//					  selection rectangle
+	// On entry, the text font needs to be
+	// selected into the DC before calling this
+	// method.
 	//------------------------------------------
-	CFont font,*old;
-	font.CreateFont(int(m_atrb.m_FontHeight * Scale.m_ScaleX),int(m_atrb.m_FontWidth * Scale.m_ScaleX),0,0,
-			m_atrb.m_Weight,0,0,0,DEFAULT_CHARSET,OUT_CHARACTER_PRECIS,
-			CLIP_CHARACTER_PRECIS,PROOF_QUALITY,DEFAULT_PITCH,
-			m_atrb.m_pFontName);
-	old = pDC->SelectObject(&font);
 	CSize cz = pDC->GetTextExtent(m_atrb.m_pText,strlen(m_atrb.m_pText));
-	pDC->SelectObject(old);
-	CRect rect;
 	Scale.m_ScaleX = 1.0/Scale.m_ScaleX;
 	Scale.m_ScaleY = 1.0/Scale.m_ScaleY;
 	cz = Scale * cz;
-	rect.SetRect(GetP1(), GetP1() + CPoint(cz.cx, cz.cy));
-	return rect;
+	pSimplePoly[0] = GetP1();
+	pSimplePoly[1] = pSimplePoly[0] + CPoint(GetP1().x +cz.cx, 0);
+	pSimplePoly[2] = pSimplePoly[1] + CPoint(0, GetP1().y + cz.cy);
+	pSimplePoly[3] = pSimplePoly[0] + CPoint(0, GetP1().y + cz.cy);
 }
 
 CPoint CCadText::CalcTextShiftonRotation(CPoint p1, CPoint Center, double angle)
@@ -631,7 +500,7 @@ void CCadText::AdjustRefernce(CPoint p)
 
 CRect CCadText::GetRect()
 {
-	return GetTextRectangle();
+	return CRect();
 }
 
 void CCadText::RenderEnable(int e)

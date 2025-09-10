@@ -155,6 +155,8 @@ void CCadRectHole::Move(CPoint p)
 
 Tokens CCadRectHole::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawing, CFileParser* pParser)
 {
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	LookAHeadToken = pParser->Expect(Tokens::HOLERECT, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens('('), LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Point(Tokens::POINT_1, pIN, GetP1(), LookAHeadToken);
@@ -167,7 +169,7 @@ Tokens CCadRectHole::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDra
 	LookAHeadToken = pParser->Expect(Tokens(','), LookAHeadToken, pIN);
 	LookAHeadToken = pParser->DecimalValue(Tokens::LINE_WIDTH, pIN, GetAttributes()->m_LineWidth, LookAHeadToken);
 	LookAHeadToken = pParser->Expect(Tokens(')'), LookAHeadToken, pIN);
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
 	return LookAHeadToken;
 }
 

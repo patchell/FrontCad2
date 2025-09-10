@@ -339,6 +339,8 @@ Tokens CCadPolygon::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDraw
 	//--------------------------------------------------------
 	BOOL Loop = 1;
 
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	switch (LookAHeadToken)
 	{
 	case Tokens::POLY:
@@ -357,7 +359,7 @@ Tokens CCadPolygon::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDraw
 	LookAHeadToken = Vertex(pIN, LookAHeadToken, ppDrawing, pParser);
 	LookAHeadToken = pParser->Expect(Tokens('}'), LookAHeadToken, pIN);
 
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
 	return LookAHeadToken;
 }
 

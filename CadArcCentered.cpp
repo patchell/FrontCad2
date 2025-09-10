@@ -194,6 +194,8 @@ Tokens CCadArcCentered::Parse(
 	BOOL bLoop = TRUE;
 	int PointOrder = 0;
 
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	LookAHeadToken = pParser->Expect(Tokens::ARC_CENTER, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens('('), LookAHeadToken, pIN);
 	while (bLoop)
@@ -271,7 +273,7 @@ Tokens CCadArcCentered::Parse(
 
 		}
 	}
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
 	return LookAHeadToken;
 }
 

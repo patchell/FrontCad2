@@ -45,8 +45,6 @@ public:
 	virtual int CheckSelected(CPoint p, CSize Offset = CSize(0, 0));
 	virtual CPoint GetReference();
 	virtual CCadObject *GetHead(void) { return 0; }
-	
-	virtual void SetSelected(int Flag = 0);
 	virtual void AdjustRefernce(CPoint Ref);
 	virtual CRect GetRect(void);
 	inline void SetParent(CFrontCadView *pW) { m_pMainView = pW; }

@@ -82,6 +82,8 @@ Tokens CCadArrow::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawin
 	BOOL bLoop = TRUE;
 	int PointOrder = 0;
 
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	LookAHeadToken = pParser->Expect(Tokens::ARROW, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens('('), LookAHeadToken, pIN);
 	while (bLoop)
@@ -161,7 +163,7 @@ Tokens CCadArrow::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawin
 			break;
 		}
 	}
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
 	return LookAHeadToken;
 }
 
@@ -265,11 +267,6 @@ int CCadArrow::CheckSelected(CPoint p,CSize Off)
 {
 	int rV = 0;
 
-	if(theApp.HasConsol())
-	{
-		printf("------------------------------------------\n");
-		printf("Enter CCadArrow::CheckSelected\n");
-	}
 	CCadPolygon Cp;
 	Cp.AddPoint(GetP1() + Off, TRUE, TRUE);
 	CPoint P3, P4;
@@ -277,10 +274,6 @@ int CCadArrow::CheckSelected(CPoint p,CSize Off)
 	Cp.AddPoint(P3, TRUE, TRUE);
 	Cp.AddPoint(P4, TRUE, TRUE);
 	rV = Cp.CheckSelected(p, CSize(0, 0));
-	if (theApp.HasConsol())
-	{
-		printf("Exit CCadArrow::CheckSelected\n");
-	}
 	return rV;
 }
 
@@ -302,11 +295,6 @@ void CCadArrow::RemoveObject(CCadObject *pO)
 CCadObject *CCadArrow::GetHead(void)
 {
 	return 0;
-}
-
-void CCadArrow::SetSelected(int Flag)
-{
-	CCadObject::SetSelected(Flag);
 }
 
 void CCadArrow::AdjustRefernce(CPoint p)

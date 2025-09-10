@@ -43,6 +43,7 @@ public:
 	CCadLine();
 	CCadLine(CCadLine &line);
 	virtual ~CCadLine();
+	BOOL Create();
 	BOOL Create(CPoint m_Pos, LineAttrib* pLineAttributes);
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }

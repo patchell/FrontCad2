@@ -107,10 +107,11 @@ struct TextAttributes {
 
 class CCadText : public CCadObject
 {
-	friend CFileParser;
 	inline static int m_RenderEnable = 1;
 	TextAttributes m_atrb;
-	CCadPolygon m_SelRect;
+	//BOOL m_FontChanged;
+	//CFont m_fontText;
+	inline static int BooBoo = 0;
 public:
 	CCadText();
 	CCadText(CCadText& v);
@@ -120,7 +121,7 @@ public:
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
 	virtual CRect GetRect(void);
-	CRect GetTextRectangle(CDC* pDC, CScale Scale);
+	void GetTextRectangle(CDC* pDC, CScale Scale, CPoint* pSimplePoly);
 	virtual CPoint GetReference();
 	virtual void Move(CPoint p);
 	virtual void SetVertex(int Vi,CPoint p);
@@ -130,22 +131,25 @@ public:
 	virtual Tokens Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawing, CFileParser* pParser);
 	virtual void Save(FILE *pO,  int Indent);
 	virtual void Draw(CDC* pDC, ObjectMode mode,CPoint Offset=CPoint(0,0),CScale Scale=CScale(0.1,0.1));
-	CRect GetTextRectangle(void);
 	void CopyAttributes(TextAttributes *d,TextAttributes *s);
-	void Rotate(int Angle,CRect rect,CCadPolygon &Poly);
+	void Rotate(CDC* pDC, CPoint* pSimplePoly);
 	TextAttributes * GetAttributes(void);
-	void SettAttrib(TextAttributes &atrb);
 	void SetColor(COLORREF c){m_atrb.m_Color = c;}
 	COLORREF GetColor(void){return m_atrb.m_Color;}
 	void SetBkColor(COLORREF c){m_atrb.m_BkColor = c;}
 	COLORREF GetBkColor(void){return m_atrb.m_BkColor;}
-	void SetText(const char *s);
-	void GetText(char *s,int n);
+	void SetText(const char* s) { m_atrb.SetText(s); }
+	void GetText(char *s,int n){
+		if (m_atrb.m_pText)
+			strcpy_s(s, n, (const char *)m_atrb.m_pText);
+		else
+			s[0] = 0;
+	}
 	void SetFormat(UINT f){m_atrb.m_Format = f;}
 	UINT GetFormat(void){return m_atrb.m_Format;}
-	void SetFontName(char *s);
+	void SetFontName(char* s) { m_atrb.SetFontName(s); }
 	char *GetFontName(void){return m_atrb.m_pFontName;}
-	void SetAngle(int e);
+	void SetAngle(int e) { m_atrb.m_Angle = e; }
 	int GetAngle(void){return m_atrb.m_Angle;}
 	void SetFontHeight(int h){m_atrb.m_FontHeight = h;}
 	int GetFontHeight(void){return m_atrb.m_FontHeight;}
@@ -156,7 +160,7 @@ public:
 	void SetWeight(int w){m_atrb.m_Weight = w;}
 	int GetWeight(void){return m_atrb.m_Weight;}
 	CPoint CalcTextShiftonRotation(CPoint p1,CPoint Center,double angle);
-	char * GetText(void);
+	char* GetText(void) const { return m_atrb.m_pText; }
 	CCadText operator=(CCadText &v);
 	virtual void RenderEnable(int e);
 	virtual CPoint GetCenter();

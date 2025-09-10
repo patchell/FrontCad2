@@ -162,6 +162,8 @@ Tokens CCadRect::Parse(
 	int ColorOrder = 0;
 	char* pToken1 = new char[64];
 
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	LookAHeadToken = pParser->Expect(Tokens::RECT, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens('('), LookAHeadToken, pIN);
 	while(bLoop)
@@ -233,7 +235,7 @@ Tokens CCadRect::Parse(
 		}
 	}
 	delete[] pToken1;
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
 	return LookAHeadToken;
 }
 

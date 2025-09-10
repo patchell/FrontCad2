@@ -46,15 +46,6 @@ CCadLibObject::CCadLibObject(CCadLibObject &LibObj):CCadObject(OBJECT_TYPE_LIBCO
 
 CCadLibObject::~CCadLibObject()
 {
-	CCadObject *pO,*pNO;
-
-	pO = GetHead();
-	while(pO)
-	{
-		pNO = pO->GetNext();
-		delete pO;
-		pO = pNO;
-	}
 }
 
 BOOL CCadLibObject::Create(CPoint ptPos, StPartAttributes* pAttributes)
@@ -67,7 +58,7 @@ BOOL CCadLibObject::Create(CPoint ptPos, StPartAttributes* pAttributes)
 		GetAttributes()->CopyFrom(pAttributes);
 	else
 		rV = FALSE;
-    return 0;
+    return rV;
 }
 
 void CCadLibObject::Draw(CDC *pDC, ObjectMode mode,CPoint Offset,CScale Scale)
@@ -174,6 +165,8 @@ Tokens CCadLibObject::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDr
 	CCadLibObject* pCLO = this;
 	BOOL Loop = TRUE;
 
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	LookAHeadToken = pParser->Expect(Tokens::LIBPART, LookAHeadToken, pIN);
 	while (Loop)
 	{
@@ -221,7 +214,7 @@ Tokens CCadLibObject::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDr
 			break;
 		}
 	}
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
     return LookAHeadToken;
 }
 

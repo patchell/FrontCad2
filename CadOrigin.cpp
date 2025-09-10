@@ -45,6 +45,8 @@ Tokens CCadOrigin::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawi
 {
 	BOOL Loop = TRUE;
 
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	LookAHeadToken = pParser->Expect(Tokens::ORG, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens('('), LookAHeadToken, pIN);
 	while(Loop)
@@ -83,7 +85,7 @@ Tokens CCadOrigin::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawi
 			break;
 		}
 	}
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
 	return LookAHeadToken;
 }
 
@@ -177,11 +179,6 @@ int CCadOrigin::CheckSelected(CPoint p,CSize O)
 CPoint CCadOrigin::GetReference()
 {
 	return GetP1();
-}
-
-void CCadOrigin::SetSelected(int Flag)
-{
-	CCadObject::SetSelected(Flag);
 }
 
 void CCadOrigin::AdjustRefernce(CPoint Ref)

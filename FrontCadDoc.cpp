@@ -126,7 +126,7 @@ void CFrontCadDoc::InsertObject(CCadObject * pObj)
 
 void CFrontCadDoc::AddObject(CCadObject * pObj)
 {
-	m_pDrawing->AddObject(pObj);
+	m_pDrawing->AddObjectToEnd(pObj);
 	SetModifiedFlag(true);
 }
 

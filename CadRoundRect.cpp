@@ -4,13 +4,6 @@
 
 #include "stdafx.h"
 
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 ///////////////////////////////////////////////
 // Construction/Destruction
 ///////////////////////////////////////////////
@@ -37,6 +30,9 @@ CCadRoundRect::~CCadRoundRect()
 BOOL CCadRoundRect::Create(CPoint ptPos, RndRectAttb* pRndRectAttributes)
 {
 	BOOL rV = TRUE;
+
+	SetP1(ptPos);
+	SetP2(ptPos);
 	if (pRndRectAttributes)
 		m_attrib.CopyFrom(pRndRectAttributes);
 	else
@@ -227,6 +223,8 @@ Tokens CCadRoundRect::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDr
 	int PointOrder = 0;
 	int ColorOrder = 0;
 
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	LookAHeadToken = pParser->Expect(Tokens::RNDRECT, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens('('), LookAHeadToken, pIN);
 	while (Loop)
@@ -304,7 +302,7 @@ Tokens CCadRoundRect::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDr
 			break;
 		}
 	}
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
 	return LookAHeadToken;
 }
 

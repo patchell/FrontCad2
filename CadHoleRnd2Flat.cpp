@@ -188,6 +188,8 @@ void CCadHoleRnd2Flat::Move(CPoint p)
 
 Tokens CCadHoleRnd2Flat::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawing, CFileParser* pParser)
 {
+	SetLineNumber(pParser->GetLine());
+	SetCollumnNumber(pParser->GetCol());
 	LookAHeadToken = pParser->Expect(Tokens::HOLE_2FLAT, LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Expect(Tokens('('), LookAHeadToken, pIN);
 	LookAHeadToken = pParser->Point(Tokens::POINT_1, pIN, GetP1(), LookAHeadToken);
@@ -200,7 +202,7 @@ Tokens CCadHoleRnd2Flat::Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** p
 	LookAHeadToken = pParser->Expect(Tokens(','), LookAHeadToken, pIN);
 	LookAHeadToken = pParser->DecimalValue(Tokens::LINE_WIDTH, pIN, GetAttributes()->m_LineWidth, LookAHeadToken);
 	LookAHeadToken = pParser->Expect(Tokens(')'), LookAHeadToken, pIN);
-	(*ppDrawing)->AddObject(this);
+	(*ppDrawing)->AddObjectToEnd(this);
 	return LookAHeadToken;
 }
 

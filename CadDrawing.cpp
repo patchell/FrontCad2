@@ -5,12 +5,6 @@
 #include "stdafx.h"
 
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 ///////////////////////////////////////////////
 // Construction/Destruction
 ///////////////////////////////////////////////
@@ -18,23 +12,11 @@ static char THIS_FILE[]=__FILE__;
 CCadDrawing::CCadDrawing():CCadObject(OBJECT_TYPE_DRAWING)
 {
 	m_Error = 0;
-	m_pHead = 0;
-	m_pTail = 0;
 	m_BkColor = RGB(255,255,255);
 }
 
 CCadDrawing::~CCadDrawing()
 {
-	if(m_pHead)
-	{
-		CCadObject *pO = m_pHead;
-		while(pO)
-		{
-			CCadObject *pOd = pO;
-			pO = pO->GetNext();
-			delete pOd;
-		}
-	}
 }
 
 CCadObject* CCadDrawing::Copy()
@@ -49,92 +31,13 @@ CCadObject* CCadDrawing::Copy()
 	//-----------------------------------------
 	CCadDrawing *pNew = new CCadDrawing();
 	pNew->m_BkColor = m_BkColor;
-	CCadObject *pO = m_pHead;
+	CCadObject *pO = GetHead();
 	while(pO)
 	{
-		pNew->AddObject(pO->Copy());
+		pNew->AddObjectToEnd(pO->Copy());
 		pO = pO->GetNext();
 	}
 	return (CCadObject*)pNew;
-}
-
-void CCadDrawing::AddObject(CCadObject *pLO)
-{
-	//----------------------------------------
-	// AddObject
-	//		This function is used to add a new
-	// object to a drawing.  It puts the
-	// object at the endof the list so
-	// that it will be drawwn last.
-	//
-	// parameters:
-	//		pLO.....pointer to CCad Object
-	//----------------------------------------
-	if(m_pHead == 0)	//nothing in drawing
-	{
-		m_pHead = pLO;
-		m_pTail = pLO;
-	}
-	else				//add part to end of drawing
-	{
-		m_pTail->SetNext(pLO);
-		pLO->SetPrev(m_pTail);
-		m_pTail = pLO;
-	}
-}
-
-void CCadDrawing::InsertObject(CCadObject *pLO)
-{
-	//----------------------------------------
-	// InsertObject
-	//		This function is used to add a new
-	// object to a drawing.  It puts the
-	// object at the front of the list so
-	// that it will be drawwn first.
-	//
-	// parameters:
-	//		pLO.....pointer to CCad Object
-	//----------------------------------------
-	if(m_pHead == 0)	//nothing in drawing
-	{
-		m_pHead = pLO;
-		m_pTail = pLO;
-	}
-	else				//add object to front
-	{
-		m_pHead->SetPrev(pLO);
-		pLO->SetNext(m_pHead);
-		m_pHead = pLO;
-	}
-}
-
-void CCadDrawing::RemoveObject(CCadObject *pLO)
-{
-	//------------------------------------------
-	// RemoveObject
-	//			This function removes an object
-	// from the drawing.  This is a DELETE
-	//
-	//	parameters:
-	//		pLO.....pointer to object to remove
-	//------------------------------------------
-	if(pLO == m_pHead)
-	{
-		m_pHead = (CCadObject *)m_pHead->GetNext();
-		if (m_pHead) m_pHead->SetPrev(0);
-	}
-	else if (pLO == m_pTail)
-	{
-		m_pTail = (CCadObject*)m_pTail->GetPrev();
-		if (m_pTail) m_pTail->SetNext(0);
-	}
-	else
-	{
-		pLO->GetPrev()->SetNext(pLO->GetNext());
-		pLO->GetNext()->SetPrev(pLO->GetPrev());
-	}
-	pLO->SetPrev(0);
-	pLO->SetNext(0);
 }
 
 void CCadDrawing::Draw(CDC *pDC, ObjectMode mode, CPoint Offset, CScale Scale)
@@ -150,8 +53,8 @@ void CCadDrawing::Draw(CDC *pDC, ObjectMode mode, CPoint Offset, CScale Scale)
 	//		Offset..Offset to add to objects
 	//		Scale...Ammount to scale objects by
 	//-----------------------------------------
-	CCadObject *pCO = m_pHead;
-	// TODO: add draw code for native data here
+	CCadObject *pCO = GetHead();
+	
 	while(pCO)
 	{
 		if(pCO->GetSelected()) 
@@ -176,7 +79,7 @@ void CCadDrawing::Save(FILE *pO,  int Indent)
 	char* s = new char[256];
 	char* s1 = new char[64];
 
-	CCadObject *pCO = m_pHead;
+	CCadObject *pCO = GetHead();
 	fprintf(pO, "%sDRAWFILE( %s )\n%s{\n",
 		theApp.IndentString(s, 256, Indent),
 		CFileParser::SaveColor(s1, 64, m_BkColor, Tokens::BACKGROUND_COLOR),
@@ -205,7 +108,7 @@ void CCadDrawing::Print(CDC *pDC, ObjectMode mode, CPoint Offset, CScale Scale)
 	//		Offset.offset to add to objects
 	//		Scale.amount to Scale drawing by
 	//-----------------------------------------
-	CCadObject *pCO = m_pHead;
+	CCadObject *pCO = GetHead();
 	while(pCO)
 	{
 		//---------------------------------
@@ -245,7 +148,7 @@ int CCadDrawing::CheckSelected(CPoint p, CCadObject **ppSelList, int n,int flag)
 	//		number of objects that are under the point
 	//--------------------------------------------
 	int count = 0;
-	CCadObject *pCO = m_pHead;
+	CCadObject *pCO = GetHead();
 
 	while(pCO && ((count < n) || !n))
 	{
@@ -292,9 +195,9 @@ CCadLibObject * CCadDrawing::CreatePartFromSelected(char *name)
 	//		pointer to the CCadLibObject that will
 	//		represent the new poart.
 	//------------------------------------------------
-	CCadObject *pObj = m_pHead;
+	CCadObject *pObj = GetHead();
 	CCadLibObject *pPart;
-	if(m_pHead == NULL)
+	if(GetHead() == NULL)
 		pPart = NULL;
 	else
 	{
@@ -410,15 +313,6 @@ CCadLibObject * CCadDrawing::CreatePartFromSelected(char *name)
 	}
 	return pPart;
 }
-
-void CCadDrawing::CheckPrev()
-{
-	if(m_pTail->GetPrev() == 0)
-	{
-		m_Error++;
-	}
-}
-
 
 CCadPrintRect *CCadDrawing::GetPrintRect()
 {
