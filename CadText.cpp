@@ -32,12 +32,16 @@ CCadText::~CCadText()
 {
 }
 
-BOOL CCadText::Create(CPoint ptPos, TextAttributes* pTextAttributes)
+BOOL CCadText::Create(CPoint ptPos, TextAttributes* pTextAttributes, const char* sText)
 {
 	BOOL bRet = TRUE;
 	SetP1(ptPos);
 	if (pTextAttributes){
 		m_atrb.CopyFrom(pTextAttributes);
+		if (sText)
+			m_atrb.SetText(sText);
+		else
+			m_atrb.SetText("No Text");
 	}
 	else {
 		bRet = FALSE;
@@ -118,10 +122,12 @@ void CCadText::Draw(CDC *pDC, ObjectMode mode,CPoint Offset,CScale Scale)
 		case ObjectMode::Selected:
 			penLine.CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
 			brushFill.CreateStockObject(NULL_BRUSH);
-			[[fallthrough]];
+			break;
 		case ObjectMode::Sketch:
+			break;
+		case ObjectMode::Erase:
+			break;
 		case ObjectMode::Final:
-
 			break;
 		}
 		pDC->TextOutA(P1.x, P1.y, m_atrb.m_pText, strlen(m_atrb.m_pText));
@@ -446,10 +452,18 @@ void CCadText::GetTextRectangle(CDC *pDC, CScale Scale, CPoint* pSimplePoly)
 	Scale.m_ScaleX = 1.0/Scale.m_ScaleX;
 	Scale.m_ScaleY = 1.0/Scale.m_ScaleY;
 	cz = Scale * cz;
+
 	pSimplePoly[0] = GetP1();
 	pSimplePoly[1] = pSimplePoly[0] + CPoint(GetP1().x +cz.cx, 0);
 	pSimplePoly[2] = pSimplePoly[1] + CPoint(0, GetP1().y + cz.cy);
 	pSimplePoly[3] = pSimplePoly[0] + CPoint(0, GetP1().y + cz.cy);
+}
+
+CSize CCadText::GetTextSize(CDC* pDC)
+{
+
+	CSize sz = pDC->GetTextExtent(m_atrb.m_pText, strlen(m_atrb.m_pText));
+	return sz;
 }
 
 CPoint CCadText::CalcTextShiftonRotation(CPoint p1, CPoint Center, double angle)

@@ -26,6 +26,14 @@ BOOL CCadDimension::Create(CPoint ptPos, DimAttrib* pDimAttributes)
     return rV;
 }
 
+BOOL CCadDimension::IsVertical()
+{
+	BOOL rV = FALSE;
+	if (GetP1().x == GetP2().x)
+		rV = TRUE;
+	return rV;
+}
+
 CCadObject* CCadDimension::Copy()
 {
 	CCadDimension* pNew = new CCadDimension(*this);
@@ -64,6 +72,7 @@ Tokens CCadDimension::Parse(
 	BOOL Loop = TRUE;
 	char* s = new char[256];
 	int PointOrder = 0;
+	CCadText* pText = 0;
 
 	SetLineNumber(pParser->GetLine());
 	SetCollumnNumber(pParser->GetCol());
@@ -113,6 +122,14 @@ Tokens CCadDimension::Parse(
 		case Tokens('{'):
 			LookAHeadToken = pParser->Expect(Tokens('{'), LookAHeadToken, pIN);
 			LookAHeadToken = pParser->DrawObjects(pIN, LookAHeadToken, this);
+			pText = GetTextObject();
+			if (pText)
+			{
+				// This is to fix the DIM angle from old files
+				// that had -900 for vertical
+				if(pText->GetAngle() == -900)
+					pText->SetAngle(900);
+			}
 			break;
 		case Tokens('}'):
 			Loop = FALSE;
@@ -174,6 +191,66 @@ int CCadDimension::GrabVertex(CPoint p)
 	return rV;
 }
 
+CCadText* CCadDimension::CalculateDimensionTextPosition(CDC* pDC, ObjectMode mode, CPoint Offset, CScale Scale)
+{
+	//---------------------------------------------
+	//	CalculateDimensionTextPosition()
+	//		This function calculates the position of the
+	// dimension text based on the dimension line
+	// orientation and the size of the text.
+	// 
+	// The result will be the position in mils
+	// being set in the CText object.
+	//---------------------------------------------
+
+	CPoint P1, P2, ptNewP1;
+	CCadObject* pObj = 0;
+	CCadText* pText = 0;
+	CSize szTextRect;
+
+	pObj = GetHead();
+	while (pObj)
+	{
+		if (pObj->GetType() == OBJECT_TYPE_TEXT)
+		{
+			pText = (CCadText*)pObj;
+			break;
+		}
+		pObj = pObj->GetNext();
+	}
+	//---------------------------------------------
+	// Get the size, in pixels, of the text
+	//---------------------------------------------
+	if (pText)
+	{
+		P1 = GetP1();	// Dimension are in mils
+		P2 = GetP2();	// Dimension are in mil
+		szTextRect = pText->GetTextSize(pDC);
+		//---------------------------------------------
+		// Convert the size to mils
+		//---------------------------------------------
+		szTextRect = CSize(int(szTextRect.cx / Scale.m_ScaleX), int(szTextRect.cy / Scale.m_ScaleY));
+		if (P1.x == P2.x)	//vertical facing dimension
+		{
+			if (P1.y > P2.y)
+				ptNewP1 = CPoint(P2.x - pText->GetFontHeight()/2, P2.y - 60);
+			else
+				ptNewP1 = CPoint(P2.x - pText->GetFontHeight()/ 2, P2.y + szTextRect.cx + 60);
+			pText->SetP1(ptNewP1);
+		}
+		else if (P1.y == P2.y)	//horizontal facing dimension
+		{
+			//rect = pText->GetRect();
+			if (P1.x > P2.x)
+				ptNewP1 = CPoint(P2.x - szTextRect.cx - 60, P2.y - (szTextRect.cy / 2));
+			else
+				ptNewP1 = CPoint(P2.x + 60, P2.y - (szTextRect.cy / 2));
+			pText->SetP1(ptNewP1);
+		}
+	}
+	return pText;
+}
+
 void CCadDimension::Draw(CDC *pDC, ObjectMode mode, CPoint Offset, CScale Scale)
 {
 	//---------------------------------------------
@@ -191,6 +268,7 @@ void CCadDimension::Draw(CDC *pDC, ObjectMode mode, CPoint Offset, CScale Scale)
 	CRect rect;
 	CPoint P1, P2;
 	int Lw;
+	CCadText* pText = 0;
 
 	if (CCadDimension::m_RenderEnable)
 	{
@@ -214,6 +292,9 @@ void CCadDimension::Draw(CDC *pDC, ObjectMode mode, CPoint Offset, CScale Scale)
 		switch (mode)
 		{
 		case ObjectMode::Selected:
+			pDC->MoveTo(P1);
+			pDC->LineTo(P2);
+			break;
 		case ObjectMode::Final:
 			pDC->MoveTo(P1);
 			pDC->LineTo(P2);
@@ -229,11 +310,10 @@ void CCadDimension::Draw(CDC *pDC, ObjectMode mode, CPoint Offset, CScale Scale)
 		//---------------------------------------------
 		// Draw the cild objects
 		//---------------------------------------------
-		CCadObject* pO = GetHead();
-		while (pO)
+		pText = CalculateDimensionTextPosition(pDC, mode, Offset, Scale);
+		if (pText)
 		{
-			pO->Draw(pDC, mode, Offset, Scale);
-			pO = pO->GetNext();
+			pText->Draw(pDC, mode, Offset, Scale);
 		}
 	}
 }
@@ -302,6 +382,41 @@ CRect CCadDimension::GetRect(void)
 	return rR;
 }
 
+void CCadDimension::AddText(CPoint Org)
+{
+	//-----------------------------------------
+	//	Add a text label to the dimension
+	// 
+	// m_P1 and m_P2 have the dimension of
+	// mils.  Org is the Zero point of
+	// of the drawing and dimensions are
+	// referenced to this point.
+	//-----------------------------------------
+	CCadText* pText = new CCadText();
+	CPoint P1 = GetP1();
+	CPoint P2 = GetP2();
+	int Dim;
+	char* s = new char[256];
+
+	if (P1.x == P2.x)	//vertical facing dimension
+	{
+		Dim = P1.x - Org.x;
+		m_Atrib.m_TextAtrib.m_Angle = 900;
+		SetValue(Dim, 3, s, 256);
+		pText->Create(P2, &m_Atrib.m_TextAtrib, s);
+		AddObjectToEnd(pText);
+	}
+	else if (P1.y == P2.y)	//horizontal facing dimension
+	{
+		Dim = Org.y - P2.y;
+		m_Atrib.m_TextAtrib.m_Angle = 0;
+		SetValue(Dim, 3, s, 256);
+		pText->Create(P2, &m_Atrib.m_TextAtrib, s);
+		AddObjectToEnd(pText);
+	}
+	delete[] s;
+}
+
 void CCadDimension::UpdateText(CPoint Org)
 {
 	CPoint P1, P2;
@@ -312,6 +427,7 @@ void CCadDimension::UpdateText(CPoint Org)
 	CSize off;
 	CCadText* pText = 0;
 	CCadObject* pObj = 0;
+	char* s = new char[256];
 
 	pObj = GetHead();
 	while (pObj)
@@ -328,7 +444,7 @@ void CCadDimension::UpdateText(CPoint Org)
 		if (P1.x == P2.x)	//vertical facing dimension
 		{
 			Dim = P1.x - Org.x;
-			SetValue(Dim, 3);
+			SetValue(Dim, 3, s, 256);
 			rect = pText->GetRect();
 			if (P1.y > P2.y)
 				ofx = -(rect.Width() + 60);
@@ -339,7 +455,7 @@ void CCadDimension::UpdateText(CPoint Org)
 		else if (P1.y == P2.y)	//horizontal facing dimension
 		{
 			Dim = -(P2.y - Org.y);
-			SetValue(Dim, 3);
+			SetValue(Dim, 3, s, 256);
 			rect = pText->GetRect();
 			if (P1.x > P2.x)
 				ofx = rect.Width() + 60;
@@ -349,29 +465,22 @@ void CCadDimension::UpdateText(CPoint Org)
 		}
 		pText->SetP1(P2 - off);
 	}
+	delete[] s;
 }
 
-void CCadDimension::SetValue(int v, int dp)
+char* CCadDimension::SetValue(int v, int dp, char* pValString, int n)
 {
 	int Intpart, Fracpart, Div;
-	CCadText* pText = 0;
-
-	Div = 1;
-
 	int i;
 
+	Div = 1;
 	for (i = 0; i < dp; ++i)
 		Div *= 10;
 	Intpart = v / Div;
 	Fracpart = v % Div;
 	Fracpart = int(((double)Fracpart / (double)Div) * double(Div));
-	char *s = new char[32];
-	sprintf_s(s,32, "%d.%03d", Intpart,Fracpart);
-	pText = GetTextObject();
-	if (pText)
-		pText->SetText(s);
-	delete[] s;
-
+	sprintf_s(pValString, n, "%d.%03d", Intpart,Fracpart);
+	return pValString;
 }
 
 void CCadDimension::RemoveObject(CCadObject *pO)

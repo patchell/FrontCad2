@@ -527,6 +527,9 @@ void CFrontCadView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case 'E':	// E key, draw Ellipse
 			OnToolbarEllipse();
 			break;
+		case 'F':	// Fix Dimensions Kluge
+			FixDimensions();
+			break;
 		case 'G':	//G key, toggle grid
 			this->m_GridOn ^= 1;
 			break;
@@ -991,7 +994,7 @@ void CFrontCadView::OnLButtonDown(UINT nFlags, CPoint point)
 				case DRAWSTATE_WAITMOUSE_DOWN:
 				{
 					pArrow = new CCadArrow;
-					pA->UpdateArcAttributes(pUV);
+					pA->UpdateArrowAttributes(pUV);
 					//-------------------------------
 					pArrow->Create(m_SnapPos, &pA->m_ArrowAttrib);
 					//-------------------------------
@@ -1586,7 +1589,7 @@ void CFrontCadView::OnLButtonUp(UINT nFlags, CPoint point)
 						pCD->SetP2(NewPos); ;
 
 					}
-					pCD->UpdateText(GetOrigin());
+					pCD->AddText(GetOrigin());
 					pDoc->AddObject(pCD);
 					m_pDrawObject = 0;
 					m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
@@ -3587,6 +3590,35 @@ void CFrontCadView::PrintToDC(CDC * pDC)
 	//----------------------------------
 	pDoc->Print(pDC, ObjectMode::Final, Offset, CScale(ZF[m_ZoomLevel], ZF[m_ZoomLevel]));
 
+}
+
+void CFrontCadView::FixDimensions(void)
+{
+	CCadObject* pOb;
+	CCadDimension* pDim = 0;
+	CCadText* pText = 0;
+	CFrontCadDoc* pDoc = GetDocument();
+	CPoint P2;
+
+	pOb = pDoc->GetHead();
+	while (pOb)
+	{
+		if (pOb->GetType() == OBJECT_TYPE_DIMENSION)
+		{
+			pDim = ((CCadDimension*)pOb);
+			if (pDim->IsVertical())
+			{
+				P2 = pDim->GetP2();
+				pText = pDim->GetTextObject();
+				if (pText)
+				{
+					pText->SetAngle(900);
+				}
+			}
+		}
+		pOb = pOb->GetNext();
+	}
+	Invalidate();
 }
 
 CPoint CFrontCadView::GetOrigin(void)

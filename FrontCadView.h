@@ -1,29 +1,7 @@
 // FrontCadView.h : interface of the CFrontCadView class
 //
 ////////////////////////////////////////////////////
-
-#if !defined(AFX_FRONTCADVIEW_H__6489B58A_D163_4F12_A34D_C86273EB1612__INCLUDED_)
-#define AFX_FRONTCADVIEW_H__6489B58A_D163_4F12_A34D_C86273EB1612__INCLUDED_
-
-//#include "CadArc.h"	// Added by ClassView
-//#include "CadRoundRect.h"	// Added by ClassView
-//#include "CadLine.h"	// Added by ClassView
-//#include "CadElipse.h"	// Added by ClassView
-//#include "CadRect.h"	// Added by ClassView
-//#include "CadPolygon.h"	// Added by ClassView
-//#include "CadPolygonFill.h"
-//#include "CadHoleRound.h"	// Added by ClassView
-//#include "CadHoleRnd2Flat.h"
-//#include "CadHoleRnd1Flat.h"
-//#include "CadRectHole.h"
-//#include "ScaleWizDialog.h"
-//#include "CadText.h"
-#include "MoveObjects.h"
-//#include "CadBitmap.h"
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 class CFrontCadApp;
 class CMainFrame;
@@ -34,6 +12,7 @@ class CMoveObjects;
 
 class CFrontCadView : public CView
 {
+	int m_nSelRegionLock;
 	CCadBitmap* m_pTempCadBitmap;
 	CMoveObjects* m_pClipBoard;;
 	CMoveObjects* m_pMoveObj;
@@ -79,6 +58,7 @@ class CFrontCadView : public CView
 	int m_SnapGrid;
 protected: // create from serialization only
 	CFrontCadView();
+	virtual ~CFrontCadView();
 	DECLARE_DYNCREATE(CFrontCadView)
 	void DrawCrosshairs(CDC *pDC,CRect *pRect,CPoint pos);
 	void DrawGrid(CDC *pDC, ObjectMode mode,CRect rect);
@@ -103,8 +83,6 @@ public:
 	void UpdateScrollbarInfo(void);
 	CPoint CorrectMousePosition(CPoint point);
 	CPoint GetScrollPosition(void);
-//	CPoint ScalePosition(CPoint p);
-//	CRect GetTextRectangle(char *s,TextAttributes *pTA,CPoint P1);
 	CLibFormView *GetLibFormView(void);
 	void ChangeObject(CUtilView *pUV,CCadObject *pO);
 	//------------------------------------------
@@ -137,19 +115,21 @@ public:
 	void FillInUtilView(CUtilView *pUV, CCadObject *pSel);
 	CPoint Snap(CPoint nP,int SnapUnits);
 	CUtilView * GetUtilityView(void);
-	virtual ~CFrontCadView();
+	CCadObject* FindHole(CCadObject* pHead, CPoint p);
+	int IsHole(CCadObject* pObj);
+	CPoint SnapToScreen(CPoint npSnap);
+	CPoint Scale(CPoint p);
+	void PrintToDC(CDC* pDC);
+	void FixDimensions(void);
 #ifdef _DEBUG
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
 #endif
-
-protected:
-
-// Generated message map functions
 protected:
 	LRESULT OnLibViewRequestReferencePoint(WPARAM wP,LPARAM lP);
 	LRESULT OnUtilMessage(WPARAM wP, LPARAM lP);
-	//{{AFX_MSG(CFrontCadView)
+	afx_msg LRESULT OnUpdatedimensions(WPARAM wParam, LPARAM lParam);
+
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
@@ -191,28 +171,17 @@ protected:
 	afx_msg void OnUpdateEditPaste(CCmdUI* pCmdUI);
 	afx_msg void OnToolbarSelectregion();
 	afx_msg void OnToolbarBitmap();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-public:
 	afx_msg void OnFilePrinttoclipboard();
-	// //helper function for printing to clipboard
-	void PrintToDC(CDC * pDC);
-	int m_nSelRegionLock;
 	afx_msg void OnButtonArrowobj();
 	afx_msg void OnButtonDimension();
 	afx_msg void OnButtonOrigin();
-protected:
-	afx_msg LRESULT OnUpdatedimensions(WPARAM wParam, LPARAM lParam);
-public:
 	afx_msg void OnViewRenderenable();
-	CCadObject * FindHole(CCadObject * pHead,CPoint p);
-	int IsHole(CCadObject * pObj);
 	afx_msg void OnAlignCentersvertical();
 	afx_msg void OnAlignCentershorizontal();
 	afx_msg void OnAlignCenters();
-	afx_msg void OnUpdateAlignCentersUI(CCmdUI *pCmdUI);
-	afx_msg void OnUpdateAlignCentershorizontal(CCmdUI *pCmdUI);
-	afx_msg void OnUpdateAlignCentersvertical(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateAlignCentersUI(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateAlignCentershorizontal(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateAlignCentersvertical(CCmdUI* pCmdUI);
 	afx_msg void OnAlignBottom();
 	afx_msg void OnAlignLeft();
 	afx_msg void OnAlignRight();
@@ -220,27 +189,24 @@ public:
 	afx_msg void OnAlignSizex();
 	afx_msg void OnAlignSizey();
 	afx_msg void OnAlignTop();
-	afx_msg void OnUpdateAlignBottom(CCmdUI *pCmdUI);
-	afx_msg void OnUpdateAlignLeft(CCmdUI *pCmdUI);
-	afx_msg void OnUpdateAlignRight(CCmdUI *pCmdUI);
-	afx_msg void OnUpdateAlignSizeboth(CCmdUI *pCmdUI);
-	afx_msg void OnUpdateAlignSizex(CCmdUI *pCmdUI);
-	afx_msg void OnUpdateAlignSizey(CCmdUI *pCmdUI);
-	afx_msg void OnUpdateAlignTop(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateAlignBottom(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateAlignLeft(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateAlignRight(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateAlignSizeboth(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateAlignSizex(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateAlignSizey(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateAlignTop(CCmdUI* pCmdUI);
 	afx_msg void OnButtonPrintRectangle();
-	CPoint SnapToScreen(CPoint npSnap);
-	CPoint Scale(CPoint p);
-    afx_msg void OnToolbarCircle();
-//    afx_msg void OnUpdateToolbarCircle(CCmdUI* pCmdUI);
-    afx_msg void OnSysChar(UINT nChar, UINT nRepCnt, UINT nFlags);
-    afx_msg void OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-    afx_msg void OnSysKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnToolbarCircle();
+	//    afx_msg void OnUpdateToolbarCircle(CCmdUI* pCmdUI);
+	afx_msg void OnSysChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnSysKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
+
+	DECLARE_MESSAGE_MAP()
 };
 
 #ifndef _DEBUG  // debug version in FrontCadView.cpp
 inline CFrontCadDoc* CFrontCadView::GetDocument()
    { return (CFrontCadDoc*)m_pDocument; }
 #endif
-
-
-#endif // !defined(AFX_FRONTCADVIEW_H__6489B58A_D163_4F12_A34D_C86273EB1612__INCLUDED_)

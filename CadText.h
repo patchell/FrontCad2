@@ -116,12 +116,13 @@ public:
 	CCadText();
 	CCadText(CCadText& v);
 	virtual ~CCadText();
-	BOOL Create(CPoint ptPos, TextAttributes* pTextAttributes);
+	BOOL Create(CPoint ptPos, TextAttributes* pTextAttributes, const char* sText = 0);
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
 	virtual CRect GetRect(void);
 	void GetTextRectangle(CDC* pDC, CScale Scale, CPoint* pSimplePoly);
+	CSize GetTextSize(CDC* pDC);
 	virtual CPoint GetReference();
 	virtual void Move(CPoint p);
 	virtual void SetVertex(int Vi,CPoint p);

@@ -216,7 +216,7 @@ void CCadArrow::Draw(CDC *pDC, ObjectMode mode, CPoint Offset, CScale Scale)
 		{
 		case ObjectMode::Final:
 			penLine.CreatePen(PS_SOLID, 1, m_Attrib.m_LineColor);
-			if (CCadObject::AreShapeFillsDisabled())
+			if (CCadObject::AreShapeFillsDisabled() || m_Attrib.m_bTransparent)
 				brushFill.CreateStockObject(NULL_BRUSH);
 			else
 				brushFill.CreateSolidBrush(m_Attrib.m_FillColor);
@@ -227,7 +227,10 @@ void CCadArrow::Draw(CDC *pDC, ObjectMode mode, CPoint Offset, CScale Scale)
 			break;
 		case ObjectMode::Sketch:
 			penLine.CreatePen(PS_SOLID, 1, m_Attrib.m_LineColor);
-			brushFill.CreateStockObject(NULL_BRUSH);
+			if (CCadObject::AreShapeFillsDisabled() || m_Attrib.m_bTransparent)
+				brushFill.CreateStockObject(NULL_BRUSH);
+			else
+				brushFill.CreateSolidBrush(m_Attrib.m_FillColor);
 			break;
 		}
 		brushPoint.CreateSolidBrush(RGB(0, 0, 255));

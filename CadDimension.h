@@ -1,6 +1,5 @@
 #pragma once
 
-TextAttributes;
 struct DimAttrib {
 	int m_LineWidth;
 	COLORREF m_Color;
@@ -27,10 +26,12 @@ struct DimAttrib {
 	void CopyFrom(DimAttrib* s) {
 		m_LineWidth = s->m_LineWidth;
 		m_Color = s->m_Color;
+		m_TextAtrib.CopyFrom(&s->m_TextAtrib);
 	}
 	void CopyTo(DimAttrib* s) {
 		s->m_LineWidth = m_LineWidth;
 		s->m_Color = m_Color;
+		m_TextAtrib.CopyTo(&s->m_TextAtrib);
 	}
 };
 
@@ -43,6 +44,7 @@ public:
 	CCadDimension(CCadDimension &cd);
 	virtual ~CCadDimension();
 	BOOL Create(CPoint ptPos, DimAttrib* pDimAttributes);
+	BOOL IsVertical();
 	virtual CCadObject* Copy();
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
@@ -52,14 +54,16 @@ public:
 	virtual void Save(FILE *pO,  int Indent);
 	virtual void SetVertex(int Vi, CPoint p);
 	virtual int GrabVertex(CPoint p);
+	CCadText* CalculateDimensionTextPosition(CDC*pDC, ObjectMode mode, CPoint Offset, CScale Scale);
 	virtual void Draw(CDC *pDC, ObjectMode mode , CPoint Offset = CPoint(0, 0), CScale Scale = CScale(0.1, 0.1));
 	virtual int CheckSelected(CPoint p, CSize Offset = CSize(0, 0));
 	virtual CPoint GetReference();
 	virtual void RemoveObject(CCadObject *pO);
 	virtual void AdjustRefernce(CPoint Ref);
 	virtual CRect GetRect(void);
+	void AddText(CPoint Org);
 	void UpdateText(CPoint Org);
-	void SetValue(int v, int dp);
+	char* SetValue(int v, int dp, char* pS, int n);
 	inline void SetColor(COLORREF c) { m_Atrib.m_Color = c; }
 	inline COLORREF GetColor(void) { return m_Atrib.m_Color; }
 	inline void SetLineWidth(int w) { m_Atrib.m_LineWidth = w; }
