@@ -85,10 +85,9 @@ BOOL CFrontCadApp::InitInstance()
 	// Dispatch commands specified on the command line
 	if (!ProcessShellCommand(cmdInfo))
 		return FALSE;
-	//AllocConsole();
-
-	//freopen_s(&pConsol, "CONOUT$", "w", stdout);
-	//if (HasConsol())	printf("Ready\n");
+//	AllocConsole();
+//	freopen_s(&pConsol, "CONOUT$", "w", stdout);
+//	if (HasConsol())	printf("Ready\n");
 
 	// The one and only window has been initialized, so show and update it.
 	m_pMainWnd->ShowWindow(SW_SHOW);
@@ -453,6 +452,72 @@ BOOL CAboutDlg::OnInitDialog()
 	return TRUE;  
 }
 
+BOOL CFrontCadApp::IsPointInPoly(CPoint* pPolyPoint, int nPointCount, CPoint p)
+{
+	//------------------------------------------------
+	// PointEnclosed
+	//	This function determines if a point
+	// is enclosed within a polygon.
+	//
+	// parameters:
+	//	nP....point to test
+	// Returns: TRUE if point inside
+	//          FALSE if point is outside
+	//------------------------------------------------
+	struct FPoint {
+		double x;
+		double y;
+		FPoint() { x = 0; y = 0; }
+		FPoint(double X, double Y) { x = X; y = Y; }
+	};
+
+	int   i, j = nPointCount - 1;
+	BOOL  Enclosed = FALSE;
+	int Xintercept;
+	FPoint* vert = new FPoint[nPointCount];
+	FPoint nP = FPoint((double)p.x, (double)p.y);
+
+	printf("Is Point  (x=%5d y=%5d) Enclosed In\n", p.x, p.y);
+	for (i = 0; i < nPointCount; ++i)
+	{
+		vert[i] = FPoint(double(pPolyPoint[i].x), double(pPolyPoint[i].y));
+		printf("vert[%d] (x=%5d y=%5d)\n", i, pPolyPoint[i].x, pPolyPoint[i].y);
+	}
+	for (i = 0; i < nPointCount; i++)
+	{
+		if (((vert[i].y < nP.y && vert[j].y >= nP.y)
+			|| (vert[j].y < nP.y && vert[i].y >= nP.y))
+			&& (vert[i].x <= nP.x || vert[j].x <= nP.x))
+		{
+			Xintercept = vert[i].x + ((nP.y - vert[i].y) * (vert[j].x - vert[i].x)) / (vert[j].y - vert[i].y);
+			Enclosed ^= Xintercept < nP.x;
+		}
+		j = i;
+	}
+	delete[] vert;
+	if(Enclosed) printf("   Yes\n");
+	else
+		printf("   No\n");	
+	return Enclosed;
+}
+
+void CFrontCadApp::RotatePoint(CPoint& p, CPoint pivot, double angle)
+{
+	CPoint p1;
+	double s = sin(-angle);
+	double c = cos(-angle);
+	double newX, newY;
+	double X, Y;
+
+	p1 = p - pivot;
+	X = p1.x;
+	Y = p1.y;
+	newX = X * c - Y * s;
+	newY = X * s + Y * c;
+	p.x = int(newX) + pivot.x;
+	p.y = int(newY) + pivot.y;
+}
+
 void CFrontCadApp::UpdateDimAttributes(CUtilView* pUV)
 {
 	char* s = new char[256];
@@ -644,8 +709,8 @@ void CFrontCadApp::UpdateOriginAttrib(CUtilView* pUV)
 void CAboutDlg::SetVersion()
 {
 	char* s = new char[256];
-	static const char* pVersion = "Simple and Down Right Crude Cad\nFor Designing Front Panel\nArtwork\nVersion 1.5.3";
-	static const char* pBuildDate = "Build Date Sept 2, 2025";
+	static const char* pVersion = "Simple and Down Right Crude Cad\nFor Designing Front Panel\nArtwork\nVersion 1.6.0";
+	static const char* pBuildDate = "Build Date Sept 15, 2025";
 	static const char* pCopyright = "Copyright (c) 2015, 2025";
 
 	sprintf_s(s, 256, "%s\n%s\n%s",

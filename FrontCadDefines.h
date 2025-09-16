@@ -7,37 +7,8 @@
 // CFrontCadView
 //---------------------------------------
 
-enum DrawMode {
-	NONE,
-	LINE,
-	RECTANGLE,
-	ELIPSE,
-	SELECT,
-	RNDRECT,
-	ARC,
-	POLYGON,
-	POLYFILL,
-	ARC_CENTER,
-	HOLE_ROUND,
-	HOLE_RECT,
-	HOLE_RND1F,
-	HOLE_RND2F,
-	TEXT,
-	LIBPART,
-	GETREF,
-	MOVE,
-	COPY,
-	CUT,
-	PASTE,
-	SELECTREGION,
-	BITMAPIMAGE,
-	ARROW,
-	ORIGIN,
-	DIMENSION,
-	ALIGN_DIM_TO_HOLE,
-	PRINTRECT,
-	CIRCLE
-};
+
+
 
 /*
 //------------------------------

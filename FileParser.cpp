@@ -423,10 +423,10 @@ Tokens CFileParser::PrintRect(FILE* pIN, Tokens Token, CCadObject* pO)
 Tokens CFileParser::DrawObjects(FILE* pIN, Tokens Token, CCadObject* pO)
 {
 	BOOL Loop = TRUE;
-	ObjectTypes DrawingObjects;
+	UObjectTypes DrawingObjects;
 	CCadDrawing* pDraw = (CCadDrawing*)pO;
 
-	memset(&DrawingObjects, 0, sizeof(ObjectTypes));
+	memset(&DrawingObjects, 0, sizeof(UObjectTypes));
 	while (Loop)
 	{
 		switch (Token)

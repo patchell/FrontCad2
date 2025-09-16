@@ -135,8 +135,8 @@ void CUtilView::ShowHide(int DrawMode)
 {
 	switch(DrawMode)
 	{
-	case DrawMode::SELECT:	//ShowHide()
-	case DrawMode::NONE:
+	case CFrontCadView::DrawMode::SELECT:	//ShowHide()
+	case CFrontCadView::DrawMode::NONE:
 			this->m_Check_TransparentFill.ShowWindow(SW_HIDE);
 			this->m_Combo_FontWeight.ShowWindow(SW_HIDE);
 			this->m_Button_Font.ShowWindow(SW_HIDE);
@@ -177,8 +177,8 @@ void CUtilView::ShowHide(int DrawMode)
 			this->m_Static_HoleRad.ShowWindow(SW_HIDE);
 			this->m_Edit_HoleRadius.ShowWindow(SW_HIDE);
 			break;
-		case DrawMode::LINE:	//ShowHide()
-		case DrawMode::ORIGIN:
+		case CFrontCadView::DrawMode::LINE:	//ShowHide()
+		case CFrontCadView::DrawMode::ORIGIN:
 			this->m_Check_TransparentFill.ShowWindow(SW_HIDE);
 			this->m_Combo_FontWeight.ShowWindow(SW_HIDE);
 			this->m_Button_Font.ShowWindow(SW_HIDE);
@@ -219,7 +219,7 @@ void CUtilView::ShowHide(int DrawMode)
 			this->m_Static_HoleRad.ShowWindow(SW_HIDE);
 			this->m_Edit_HoleRadius.ShowWindow(SW_HIDE);
 			break;
-		case DrawMode::POLYGON:	//ShowHide()
+		case CFrontCadView::DrawMode::POLYGON:	//ShowHide()
 			this->m_Check_TransparentFill.ShowWindow(SW_SHOW);
 			this->m_Combo_FontWeight.ShowWindow(SW_HIDE);
 			this->m_Button_Font.ShowWindow(SW_HIDE);
@@ -260,8 +260,8 @@ void CUtilView::ShowHide(int DrawMode)
 			this->m_Static_HoleRad.ShowWindow(SW_HIDE);
 			this->m_Edit_HoleRadius.ShowWindow(SW_HIDE);
 			break;
-		case DrawMode::ARC:			//ShowHide()
-		case DrawMode::ARC_CENTER:
+		case CFrontCadView::DrawMode::ARC:			//ShowHide()
+		case CFrontCadView::DrawMode::ARC_CENTER:
 			this->m_Check_TransparentFill.ShowWindow(SW_HIDE);
 			this->m_Combo_FontWeight.ShowWindow(SW_HIDE);
 			this->m_Button_Font.ShowWindow(SW_HIDE);
@@ -302,7 +302,7 @@ void CUtilView::ShowHide(int DrawMode)
 			this->m_Static_HoleRad.ShowWindow(SW_HIDE);
 			this->m_Edit_HoleRadius.ShowWindow(SW_HIDE);
 			break;
-		case DrawMode::HOLE_RECT:	//ShowHide()
+		case CFrontCadView::DrawMode::HOLE_RECT:	//ShowHide()
 			this->m_Check_TransparentFill.ShowWindow(SW_HIDE);
 			this->m_Combo_FontWeight.ShowWindow(SW_HIDE);
 			this->m_Button_Font.ShowWindow(SW_HIDE);
@@ -343,8 +343,8 @@ void CUtilView::ShowHide(int DrawMode)
 			this->m_Static_HoleRad.ShowWindow(SW_HIDE);
 			this->m_Edit_HoleRadius.ShowWindow(SW_HIDE);
 			break;
-		case DrawMode::RECTANGLE:	//ShowHide()
-		case DrawMode::ELIPSE:
+		case CFrontCadView::DrawMode::RECTANGLE:	//ShowHide()
+		case CFrontCadView::DrawMode::ELIPSE:
 			this->m_Combo_FontWeight.ShowWindow(SW_HIDE);
 			this->m_Button_Font.ShowWindow(SW_HIDE);
 			this->m_Static_Fg.ShowWindow(SW_HIDE);
@@ -386,7 +386,7 @@ void CUtilView::ShowHide(int DrawMode)
 			this->m_Static_HoleRad.ShowWindow(SW_HIDE);
 			this->m_Edit_HoleRadius.ShowWindow(SW_HIDE);
 			break;
-		case DrawMode::RNDRECT:	//ShowHide()
+		case CFrontCadView::DrawMode::RNDRECT:	//ShowHide()
 			this->m_Combo_FontWeight.ShowWindow(SW_HIDE);
 			this->m_Button_Font.ShowWindow(SW_HIDE);
 			this->m_Static_Fg.ShowWindow(SW_HIDE);
@@ -428,7 +428,7 @@ void CUtilView::ShowHide(int DrawMode)
 			this->m_Static_HoleRad.ShowWindow(SW_HIDE);
 			this->m_Edit_HoleRadius.ShowWindow(SW_HIDE);
 			break;
-		case DrawMode::HOLE_ROUND:	//ShowHide()
+		case CFrontCadView::DrawMode::HOLE_ROUND:	//ShowHide()
 			this->m_Combo_FontWeight.ShowWindow(SW_HIDE);
 			this->m_Button_Font.ShowWindow(SW_HIDE);
 			this->m_Static_Fg.ShowWindow(SW_HIDE);
@@ -470,8 +470,8 @@ void CUtilView::ShowHide(int DrawMode)
 			this->m_Static_HoleRad.ShowWindow(SW_SHOW);
 			this->m_Edit_HoleRadius.ShowWindow(SW_SHOW);
 			break;
-		case DrawMode::HOLE_RND1F:	//ShowHide()
-		case DrawMode::HOLE_RND2F:
+		case CFrontCadView::DrawMode::HOLE_RND1F:	//ShowHide()
+		case CFrontCadView::DrawMode::HOLE_RND2F:
 			this->m_Combo_FontWeight.ShowWindow(SW_HIDE);
 			this->m_Button_Font.ShowWindow(SW_HIDE);
 			this->m_Static_Fg.ShowWindow(SW_HIDE);
@@ -513,7 +513,7 @@ void CUtilView::ShowHide(int DrawMode)
 			this->m_Static_HoleRad.ShowWindow(SW_SHOW);
 			this->m_Edit_HoleRadius.ShowWindow(SW_SHOW);
 			break;
-		case DrawMode::TEXT:	//ShowHide()
+		case CFrontCadView::DrawMode::TEXT:	//ShowHide()
 			this->m_Combo_FontWeight.ShowWindow(SW_SHOW);
 			this->m_Button_Font.ShowWindow(SW_SHOW);
 			this->m_Static_Fg.ShowWindow(SW_SHOW);
@@ -555,7 +555,7 @@ void CUtilView::ShowHide(int DrawMode)
 			this->m_Static_HoleRad.ShowWindow(SW_HIDE);
 			this->m_Edit_HoleRadius.ShowWindow(SW_HIDE);
 			break;
-		case DrawMode::ARROW:	//ShowHide()
+		case CFrontCadView::DrawMode::ARROW:	//ShowHide()
 			this->m_Combo_FontWeight.ShowWindow(SW_HIDE);
 			this->m_Button_Font.ShowWindow(SW_HIDE);
 			this->m_Static_Fg.ShowWindow(SW_HIDE);
@@ -597,7 +597,7 @@ void CUtilView::ShowHide(int DrawMode)
 			this->m_Static_HoleRad.ShowWindow(SW_HIDE);
 			this->m_Edit_HoleRadius.ShowWindow(SW_HIDE);
 			break;
-		case DrawMode::DIMENSION:	//ShowHide()
+		case CFrontCadView::DrawMode::DIMENSION:	//ShowHide()
 			this->m_Combo_FontWeight.ShowWindow(SW_SHOW);
 			this->m_Button_Font.ShowWindow(SW_SHOW);
 			this->m_Static_Fg.ShowWindow(SW_SHOW);
@@ -639,7 +639,7 @@ void CUtilView::ShowHide(int DrawMode)
 			this->m_Static_HoleRad.ShowWindow(SW_HIDE);
 			this->m_Edit_HoleRadius.ShowWindow(SW_HIDE);
 			break;
-		case DrawMode::CIRCLE:	//ShowHide()
+		case CFrontCadView::DrawMode::CIRCLE:	//ShowHide()
 			this->m_Combo_FontWeight.ShowWindow(SW_HIDE);
 			this->m_Button_Font.ShowWindow(SW_HIDE);
 			this->m_Static_Fg.ShowWindow(SW_HIDE);
@@ -1294,66 +1294,66 @@ void CUtilView::SetUpText(int Drawmode)
 {
 	switch(Drawmode)
 	{
-		case DrawMode::NONE:
+		case CFrontCadView::DrawMode::NONE:
 			break;
-		case DrawMode::HOLE_RECT:
+		case CFrontCadView::DrawMode::HOLE_RECT:
 			this->m_Static_X1.SetWindowText("X1");
 			this->m_Static_Y1.SetWindowText("Y1");
 			this->m_Static_X2.SetWindowText("H");
 			this->m_Static_Y2.SetWindowText("W");
 			break;
-		case DrawMode::LINE:
-		case DrawMode::ARC:
-		case DrawMode::POLYGON:	
-		case DrawMode::ARC_CENTER:	
+		case CFrontCadView::DrawMode::LINE:
+		case CFrontCadView::DrawMode::ARC:
+		case CFrontCadView::DrawMode::POLYGON:	
+		case CFrontCadView::DrawMode::ARC_CENTER:	
 			this->m_Static_X1.SetWindowText("X1");
 			this->m_Static_Y1.SetWindowText("Y1");
 			this->m_Static_X2.SetWindowText("X2");
 			this->m_Static_Y2.SetWindowText("Y2");
 			break;
-		case DrawMode::RECTANGLE:	
-		case DrawMode::ELIPSE:		
-		case DrawMode::POLYFILL:
+		case CFrontCadView::DrawMode::RECTANGLE:	
+		case CFrontCadView::DrawMode::ELIPSE:		
+		case CFrontCadView::DrawMode::POLYFILL:
 			this->m_Static_X1.SetWindowText("X1");
 			this->m_Static_Y1.SetWindowText("Y1");
 			this->m_Static_X2.SetWindowText("X2");
 			this->m_Static_Y2.SetWindowText("Y2");
 			break;
-		case DrawMode::SELECT:
+		case CFrontCadView::DrawMode::SELECT:
 			this->m_Static_X1.SetWindowText("X1");
 			this->m_Static_Y1.SetWindowText("Y1");
 			this->m_Static_X2.SetWindowText("X2");
 			this->m_Static_Y2.SetWindowText("Y2");
 			break;
-		case DrawMode::RNDRECT:
+		case CFrontCadView::DrawMode::RNDRECT:
 			this->m_Static_X1.SetWindowText("X1");
 			this->m_Static_Y1.SetWindowText("Y1");
 			this->m_Static_X2.SetWindowText("X2");
 			this->m_Static_Y2.SetWindowText("Y2");
 			break;
-		case DrawMode::HOLE_ROUND:
-		case DrawMode::HOLE_RND1F:
-		case DrawMode::HOLE_RND2F:
+		case CFrontCadView::DrawMode::HOLE_ROUND:
+		case CFrontCadView::DrawMode::HOLE_RND1F:
+		case CFrontCadView::DrawMode::HOLE_RND2F:
 			this->m_Static_X1.SetWindowText("Xc");
 			this->m_Static_Y1.SetWindowText("Yc");
 			this->m_Static_X2.SetWindowText("X2");
 			this->m_Static_Y2.SetWindowText("Y2");
 			break;
-		case DrawMode::TEXT:
+		case CFrontCadView::DrawMode::TEXT:
 			break;
-		case DrawMode::ARROW:
+		case CFrontCadView::DrawMode::ARROW:
 			this->m_Static_X3.SetWindowText("Length");
 			this->m_Static_Y3.SetWindowText("Base Width");
 			break;
-		case DrawMode::ORIGIN:
+		case CFrontCadView::DrawMode::ORIGIN:
 			this->m_Static_X1.SetWindowText("X1");
 			this->m_Static_Y1.SetWindowText("Y1");
 			break;
-		case DrawMode::DIMENSION:
+		case CFrontCadView::DrawMode::DIMENSION:
 			this->m_Static_X1.SetWindowText("X1");
 			this->m_Static_Y1.SetWindowText("Y1");
 			break;
-		case DrawMode::CIRCLE:
+		case CFrontCadView::DrawMode::CIRCLE:
 			break;
 	}
 }	//SetupText

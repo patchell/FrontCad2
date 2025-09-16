@@ -192,13 +192,13 @@ CCadRoundRect CCadRoundRect::operator=(CCadRoundRect &v)
 	// parameters:
 	//		v.....reference to object to copy
 	//----------------------------------------
-	SetP1(v.GetP1());
-	SetP2(v.GetP2());
-	GetAttributes()->m_P3 = v.GetAttributes()->m_P3;
-	GetAttributes()->m_FillColor = v.GetAttributes()->m_FillColor;
-	GetAttributes()->m_LineColor = v.GetAttributes()->m_LineColor;
-	GetAttributes()->m_LineWidth = v.GetAttributes()->m_LineWidth;
-	return *this;
+
+	CCadRoundRect RndRect;
+
+	RndRect.SetP1(v.GetP1());
+	RndRect.SetP2(v.GetP2());
+	RndRect.GetAttributes()->CopyFrom(v.GetAttributes());
+	return RndRect;
 }
 
 void CCadRoundRect::Move(CPoint p)

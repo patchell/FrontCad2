@@ -44,9 +44,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\Debug\</OutDir>
+    <OutDir>.\Bin</OutDir>
     <IntDir>.\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <ExecutablePath>C:\Users\patch\OneDrive\Documents\VisualStudio2022\Projects\FrontCad2\Bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>.\Release\</OutDir>
@@ -92,7 +93,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <OutputFile>.\Debug\FrontCad.exe</OutputFile>
+      <OutputFile>.\Bin\FrontCad.exe</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -181,6 +182,7 @@
     <ClCompile Include="MyEdit.cpp" />
     <ClCompile Include="MyTabCtrl.cpp" />
     <ClCompile Include="NewLibDialog.cpp" />
+    <ClCompile Include="PotScaleWizAttributes.cpp" />
     <ClCompile Include="RepeatDlg.cpp" />
     <ClCompile Include="ruler.cpp" />
     <ClCompile Include="SaveToLibDlg.cpp" />
@@ -252,6 +254,7 @@
     <ClInclude Include="MyEdit.h" />
     <ClInclude Include="MyTabCtrl.h" />
     <ClInclude Include="NewLibDialog.h" />
+    <ClInclude Include="PotScaleWizAttributes.h" />
     <ClInclude Include="RepeatDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ruler.h" />
@@ -280,8 +283,8 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Bin\FrontCad.exe" />
     <None Include="packages.config" />
-    <None Include="readme.md" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="CadObject.xaml">

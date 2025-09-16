@@ -1,18 +1,7 @@
 // FrontCad.h : main header file for the FRONTCAD application
 //
 
-#if !defined(AFX_FRONTCAD_H__E7F90698_BBB2_4535_A812_3FB737CDB14E__INCLUDED_)
-#define AFX_FRONTCAD_H__E7F90698_BBB2_4535_A812_3FB737CDB14E__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-
-#ifndef __AFXWIN_H__
-	#error include 'stdafx.h' before including this file for PCH
-#endif
-
-
 
 ////////////////////////////////////////////////////
 // CFrontCadApp:
@@ -34,7 +23,7 @@ public:
 	//------------------------------
 	RndRectAttb m_RndRectAttributes;
 	TextAttributes m_TextAttributes;
-	SCALEWIZattributes m_SCALEWIZattributes;
+	SPotScaleWizAttributes m_SCALEWIZattributes;
 	PolyAttributes m_PolyAttributes;
 	RectHoleAttributes m_RectHoleAttributes;
 	HoleRnd1FlatAttributes m_HoleRnd1FlatAttributes;
@@ -50,6 +39,9 @@ public:
 	DimAttrib m_DimAttrib;
 public:
 	CFrontCadApp();
+	CScale GetScale() {
+		return m_pMainView->GetScale();
+	}
 	void SaveSettings(void);
 	void LoadSettings(void);
 	void WriteToLogFile(char* pS);
@@ -78,6 +70,8 @@ public:
 			rV = TRUE;
 		return rV;
 	}
+	BOOL IsPointInPoly(CPoint* pPolyPoint, int nPolyPoints, CPoint p);
+	void RotatePoint(CPoint& p, CPoint pivot, double angle);
 	//------------------------------------------------------
 	// Update Default Attributes Methods
 	//------------------------------------------------------
@@ -103,5 +97,3 @@ public:
 extern CFrontCadApp theApp;
 extern double ArcTan(double x, double y);
 extern int CheckAngle(double Start, double End,double Angle);
-
-#endif // !defined(AFX_FRONTCAD_H__E7F90698_BBB2_4535_A812_3FB737CDB14E__INCLUDED_)

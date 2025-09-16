@@ -154,13 +154,12 @@ int CCadHoleRnd1Flat::CheckSelected(CPoint p,CSize O)
 
 CCadHoleRnd1Flat CCadHoleRnd1Flat::operator=(CCadHoleRnd1Flat &v)
 {
-	SetP1(v.GetP1());
-	SetP2(v.GetP2());
-	GetAttributes()->m_FlatDist = v.GetAttributes()->m_FlatDist;
-	GetAttributes()->m_LineColor = v.GetAttributes()->m_LineColor;
-	GetAttributes()->m_Radius = v.GetAttributes()->m_Radius;
-	GetAttributes()->m_LineWidth = v.GetAttributes()->m_LineWidth;
-	return *this;
+	CCadHoleRnd1Flat Hole;
+
+	Hole.SetP1(v.GetP1());
+	Hole.SetP2(v.GetP2());
+	Hole.GetAttributes()->CopyFrom(v.GetAttributes());
+	return Hole;
 }
 
 

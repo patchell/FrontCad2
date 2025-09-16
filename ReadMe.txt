@@ -1,5 +1,13 @@
 Move along folks, nothing to see here, move along.
 
+September 15, 2025
+
+What a pain.  Trouble with the repository.  Trouble with the source code/
+However, I think it is just a tiny bit cleaner.
+Spent more time on this than I planned.  There are
+still some bugs, and I sure am likely to find them as I use this program.
+A lot has been changed, so no doubt things have been broken.
+
 August 29, 2025
 I thought I could make the code a little better.  Boy, that was a mistake.
 All better now, but I also had to contend with the AI that is now

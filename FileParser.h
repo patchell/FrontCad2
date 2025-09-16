@@ -168,9 +168,9 @@ public:
 	BOOL CheckKeywordChar(int c);
 	Tokens Lex(FILE* pIN);
 	char* GetLexBuff() { return m_LexBuff; }
-	int GetLexValue() { return m_LexValue; }
-	int GetLine() { return m_Line; }
-	int GetCol() { return m_Col; }
+	int GetLexValue() const { return m_LexValue; }
+	int GetLine() const { return m_Line; }
+	int GetCol() const { return m_Col; }
 	//-------------------------------------------
 	int Open(char *pFileName,CFrontCadDoc *pDoc);
 	Tokens Parse(FILE *pIN);

@@ -12,6 +12,111 @@ class CMoveObjects;
 
 class CFrontCadView : public CView
 {
+	inline static int ZoomScale[MAX_ZOOM] = {
+		1,
+		1,
+		1,
+		1,
+		1,
+		1
+	};
+
+	inline static int ZoomScaleDiv[MAX_ZOOM] = {
+		1,
+		2,
+		5,
+		10,
+		20,
+		50,
+	};
+
+	inline static double ZF[MAX_ZOOM] = {
+		1.0,		//1000 pixels per inch
+		0.50,		// 500 pixels per inch
+		0.20,		// 200 pixels per inch
+		0.10,		// 100 pixels per inch
+		0.05,		//  50 pixels per inch
+		0.02		//	20 pixels per inch
+	};
+public:
+
+	enum DrawMode {
+		NONE,
+		LINE,
+		RECTANGLE,
+		ELIPSE,
+		SELECT,
+		RNDRECT,
+		ARC,
+		POLYGON,
+		POLYFILL,
+		ARC_CENTER,
+		HOLE_ROUND,
+		HOLE_RECT,
+		HOLE_RND1F,
+		HOLE_RND2F,
+		TEXT,
+		LIBPART,
+		GETREF,
+		MOVE,
+		COPY,
+		CUT,
+		PASTE,
+		SELECTREGION,
+		BITMAPIMAGE,
+		ARROW,
+		ORIGIN,
+		DIMENSION,
+		ALIGN_DIM_TO_HOLE,
+		PRINTRECT,
+		CIRCLE
+	};
+	struct DrawModeName {
+		DrawMode mode;
+		const char* name;
+		DrawModeName() {
+			mode = DrawMode::NONE;
+			name = "";
+		}
+		DrawModeName(DrawMode m, const char* n) {
+			mode = m;
+			name = n;
+		}
+	};
+private:
+	inline static DrawModeName DrawModeNames[] = {
+		{DrawMode::NONE, "None"},
+		{DrawMode::LINE, "Line"},
+		{DrawMode::RECTANGLE, "Rectangle"},
+		{DrawMode::ELIPSE, "Ellipse"},
+		{DrawMode::SELECT, "Select"},
+		{DrawMode::RNDRECT, "Rounded Rectangle"},
+		{DrawMode::ARC, "Arc"},
+		{DrawMode::POLYGON, "Polygon"},
+		{DrawMode::POLYFILL, "Filled Polygon"},
+		{DrawMode::ARC_CENTER, "Centered Arc"},
+		{DrawMode::HOLE_ROUND, "Round Hole"},
+		{DrawMode::HOLE_RECT, "Rectangular Hole"},
+		{DrawMode::HOLE_RND1F, "1 Flat Round Hole"},
+		{DrawMode::HOLE_RND2F, "2 Flat Round Hole"},
+		{DrawMode::TEXT, "Text"},
+		{DrawMode::LIBPART, "Library Part"},
+		{DrawMode::GETREF, "Get Reference"},
+		{DrawMode::MOVE, "Move"},
+		{DrawMode::COPY, "Copy"},
+		{DrawMode::CUT, "Cut"},
+		{DrawMode::PASTE, "Paste"},
+		{DrawMode::SELECTREGION, "Select Region"},
+		{DrawMode::BITMAPIMAGE, "Bitmap Image"},
+		{DrawMode::ARROW, "Arrow"},
+		{DrawMode::ORIGIN, "Origin"},
+		{DrawMode::DIMENSION, "Dimension"},
+		{DrawMode::ALIGN_DIM_TO_HOLE, "Align Dimension to Hole"},
+		{DrawMode::PRINTRECT, "Print Rectangle"},
+		{DrawMode::CIRCLE, "Circle"},
+		{DrawMode::NONE, 0}
+	};
+
 	int m_nSelRegionLock;
 	CCadBitmap* m_pTempCadBitmap;
 	CMoveObjects* m_pClipBoard;;
@@ -65,7 +170,6 @@ protected: // create from serialization only
     void UpdateRulerInfo(int nMessage, CPoint ScrollPos, CPoint Pos = CPoint(0, 0)); 
 
 public:
-	CFrontCadDoc* GetDocument();
 	virtual void OnDraw(CDC* pDC);  // overridden to draw this view
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL);
@@ -121,7 +225,11 @@ public:
 	CPoint Scale(CPoint p);
 	void PrintToDC(CDC* pDC);
 	void FixDimensions(void);
+	CScale GetScale(void) const {
+		return CScale(ZF[m_ZoomLevel], ZF[m_ZoomLevel]);
+	}
 #ifdef _DEBUG
+	CFrontCadDoc* GetDocument();
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
 #endif

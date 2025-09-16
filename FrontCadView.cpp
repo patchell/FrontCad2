@@ -8,34 +8,7 @@ constexpr auto ZOOM_NORMAL = 1;
 constexpr auto INCHES_DECPLACE = 3;
 constexpr auto DEGREE_DECPLACE = 1;
 
-double ZF[MAX_ZOOM] = {
-	1.0,		//1000 pixels per inch
-	0.50,		// 500 pixels per inch
-	0.20,		// 200 pixels per inch
-	0.10,		// 100 pixels per inch
-	0.05,		//  50 pixels per inch
-	0.02		//	20 pixels per inch
-};
-
-int ZoomScale[MAX_ZOOM] = {
-	1,
-	1,
-	1,
-	1,
-	1,
-	1
-};
-
-int ZoomScaleDiv[MAX_ZOOM] = {
-	1,
-	2,
-	5,
-	10,
-	20,
-	50,
-};
-
-
+CFrontCadApp* pApp;
 
 ///////////////////////////////////
 // CFrontCadView
@@ -310,16 +283,18 @@ void CFrontCadView::OnDraw(CDC* pDC)
 
 void CFrontCadView::OnInitialUpdate()
 {
+	CFrontCadApp* pA = 0;
+
 	CView::OnInitialUpdate();
 
     m_pParent = ((CMainFrame*)GetParentFrame());
-	CFrontCadApp *pA = (CFrontCadApp *)AfxGetApp();
+	pA = (CFrontCadApp *)AfxGetApp();
     m_pParent->ShowRulers(TRUE);
 	CRect clientrect;
 	GetClientRect(&clientrect);
 	m_DocSize = CSize(24000,24000);	//document size is in mils
 	m_ImageSize = clientrect.Size();
-	((CFrontCadApp *)AfxGetApp())->SetMainView(this);
+	theApp.SetMainView(this);
 	ShowScrollBar(SB_BOTH,TRUE);
 	UpdateScrollbarInfo();
 	EnableScrollBarCtrl(SB_VERT,TRUE);
@@ -566,11 +541,14 @@ void CFrontCadView::OnLButtonDown(UINT nFlags, CPoint point)
 	//		nFlags.....status flaGs of mouse press
 	//		point......point where mouse was pressed
 	//-------------------------------------------
-	CCadRoundRect* pRRect = 0;
 	CFrontCadApp *pA = (CFrontCadApp *)AfxGetApp();
 	CFrontCadDoc *pDoc = GetDocument();
 	CUtilView *pUV = this->GetUtilityView();
+	CLibFormView* pLFV = 0;
+	char* s = new char[256];
+	UObjectTypes objType;
 
+	objType.pCadObj = 0;
 	// correct mouse position for scrolling, etc
 	m_MousePos = CorrectMousePosition(point);
 	// Snap the mouse posiition
@@ -579,505 +557,435 @@ void CFrontCadView::OnLButtonDown(UINT nFlags, CPoint point)
 	//do actions depending of Drawmode state
 	switch(m_Drawmode)
 	{
-		case DrawMode::NONE:
-			break;
-		case DrawMode::LINE:
-			switch (m_DrawState)
-			{
-				case DRAWSTATE_WAITMOUSE_DOWN:
-					{
-						CCadLine *pLine;
-
-						pA->UpdateLineAttrib(pUV);
-						pLine = new CCadLine;
-						pLine->Create(m_SnapPos, &pA->m_LineAttrib);
-						m_pDrawObject = (CCadObject *)pLine;
-					}
-					break;
-				case DRAWSTATE_MOVE:
-					break;
-			}
-			break;
-		case DrawMode::RECTANGLE:	//Button Down
-			switch (m_DrawState)
-			{
-				case DRAWSTATE_WAITMOUSE_DOWN:
-					{
-						CCadRect *pCR = new CCadRect();
-						//update rectangle attributes
-						pA->UpdateRectAttributes(pUV);
-						pCR->Create(m_SnapPos, &pA->m_RectAttributes);
-						m_pDrawObject = (CCadObject *)pCR;
-					}
-					break;
-				case DRAWSTATE_MOVE:
-					break;
-			}
-			break;
-		case DrawMode::CIRCLE:		//Button Down
-			switch (m_DrawState)
-			{
-			case DRAWSTATE_WAITMOUSE_DOWN:
-			{
-				CUtilView* pUV = GetUtilityView();
-				CCadCircle* pCC = new CCadCircle;
-				pA->UpdateCircleAttributes(pUV);
-				pCC->Create(m_SnapPos, &pA->m_CircleAttributs);
-				m_pDrawObject = (CCadObject*)pCC;
-			}
-			break;
-			case DRAWSTATE_MOVE:
-				break;
-			}
-			break;
-		case DrawMode::ELIPSE:
-			switch (m_DrawState)
-			{
-				case DRAWSTATE_WAITMOUSE_DOWN:
-					{
-						CUtilView *pUV = GetUtilityView();
-						CCadElipse *pCE = new CCadElipse();
-						//update ellipse attributes
-						pA->UpdateEllipseAttributes(pUV);
-						//create the ellipse
-						pCE->Create(m_SnapPos, &pA->m_EllipseAttributes);
-						m_pDrawObject = (CCadObject *)pCE;
-				}
-					break;
-				case DRAWSTATE_MOVE:
-					break;
-			}
-			break;
-		case DrawMode::SELECT://MOUSE DOWN
-			//----------------------------------
-			// Now we are getting complicated.
-			// We do not know, at this junksure
-			// if the user is just selecting an
-			// object, or wants to maybe drag
-			// something.
-			//----------------------------------
-			if(m_pSelObjList)	//object selected?
-			{
-				CCadObject *pOb = m_pSelObjList;
-				m_GrabbedVertex = pOb->GrabVertex(m_SnapPos);
-				if(m_GrabbedVertex < 0)
-				{
-					if(pOb->CheckSelected(Scale(m_MousePos)))
-						m_DragObject = 1;
-				}
-			}
-			break;
-		case DrawMode::RNDRECT:	//MOUSE DOWN
+	case DrawMode::NONE:
+		break;
+	case DrawMode::LINE:
+		switch (m_DrawState)
 		{
-			switch (m_DrawState)
-			{
-				case DRAWSTATE_WAITMOUSE_DOWN:
-					//update rounded rect paramters
-					pA->UpdateRndRectAttributes(pUV);
-					//------------------------------------------------------------
-					pRRect = new CCadRoundRect;
-					pRRect->Create(m_SnapPos, &pA->m_RndRectAttributes);
-					//--------------------------------------
-					m_pDrawObject = (CCadObject *)pRRect;
-					break;
-				case DRAWSTATE_MOVE:
-					break;
-			}
+		case DRAWSTATE_WAITMOUSE_DOWN:
+			pA->UpdateLineAttrib(pUV);
+			objType.pLine = new CCadLine;
+			objType.pLine->Create(m_SnapPos, &pA->m_LineAttrib);
+			m_pDrawObject = (CCadObject *)objType.pLine;
+			break;
+		case DRAWSTATE_MOVE:
+			break;
 		}
 		break;
-		case DrawMode::POLYGON://MOUSE DOWN
+	case DrawMode::RECTANGLE:	//Button Down
+		switch (m_DrawState)
+		{
+		case DRAWSTATE_WAITMOUSE_DOWN:
+			objType.pRect = new CCadRect();
+			//update rectangle attributes
+			pA->UpdateRectAttributes(pUV);
+			objType.pRect->Create(m_SnapPos, &pA->m_RectAttributes);
+			m_pDrawObject = (CCadObject *)objType.pRect;
+			break;
+		case DRAWSTATE_MOVE:
+			break;
+		}
+		break;	// End of DrawMode::RECTANGLE:
+	case DrawMode::CIRCLE:		//Button Down
+		switch (m_DrawState)
+		{
+		case DRAWSTATE_WAITMOUSE_DOWN:
+			pUV = GetUtilityView();
+			objType.pCircle = new CCadCircle;
+			pA->UpdateCircleAttributes(pUV);
+			objType.pCircle->Create(m_SnapPos, &pA->m_CircleAttributs);
+			m_pDrawObject = (CCadObject*)objType.pCircle;
+		break;
+		case DRAWSTATE_MOVE:
+			break;
+		}
+		break;	// End of DrawMode::CIRCLE:
+	case DrawMode::ELIPSE:
+		switch (m_DrawState)
+		{
+		case DRAWSTATE_WAITMOUSE_DOWN:
+			pUV = GetUtilityView();
+			objType.pElipse = new CCadElipse;
+			//update ellipse attributes
+			pA->UpdateEllipseAttributes(pUV);
+			//create the ellipse
+			objType.pElipse->Create(m_SnapPos, &pA->m_EllipseAttributes);
+			m_pDrawObject = (CCadObject *)objType.pElipse;
+			break;
+		case DRAWSTATE_MOVE:
+			break;
+		}
+		break;	// End of DrawMode::ELIPSE:
+	case DrawMode::SELECT://MOUSE DOWN
+		//----------------------------------
+		// Now we are getting complicated.
+		// We do not know, at this junksure
+		// if the user is just selecting an
+		// object, or wants to maybe drag
+		// something.
+		//----------------------------------
+		if(m_pSelObjList)	//object selected?
+		{
+			CCadObject *pOb = m_pSelObjList;
+			m_GrabbedVertex = pOb->GrabVertex(m_SnapPos);
+			if(m_GrabbedVertex < 0)
 			{
-				CCadPolygon* pCP = new CCadPolygon;
-				pCP->Create(m_SnapPos, &pA->m_PolyAttributes);
-				switch(m_DrawState)
-				{
-					case DRAWSTATE_WAITMOUSE_DOWN:	//This is where we start
-						//update polygon attributes
-						pA->UpdatePolyAttributes(pUV);
-						pCP->Create(m_SnapPos, &pA->m_PolyAttributes);
-						pCP->AddPoint(m_SnapPos, FALSE, TRUE);
-						m_pDrawObject = (CCadObject *)pCP;
-						m_PolyStart = m_SnapPos;
-						break;
-					case DRAWSTATE_MOVE:
-						if (!((m_SnapPos.x == m_PolyStart.x) && (m_SnapPos.y == m_PolyStart.y)))
-						{
+				if(pOb->CheckSelected(Scale(m_MousePos)))
+					m_DragObject = 1;
+			}
+		}
+		break;	// End of DrawMode::SELECT:
+	case DrawMode::RNDRECT:	//MOUSE DOWN
+		switch (m_DrawState)
+		{
+			case DRAWSTATE_WAITMOUSE_DOWN:
+				//update rounded rect paramters
+				pA->UpdateRndRectAttributes(pUV);
+				//------------------------------------------------------------
+				objType.pRndedRect = new CCadRoundRect;
+				objType.pRndedRect->Create(m_SnapPos, &pA->m_RndRectAttributes);
+				//--------------------------------------
+				m_pDrawObject = objType.pCadObj;
+				break;
+			case DRAWSTATE_MOVE:
+				break;
+		}
+		break;	// End of DrawMode::RNDRECT:
+	case DrawMode::POLYGON://MOUSE DOWN
+		switch(m_DrawState)
+		{
+		case DRAWSTATE_WAITMOUSE_DOWN:	//This is where we start
+			objType.pPoly = new CCadPolygon;
+			objType.pPoly->Create(m_SnapPos, &pA->m_PolyAttributes);
+			//update polygon attributes
+			pA->UpdatePolyAttributes(pUV);
+			objType.pPoly->AddPoint(m_SnapPos, FALSE, TRUE);
+			m_pDrawObject = (CCadObject *)objType.pPoly;
+			m_PolyStart = m_SnapPos;
+			break;
+		case DRAWSTATE_MOVE:
+			if (!((m_SnapPos == m_PolyStart)))
+			{
 
-							pCP = (CCadPolygon*)m_pDrawObject;
-							pCP->AddPoint(m_SnapPos, FALSE, TRUE);
-						}
-						break;
-				}
+				objType.pPoly = (CCadPolygon*)m_pDrawObject;
+				objType.pPoly->AddPoint(m_SnapPos, FALSE, TRUE);
 			}
 			break;
-		case DrawMode::ARC:	//mouse down
-			{
-				CCadArc *pCA;
-				switch(m_DrawState)
-				{
-					case DRAWSTATE_WAITMOUSE_DOWN:
-						pA->UpdateArcAttributes(pUV);
-						pCA = new CCadArc;
-						pCA->Create(m_SnapPos, &pA->m_ArcAttributes);
-						m_pDrawObject = (CCadObject *)pCA;
-						break;
-					case DRAWSTATE_MOVE:
-						break;
-					case DRAWSTATE_ARCSTART:
-						pCA = (CCadArc *)m_pDrawObject;
-						pCA->SetStartPoint(m_SnapPos);
-						break;
-					case DRAWSTATE_ARCEND:
-						break;
-				}
-			}
-			break;
-		case DrawMode::ARC_CENTER:	//Mouse Down
-			{
-				CCadArcCentered* pCA = 0;
-				switch(m_DrawState)
-				{
-					case DRAWSTATE_WAITMOUSE_DOWN:
-						//update arc attributes
-						pA->UpdateArcAttributes(pUV);
-						pCA = new CCadArcCentered;
-						pCA->Create(m_SnapPos, &pA->m_ArcAttributes);
-						m_pDrawObject = (CCadObject *)pCA;
-						break;
-					case DRAWSTATE_MOVE:
-						break;
-					case DRAWSTATE_ARCSTART:
-						pCA = (CCadArcCentered *)m_pDrawObject;
-						pCA->SetStartPoint(m_SnapPos);
-						break;
-					case DRAWSTATE_ARCEND:
-						pCA = (CCadArcCentered *)m_pDrawObject;
-						pCA->SetEndPoint(m_SnapPos);
-						break;
-				}
-			}
-			break;
-		case DrawMode::HOLE_ROUND:	//Mouse Down
-			{
-				CCadHoleRound *pHR;
-				switch (m_DrawState)
-				{
-					case DRAWSTATE_WAITMOUSE_DOWN:
-						pA->UpdateHoleRoundAttributes(pUV);
-						pHR = new CCadHoleRound;
-						pHR->Create(m_SnapPos, &pA->m_HoleRoundAttributes);
-						m_pDrawObject = (CCadObject *)pHR;
-						Invalidate();
-						break;
-					case DRAWSTATE_MOVE:
-						Invalidate();
-						break;
-				}
-			}
-			break;
-		case DrawMode::HOLE_RECT:
-			{
-				CCadRectHole *pRH;
-
-				switch (m_DrawState)
-				{
-					case DRAWSTATE_WAITMOUSE_DOWN:
-						pRH = new CCadRectHole;
-						pA->UpdateRectHoleAttributes(pUV);
-						pRH->Create(m_SnapPos, &pA->m_RectHoleAttributes);
-						m_pDrawObject = (CCadObject*)pRH;
-						Invalidate();
-						break;
-					case DRAWSTATE_MOVE:
-						Invalidate();
-						break;
-				}
-			}
-			break;
-		case DrawMode::HOLE_RND1F:
-			{
-				CCadHoleRnd1Flat *pHR;
-
-				switch (m_DrawState)
-				{
-					case DRAWSTATE_WAITMOUSE_DOWN:
-						pA->UpdateHoleRnd1FlatAttributes(pUV);
-						pHR = new CCadHoleRnd1Flat;
-						pHR->Create(m_SnapPos, &pA->m_HoleRnd1FlatAttributes);
-						m_pDrawObject = (CCadObject *)pHR;
-						Invalidate();
-						break;
-					case DRAWSTATE_MOVE:
-						break;
-				}
-			}
-			break;
-		case DrawMode::HOLE_RND2F:
-			{
-				CCadHoleRnd2Flat *pHR;
-
-				switch (m_DrawState)
-				{
-					case DRAWSTATE_WAITMOUSE_DOWN:
-						//update hole rnd2flat attributes
-						pA->UpdateHoleRnd2FlatAttributes(pUV);
-						pHR = new CCadHoleRnd2Flat;
-						pHR->Create(m_SnapPos, &pA->m_HoleRnd2FlatAttributes);
-						m_pDrawObject = (CCadObject *)pHR;
-						Invalidate();
-						break;
-					case DRAWSTATE_MOVE:
-						Invalidate();
-						break;
-				}
-			}
-			break;
-		case DrawMode::TEXT:	//Mouse Down
-			{
-				char *s = new char[256];
-				CCadText* pCT = new CCadText;
+		}
+		break;	// End of DrawMode::POLYGON:
+	case DrawMode::ARC:	//mouse down
+		switch(m_DrawState)
+		{
+			case DRAWSTATE_WAITMOUSE_DOWN:
+				pA->UpdateArcAttributes(pUV);
+				objType.pArcObj = new CCadArc;
+				objType.pArcObj->Create(m_SnapPos, &pA->m_ArcAttributes);
+				m_pDrawObject = (CCadObject *)objType.pArcObj;
+				break;
+			case DRAWSTATE_MOVE:
+				break;
+			case DRAWSTATE_ARCSTART:
+				objType.pArcObj = (CCadArc *)m_pDrawObject;
+				objType.pArcObj->SetStartPoint(m_SnapPos);
+				break;
+			case DRAWSTATE_ARCEND:
+				break;
+		}
+		break;
+	case DrawMode::ARC_CENTER:	//Mouse Down
+		switch(m_DrawState)
+		{
+			case DRAWSTATE_WAITMOUSE_DOWN:
+				//update arc attributes
+				pA->UpdateArcAttributes(pUV);
+				objType.pArcCentObj = new CCadArcCentered;
+				objType.pArcCentObj->Create(m_SnapPos, &pA->m_ArcAttributes);
+				m_pDrawObject = (CCadObject *)objType.pArcCentObj;
+				break;
+			case DRAWSTATE_MOVE:
+				break;
+			case DRAWSTATE_ARCSTART:
+				objType.pArcCentObj = (CCadArcCentered *)m_pDrawObject;
+				objType.pArcCentObj->SetStartPoint(m_SnapPos);
+				break;
+			case DRAWSTATE_ARCEND:
+				objType.pArcCentObj = (CCadArcCentered *)m_pDrawObject;
+				objType.pArcCentObj->SetEndPoint(m_SnapPos);
+				break;
+		}
+		break;
+	case DrawMode::HOLE_ROUND:	//Mouse Down
+		switch (m_DrawState)
+		{
+			case DRAWSTATE_WAITMOUSE_DOWN:
+				pA->UpdateHoleRoundAttributes(pUV);
+				objType.pRndHole = new CCadHoleRound;
+				objType.pRndHole->Create(m_SnapPos, &pA->m_HoleRoundAttributes);
+				m_pDrawObject = (CCadObject *)objType.pRndHole;
+				break;
+			case DRAWSTATE_MOVE:
+				break;
+		}
+		break;
+	case DrawMode::HOLE_RECT:
+		switch (m_DrawState)
+		{
+			case DRAWSTATE_WAITMOUSE_DOWN:
+				objType.pRectHole = new CCadRectHole;
+				pA->UpdateRectHoleAttributes(pUV);
+				objType.pRectHole->Create(m_SnapPos, &pA->m_RectHoleAttributes);
+				m_pDrawObject = (CCadObject*)objType.pRectHole;
+				break;
+			case DRAWSTATE_MOVE:
+				break;
+		}
+		break;	// End of DrawMode::HOLE_RECT:
+	case DrawMode::HOLE_RND1F:
+		switch (m_DrawState)
+		{
+			case DRAWSTATE_WAITMOUSE_DOWN:
+				pA->UpdateHoleRnd1FlatAttributes(pUV);
+				objType.pRnd1Flat = new CCadHoleRnd1Flat;
+				objType.pRnd1Flat->Create(m_SnapPos, &pA->m_HoleRnd1FlatAttributes);
+				m_pDrawObject = (CCadObject *)objType.pRnd1Flat;
+				break;
+			case DRAWSTATE_MOVE:
+				break;
+		}
+		break;	// End of DrawMode::HOLE_RND1F:
+	case DrawMode::HOLE_RND2F:
+		switch (m_DrawState)
+		{
+			case DRAWSTATE_WAITMOUSE_DOWN:
+				//update hole rnd2flat attributes
+				pA->UpdateHoleRnd2FlatAttributes(pUV);
+				objType.pRnd2Flat = new CCadHoleRnd2Flat;
+				objType.pRnd2Flat->Create(m_SnapPos, &pA->m_HoleRnd2FlatAttributes);
+				m_pDrawObject = (CCadObject *)objType.pRnd2Flat;
+				break;
+			case DRAWSTATE_MOVE:
+				break;
+		}
+		break;
+	case DrawMode::TEXT:	//Mouse Down
+		switch (m_DrawState)
+		{
+			case DRAWSTATE_WAITMOUSE_DOWN:
+				objType.pText = new CCadText;
 				//update text attributes
 				pA->UpdateTextAttributes(pUV);
-				pCT->Create(m_SnapPos, &pA->m_TextAttributes);
+				objType.pText->Create(m_SnapPos, &pA->m_TextAttributes);
 				pUV->m_Edit_Text.GetWindowText(s, 256);
-				pCT->SetText(s);
-				pDoc->AddObject(pCT);
-				delete[] s;
-				Invalidate();
-			}
-			break;
-		case DrawMode::LIBPART:
-			{
-				CLibFormView *pLFV = ((CFrontCadApp *)AfxGetApp())->GetLibView();
-				CCadLibObject *pLO = pLFV->GetCurrentPart();
-				if(pLO)
-				{
-					CCadLibObject *pPart = new CCadLibObject(pLO->GetHead());
-					pPart->SetName(pLO->GetPartName());
-					pPart->SetP1(m_SnapPos);
-					pDoc->AddObject(pPart);
-					Invalidate();
-				}
-				else
-				{
-					m_Drawmode = DrawMode::SELECT;
-					MessageBox("No Libraries or Parts Selected","Oppsie",MB_OK | MB_ICONHAND);
-				}
-			}
-			break;
-		case DrawMode::GETREF:
-			break;
-		case DrawMode::MOVE:		// mouse down
-			switch(this->m_DrawState)
-			{
-				case DRAWSTATE_GETREFEREMCE:
-					{
-						m_RefPoint = m_SnapPos;
-						CCadObject *pObj = GetTopSelection();
-						m_pMoveObj = new CMoveObjects;
-						while(pObj)
-						{
-							pDoc->RemoveObject(pObj);
-							RemoveObject(pObj);
-							m_pMoveObj->AddObject(pObj);
-							pObj = GetTopSelection();
-						}
-					}
-					m_pMoveObj->SetRef(m_SnapPos);
-//					m_pMoveObj = &m_MoveObj;
-					Invalidate();
-					break;
-				case DRAWSTATE_DRAG:
-					break;
-			}
-			break;
-		case DrawMode::COPY:	//mouse button down
-			switch(m_DrawState)
-			{
-				case DRAWSTATE_GETREFEREMCE:
-					{
-						//----------------------------------------------
-						//for copy, leave the objects behind in the
-						//drawing, but make a new copy of the objects
-						//to put into the "clipboard"
-						//----------------------------------------------
-//						m_RefPoint = m_SnapPos;
-						CCadObject *pObj = this->GetTopSelection();
-						CCadObject *newObj;
-						if (m_pClipBoard == NULL) m_pClipBoard = new CMoveObjects;
-						m_pClipBoard->Clear(1);
-						while(pObj)
-						{
-							newObj = pObj->Copy();
-							m_pClipBoard->AddObject(newObj);
-							RemoveObject(pObj);
-							pObj->SetSelected(0);
-							pObj = GetTopSelection();
-						}
-						m_pClipBoard->SetRef(m_SnapPos);
-						Invalidate();
-					}
-					break;
-				case DRAWSTATE_DRAG:
-					break;
-			}
-			break;
-		case DrawMode::PASTE:		//mouse down
-			switch (m_DrawState)
-			{
-				case DRAWSTATE_PLACE:
-					if (m_pClipBoard)
-					{
-						m_pMoveObj = new CMoveObjects;
-						m_pMoveObj->Copy(*m_pClipBoard);
-						Invalidate();
-					}
-					break;
-				case DRAWSTATE_DRAG:
-					break;
-			}
-			break;
-		case DrawMode::CUT:		//Mouse Down
-			switch(m_DrawState)
-			{
-				case DRAWSTATE_GETREFEREMCE:
-					{
-						//----------------------------------------------
-						//for copy, leave the objects behind in the
-						//drawing, but make a new copy of the objects
-						//to put into the "clipboard"
-						//----------------------------------------------
-						CCadObject *pObj = this->GetTopSelection();
-						if (m_pClipBoard == 0) m_pClipBoard = new CMoveObjects;
-						m_pClipBoard->Clear(1);	//delete objects in clipboard
-						while(pObj)
-						{
-							RemoveObject(pObj);	//remove from sel list
-							//remove from drawing
-							pDoc->RemoveObject(pObj);
-							//add to clipboard
-							m_pClipBoard->AddObject(pObj);
-							//get next obje3ct
-							pObj = GetTopSelection();
-						}
-						m_pClipBoard->SetRef(m_SnapPos);
-						Invalidate();
-					}
-					break;
-				case DRAWSTATE_DRAG:
-					break;
-			}
-			break;
-		case DrawMode::SELECTREGION:	//Button Down
-			if (m_nSelRegionLock)
-			{
-				m_nSelRegionLock = 0;
-				m_Drawmode = DrawMode::SELECT;
-			}
-			else
-			{
-				m_nSelRegionLock = 1;
-				m_SelRegion_P1 = m_SnapPos;
-				m_SelRegion_P2 = m_SnapPos;
-				ClearSelList();
-			}
-			break;
-		case DrawMode::BITMAPIMAGE:
-			m_pDrawObject = m_pTempCadBitmap;
-			m_pDrawObject->SetP1(m_SnapPos);
-			break;
-		case DrawMode::ARROW:	//Button Down
-			{
-				CCadArrow* pArrow = 0;
-				switch (m_DrawState)
-				{
-				case DRAWSTATE_WAITMOUSE_DOWN:
-				{
-					pArrow = new CCadArrow;
-					pA->UpdateArrowAttributes(pUV);
-					//-------------------------------
-					pArrow->Create(m_SnapPos, &pA->m_ArrowAttrib);
-					//-------------------------------
-					m_pDrawObject = (CCadObject*)pArrow;
-				}
-				break;
-				case DRAWSTATE_MOVE:
-					break;
-				}
-			}
-			Invalidate();
-			break;
-		case DrawMode::ORIGIN:	//button down
-			{
-			CCadOrigin* pOrg = 0;
-			switch (m_DrawState)
-			{
-			case DRAWSTATE_WAITMOUSE_DOWN:
-				pA->UpdateOriginAttrib(pUV);
-				pOrg = new CCadOrigin;
-				pOrg->Create(m_SnapPos, &pA->m_OriginAttrib);
-				pOrg->SetParent(this);
-				m_pDrawObject = (CCadObject*)pOrg;
+				objType.pText->SetText(s);
+				pDoc->AddObject(objType.pText);
 				break;
 			case DRAWSTATE_MOVE:
 				break;
-			case DRAWSTATE_PLACE:
+		}
+		break;
+	case DrawMode::LIBPART:
+		pLFV = ((CFrontCadApp *)AfxGetApp())->GetLibView();
+		objType.pLibObj = pLFV->GetCurrentPart();
+		if(objType.pLibObj)
+		{
+			CCadLibObject *pPart = new CCadLibObject(objType.pLibObj->GetHead());
+			pPart->SetName(objType.pLibObj->GetPartName());
+			pPart->SetP1(m_SnapPos);
+			pDoc->AddObject(pPart);
+		}
+		else
+		{
+			m_Drawmode = DrawMode::SELECT;
+			MessageBox("No Libraries or Parts Selected","Oppsie",MB_OK | MB_ICONHAND);
+		}
+		break;
+	case DrawMode::GETREF:
+		break;
+	case DrawMode::MOVE:		// mouse down
+		switch(this->m_DrawState)
+		{
+			case DRAWSTATE_GETREFEREMCE:
+				m_RefPoint = m_SnapPos;
+				objType.pCadObj = GetTopSelection();
+				m_pMoveObj = new CMoveObjects;
+				while(objType.pCadObj)
+				{
+					pDoc->RemoveObject(objType.pCadObj);
+					RemoveObject(objType.pCadObj);
+					m_pMoveObj->AddObject(objType.pCadObj);
+					objType.pCadObj = GetTopSelection();
+				}
+				m_pMoveObj->SetRef(m_SnapPos);
 				break;
+			case DRAWSTATE_DRAG:
+				break;
+		}
+		break;
+	case DrawMode::COPY:	//mouse button down
+		switch(m_DrawState)
+		{
+			case DRAWSTATE_GETREFEREMCE:
+				//----------------------------------------------
+				//for copy, leave the objects behind in the
+				//drawing, but make a new copy of the objects
+				//to put into the "clipboard"
+				//----------------------------------------------
+				objType.pCadObj = GetTopSelection();
+				if (m_pClipBoard == NULL) m_pClipBoard = new CMoveObjects;
+				m_pClipBoard->Clear(1);
+				while(objType.pCadObj)
+				{
+					CCadObject* newObj;
+					newObj = objType.pCadObj->Copy();
+					m_pClipBoard->AddObject(newObj);
+					RemoveObject(objType.pCadObj);
+					objType.pCadObj->SetSelected(0);
+					objType.pCadObj = GetTopSelection();
+				}
+				m_pClipBoard->SetRef(m_SnapPos);
+				break;
+			case DRAWSTATE_DRAG:
+				break;
+		}
+		break;
+	case DrawMode::PASTE:		//mouse down
+		switch (m_DrawState)
+		{
+		case DRAWSTATE_PLACE:
+			if (m_pClipBoard)
+			{
+				m_pMoveObj = new CMoveObjects;
+				m_pMoveObj->Copy(*m_pClipBoard);
 			}
-			Invalidate();
+			break;
+		case DRAWSTATE_DRAG:
+			break;
+		}
+		break;
+	case DrawMode::CUT:		//Mouse Down
+		switch(m_DrawState)
+		{
+		case DRAWSTATE_GETREFEREMCE:
+			//----------------------------------------------
+			//for copy, leave the objects behind in the
+			//drawing, but make a new copy of the objects
+			//to put into the "clipboard"
+			//----------------------------------------------
+			objType.pCadObj = GetTopSelection();
+			if (m_pClipBoard == 0) m_pClipBoard = new CMoveObjects;
+			m_pClipBoard->Clear(1);	//delete objects in clipboard
+			while(objType.pCadObj)
+			{
+				RemoveObject(objType.pCadObj);	//remove from sel list
+				//remove from drawing
+				pDoc->RemoveObject(objType.pCadObj);
+				//add to clipboard
+				m_pClipBoard->AddObject(objType.pCadObj);
+				//get next object
+				objType.pCadObj = GetTopSelection();
+			}
+			m_pClipBoard->SetRef(m_SnapPos);
+			break;
+		case DRAWSTATE_DRAG:
+			break;
+		}
+		break;
+	case DrawMode::SELECTREGION:	//Button Down
+		if (m_nSelRegionLock)
+		{
+			m_nSelRegionLock = 0;
+			m_Drawmode = DrawMode::SELECT;
+		}
+		else
+		{
+			m_nSelRegionLock = 1;
+			m_SelRegion_P1 = m_SnapPos;
+			m_SelRegion_P2 = m_SnapPos;
+			ClearSelList();
+		}
+		break;
+	case DrawMode::BITMAPIMAGE:
+		m_pDrawObject = m_pTempCadBitmap;
+		m_pDrawObject->SetP1(m_SnapPos);
+		break;
+	case DrawMode::ARROW:	//Button Down
+		objType.pArrow = 0;
+		switch (m_DrawState)
+		{
+		case DRAWSTATE_WAITMOUSE_DOWN:
+		{
+			objType.pArrow = new CCadArrow;
+			pA->UpdateArrowAttributes(pUV);
+			//-------------------------------
+			objType.pArrow->Create(m_SnapPos, &pA->m_ArrowAttrib);
+			//-------------------------------
+			m_pDrawObject = (CCadObject*)objType.pArrow;
+		}
+		break;
+		case DRAWSTATE_MOVE:
+			break;
+		}
+		break;
+	case DrawMode::ORIGIN:	//button down
+		switch (m_DrawState)
+		{
+		case DRAWSTATE_WAITMOUSE_DOWN:
+			pA->UpdateOriginAttrib(pUV);
+			objType.pOrigin = new CCadOrigin;
+			objType.pOrigin->Create(m_SnapPos, &pA->m_OriginAttrib);
+			objType.pOrigin->SetParent(this);
+			m_pDrawObject = (CCadObject*)objType.pOrigin;
+			break;
+		case DRAWSTATE_MOVE:
+			break;
+		case DRAWSTATE_PLACE:
+			break;
+		}
+		break;
+	case DrawMode::DIMENSION:	//mouse button down
+		switch (m_DrawState)
+		{
+		case DRAWSTATE_WAITMOUSE_DOWN:
+			//---------------------------------
+			// Update Dimension Settings
+			//---------------------------------
+			pA->UpdateDimAttributes(pUV);
+			//---------------------------------
+			objType.pDim = new CCadDimension;
+			objType.pDim->Create(m_SnapPos, &pA->m_DimAttrib);
+			m_pDrawObject = (CCadObject *)objType.pDim;
+			break;
+		case DRAWSTATE_MOVE:
+			break;
+		}
+		break;
+	case DrawMode::ALIGN_DIM_TO_HOLE:	//Mouse button down
+		switch (m_DrawState)
+		{
+			case DRAWSTATE_WAITMOUSE_DOWN:
+				break;
+		}
+		break;
+	case DrawMode::PRINTRECT:	//Mouse Button Down
+		switch (m_DrawState)
+		{
+		case DRAWSTATE_WAITMOUSE_DOWN:
+		{
+			objType.pPrintRect = new CCadPrintRect;
+			objType.pPrintRect->SetP1(m_SnapPos);
+			objType.pPrintRect->SetLineWidth(40);
+			objType.pPrintRect->SetLineColor(RGB(0, 0, 0));
+			objType.pPrintRect->SetSize(pUV->m_Combo_PrintRect.GetPrintRectSize());
+			m_pDrawObject = (CCadObject *)objType.pPrintRect;
 		}
 			break;
-		case DrawMode::DIMENSION:	//mouse button down
-			{
-				CCadDimension *pCD;
-				char *s = new char[256];
-				switch (m_DrawState)
-				{
-					case DRAWSTATE_WAITMOUSE_DOWN:
-						//---------------------------------
-						// Update Dimension Settings
-						//---------------------------------
-						pA->UpdateDimAttributes(pUV);
-						//---------------------------------
-						pCD = new CCadDimension;
-						pCD->Create(m_SnapPos, &pA->m_DimAttrib);
-						m_pDrawObject = (CCadObject *)pCD;
-						Invalidate();
-						break;
-					case DRAWSTATE_MOVE:
-						Invalidate();
-						break;
-				}
-				delete[] s;
-			}
+		case DRAWSTATE_MOVE:
 			break;
-		case DrawMode::ALIGN_DIM_TO_HOLE:	//Mouse button down
-			switch (m_DrawState)
-			{
-				case DRAWSTATE_WAITMOUSE_DOWN:
-					Invalidate();
-					break;
-			}
-			break;
-		case DrawMode::PRINTRECT:	//Mouse Button Down
-			switch (m_DrawState)
-			{
-			case DRAWSTATE_WAITMOUSE_DOWN:
-			{
-				CCadPrintRect *pPR = new CCadPrintRect;
-				pPR->SetP1(m_SnapPos);
-				pPR->SetLineWidth(40);
-				pPR->SetLineColor(RGB(0, 0, 0));
-				pPR->SetSize(pUV->m_Combo_PrintRect.GetPrintRectSize());
-				m_pDrawObject = (CCadObject *)pPR;
-				Invalidate();
-			}
-				break;
-			case DRAWSTATE_MOVE:
-				break;
-			}
-			break;
-	}		 
+		}
+		break;
+	}
+	delete[] s;
+	Invalidate();
 	CView::OnLButtonDown(nFlags, point);
 }
 
@@ -1493,7 +1401,7 @@ void CFrontCadView::OnLButtonUp(UINT nFlags, CPoint point)
 			Invalidate();
 //			m_Drawmode = DrawMode::SELECT;
 			break;
-		case DrawMode::BITMAPIMAGE:
+		case DrawMode::BITMAPIMAGE:	//mouse button up
 			if(m_pDrawObject)
 			{
 				m_pDrawObject->SetP2(m_SnapPos); ;
@@ -1537,8 +1445,6 @@ void CFrontCadView::OnLButtonUp(UINT nFlags, CPoint point)
 				}
 				break;
 			}
-
-
 			break;
 		case DrawMode::ORIGIN:	//Left Button Up
 			switch (m_DrawState)
@@ -1644,7 +1550,6 @@ void CFrontCadView::OnLButtonUp(UINT nFlags, CPoint point)
 			}
 			break;
 	}
-
 	CView::OnLButtonUp(nFlags, point);
 }
 
@@ -1687,7 +1592,7 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 				break;
 			}
 			break;
-		case DrawMode::RECTANGLE:
+		case DrawMode::RECTANGLE:	//on mouse move
 		case DrawMode::ELIPSE:
 		case DrawMode::RNDRECT:
 			switch (m_DrawState)
@@ -1786,7 +1691,7 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 				}
 			}
 			break;
-		case DrawMode::MOVE:	//mouse move
+		case DrawMode::MOVE:	//on mouse move
 			switch (m_DrawState)
 			{
 				case DRAWSTATE_GETREFEREMCE:
@@ -1805,7 +1710,7 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 					break;
 			}
 			break;
-		case DrawMode::PASTE:	//mouse move
+		case DrawMode::PASTE:	//on mouse move
 			switch (m_DrawState)
 			{
 				case DRAWSTATE_PLACE:
@@ -1814,21 +1719,21 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 					break;
 			}
 			break;
-		case DrawMode::TEXT:
+		case DrawMode::TEXT:	//on mouse move
 		case DrawMode::LIBPART:
 		case DrawMode::GETREF:
 			break;
-		case DrawMode::SELECTREGION:
+		case DrawMode::SELECTREGION:	//on mouse move
 			if(m_MouseState == MOUSESTATE_DOWN)
 				m_SelRegion_P2 = m_SnapPos;
 			break;
-		case DrawMode::BITMAPIMAGE:
+		case DrawMode::BITMAPIMAGE:	//on mouse move
 			if(m_pDrawObject)
 			{
 				m_pDrawObject->SetP2(m_SnapPos);
 			}
 			break;
-		case DrawMode::ARROW:	//mouse move
+		case DrawMode::ARROW:	//on mouse move
 			switch (m_DrawState)
 			{
 			case DRAWSTATE_WAITMOUSE_DOWN:
@@ -1890,14 +1795,14 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 			}
 		}
 		break;
-		case DrawMode::ALIGN_DIM_TO_HOLE:
+		case DrawMode::ALIGN_DIM_TO_HOLE:	//on mouse move
 			switch (m_DrawState)
 			{
 				case DRAWSTATE_WAITMOUSE_DOWN:
 					break;
 			}
 			break;
-		case DrawMode::PRINTRECT:
+		case DrawMode::PRINTRECT:	//on mouse move
 			switch (m_DrawState)
 			{
 			case DRAWSTATE_WAITMOUSE_DOWN:

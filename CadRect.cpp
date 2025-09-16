@@ -270,12 +270,12 @@ void CCadRect::Save(FILE *pO,  int Indent)
 
 CCadRect CCadRect::operator=(CCadRect &v)
 {
-	SetP1(v.GetP1());
-	SetP2(v.GetP2());
-	GetAttributes()->m_FillColor = v.GetAttributes()->m_FillColor;
-	GetAttributes()->m_LineColor = v.GetAttributes()->m_LineColor;
-	GetAttributes()->m_LineWidth = v.GetAttributes()->m_LineWidth;
-	return *this;
+	CCadRect Rect;
+
+	Rect.SetP1(v.GetP1());
+	Rect.SetP2(v.GetP2());
+	Rect.GetAttributes()->CopyFrom(v.GetAttributes());
+	return Rect;
 }
 
 

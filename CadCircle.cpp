@@ -184,12 +184,12 @@ int CCadCircle::CheckSelected(CPoint p, CSize O)
 
 CCadCircle CCadCircle::operator=(CCadCircle& v)
 {
-	SetP1(v.GetP1());
-	SetP2(v.GetP2());
-	GetAttributes()->m_FillColor = v.GetAttributes()->m_FillColor;
-	GetAttributes()->m_LineColor = v.GetAttributes()->m_LineColor;
-	GetAttributes()->m_LineWidth = v.GetAttributes()->m_LineWidth;
-	return *this;
+	CCadCircle Circle;
+
+	Circle.SetP1(v.GetP1());
+	Circle.SetP2(v.GetP2());
+	Circle.GetAttributes()->CopyFrom(v.GetAttributes());
+	return Circle;
 }
 
 void CCadCircle::Move(CPoint p)

@@ -207,9 +207,10 @@ CCadText* CCadDimension::CalculateDimensionTextPosition(CDC* pDC, ObjectMode mod
 	CCadObject* pObj = 0;
 	CCadText* pText = 0;
 	CSize szTextRect;
+	CFont* pOldFont, font;
 
 	pObj = GetHead();
-	while (pObj)
+	while (pObj && !pText)
 	{
 		if (pObj->GetType() == OBJECT_TYPE_TEXT)
 		{
@@ -225,6 +226,24 @@ CCadText* CCadDimension::CalculateDimensionTextPosition(CDC* pDC, ObjectMode mod
 	{
 		P1 = GetP1();	// Dimension are in mils
 		P2 = GetP2();	// Dimension are in mil
+
+		font.CreateFont(
+			int(-pText->GetFontHeight() * Scale.m_ScaleY), // nHeight
+			0, // nWidth
+			0, // nEscapement
+			0, // nOrientation
+			FW_NORMAL, // nWeight
+			FALSE, // bItalic
+			FALSE, // bUnderline
+			0, // cStrikeOut
+			ANSI_CHARSET, // nCharSet
+			OUT_DEFAULT_PRECIS, // nOutPrecision
+			CLIP_DEFAULT_PRECIS, // nClipPrecision
+			DEFAULT_QUALITY, // nQuality
+			DEFAULT_PITCH | FF_DONTCARE, // nPitchAndFamily
+			pText->GetFontName()// lpszFacename
+		);
+		pOldFont = pDC->SelectObject(&font);
 		szTextRect = pText->GetTextSize(pDC);
 		//---------------------------------------------
 		// Convert the size to mils
@@ -247,6 +266,7 @@ CCadText* CCadDimension::CalculateDimensionTextPosition(CDC* pDC, ObjectMode mod
 				ptNewP1 = CPoint(P2.x + 60, P2.y - (szTextRect.cy / 2));
 			pText->SetP1(ptNewP1);
 		}
+		pDC->SelectObject(pOldFont);
 	}
 	return pText;
 }
@@ -264,10 +284,13 @@ void CCadDimension::Draw(CDC *pDC, ObjectMode mode, CPoint Offset, CScale Scale)
 	//		Offset...Offset to add to points
 	//		Scale....Sets Units to Pixels ratio
 	//---------------------------------------------
-	CPen *pOld, penLine;
+	CPen *pOld, penLine, penSel;
+	CBrush* pOldBr, brFill;
+	CPoint ptPr1, ptPr2;
 	CRect rect;
 	CPoint P1, P2;
 	int Lw;
+	CSize szSelRect;
 	CCadText* pText = 0;
 
 	if (CCadDimension::m_RenderEnable)
@@ -275,6 +298,24 @@ void CCadDimension::Draw(CDC *pDC, ObjectMode mode, CPoint Offset, CScale Scale)
 		P1 = (Scale * GetP1()) + Offset;
 		P2 = (Scale * GetP2()) + Offset;
 		Lw = int(Scale.m_ScaleX * m_Atrib.m_LineWidth);
+		if (P1.x == P2.x)
+		{
+			szSelRect = CSize(0, 25);
+		}
+		else
+			if (P1.y == P2.y)
+		{
+			szSelRect = CSize(25, 0);
+		}
+		else
+		{
+			szSelRect = CSize(0, 0);
+		}
+		ptPr1 = P1 + szSelRect;
+		ptPr2 = P2 - szSelRect;	
+		rect.SetRect(ptPr1, ptPr2);	
+		Lw = int(Scale.m_ScaleY * m_Atrib.m_LineWidth);
+
 		if (Lw < 1) Lw = 1;
 		switch (mode)
 		{
@@ -283,25 +324,31 @@ void CCadDimension::Draw(CDC *pDC, ObjectMode mode, CPoint Offset, CScale Scale)
 			break;
 		case ObjectMode::Selected:
 			penLine.CreatePen(PS_SOLID, Lw, RGB(0, 255, 50));
+			penSel.CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+			brFill.CreateStockObject(NULL_BRUSH);
 			break;
 		case ObjectMode::Sketch:
 			penLine.CreatePen(PS_DOT, 1, RGB(0, 0, 255));
 			break;
 		}
-		pOld = pDC->SelectObject(&penLine);
 		switch (mode)
 		{
 		case ObjectMode::Selected:
+			pOld = pDC->SelectObject(&penSel);
 			pDC->MoveTo(P1);
 			pDC->LineTo(P2);
+			pDC->SelectObject(&penSel);
+			pOldBr = pDC->SelectObject(&brFill);
+			pDC->Rectangle(rect);
+			pDC->SelectObject(pOld);
+			pDC->SelectObject(pOldBr);
 			break;
 		case ObjectMode::Final:
-			pDC->MoveTo(P1);
-			pDC->LineTo(P2);
-			break;
 		case ObjectMode::Sketch:
+			pOld = pDC->SelectObject(&penLine);
 			pDC->MoveTo(P1);
 			pDC->LineTo(P2);
+			pDC->SelectObject(pOld);
 			break;
 		case ObjectMode::Erase:
 			break;
@@ -328,12 +375,12 @@ int CCadDimension::CheckSelected(CPoint p,CSize O)
 
 	if (P1.x == P2.x)
 	{
-		s1 = 20;
+		s1 = 50;
 		s2 = 0;
 	}
 	else if (P1.y == P2.y)
 	{
-		s2 = 20;
+		s2 = 50;
 		s1 = 0;
 	}
 	CSize rOff = CSize(s1, s2);

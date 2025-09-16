@@ -5,7 +5,8 @@
 #pragma once
 
 
-struct ObjectTypeMembers {
+struct ObjectTypeMembers 
+{
 	const char* m_pName;
 	int m_Type;
 	ObjectTypeMembers()
@@ -25,6 +26,7 @@ struct ObjectTypeMembers {
 		return rV;
 	}
 };
+
 class CCadDrawing;
 class CFileParser;
 

@@ -11,20 +11,25 @@
 
 CCadLine::CCadLine():CCadObject(OBJECT_TYPE_LINE)
 {
-	m_pPoly = 0;
+	m_pRecEncl = new CPoint[4];
 }
 
 CCadLine::CCadLine(CCadLine &line):CCadObject(OBJECT_TYPE_LINE)
 {
 	GetAttributes()->m_LineWidth = 1;
 	GetAttributes()->m_LineColor = line.GetAttributes()->m_LineColor;	//black line
-	m_pPoly = 0;
+	m_pRecEncl = new CPoint[4];
 	SetP1(line.GetP1());
 	SetP2(line.GetP2());
 }
 
 CCadLine::~CCadLine()
 {
+	if (m_pRecEncl)
+	{
+		delete[] m_pRecEncl;
+		m_pRecEncl = 0;
+	}
 }
 
 BOOL CCadLine::Create()
@@ -135,78 +140,75 @@ void CCadLine::Draw(CDC *pDC, ObjectMode mode,CPoint O,CScale Scale)
 	}
 }
 
-int CCadLine::CheckSelected(CPoint p,CSize O)
+int CCadLine::CheckSelected(CPoint p,CSize Offset)
 {
-	if(m_pPoly == 0)
-		m_pPoly = new CCadPolygon();
-	else
-		m_pPoly->Reset();
 
 	//-----------------------------
 	// enclose the line inside
 	// of a polygon
 	//-----------------------------
-	CPoint P1 = GetP1() + O;
-	CPoint P2 = GetP2() + O;
+	CPoint P1 = GetP1() + Offset;
+	CPoint P2 = GetP2() + Offset;
 	int d = GetAttributes()->m_LineWidth/2;
-	if(d < 10) d = 10;
+
+	if(d < 50) d = 50;
 	if((P1.x < P2.x) && (P1.y < P2.y))
 	{
-		m_pPoly->AddPoint(CPoint(P1.x-d,P1.y+d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P1.x+d,P1.y-d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x+d,P2.y-d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x-d,P2.y+d), TRUE, TRUE);
+		m_pRecEncl[0] = CPoint(P1.x-d,P1.y+d);
+		m_pRecEncl[1] = CPoint(P1.x+d,P1.y-d);
+		m_pRecEncl[2] = CPoint(P2.x+d,P2.y-d);
+		m_pRecEncl[3] = CPoint(P2.x-d,P2.y+d);
 	}
 	else if((P1.x > P2.x) && (P1.y < P2.y))
 	{
-		m_pPoly->AddPoint(CPoint(P1.x-d,P1.y-d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P1.x+d,P1.y+d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x+d,P2.y+d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x-d,P2.y-d), TRUE, TRUE);
+		m_pRecEncl[0] = CPoint(P1.x-d,P1.y-d);
+		m_pRecEncl[1] = CPoint(P1.x+d,P1.y+d);
+		m_pRecEncl[2] = CPoint(P2.x+d,P2.y+d);
+		m_pRecEncl[3] = CPoint(P2.x-d,P2.y-d);
 	}
 	else if((P1.x < P2.x) && (P1.y > P2.y))
 	{
-		m_pPoly->AddPoint(CPoint(P1.x-d,P1.y-d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P1.x+d,P1.y+d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x+d,P2.y+d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x-d,P2.y-d), TRUE, TRUE);
+		m_pRecEncl[0] = CPoint(P1.x-d,P1.y-d);
+		m_pRecEncl[1] = CPoint(P1.x+d,P1.y+d);
+		m_pRecEncl[2] = CPoint(P2.x+d,P2.y+d);
+		m_pRecEncl[3] = CPoint(P2.x-d,P2.y-d);
 	}
 	else if((P1.x > P2.x) && (P1.y > P2.y))
 	{
-		m_pPoly->AddPoint(CPoint(P1.x-d,P1.y+d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P1.x+d,P1.y-d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x+d,P2.y-d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x-d,P2.y+d), TRUE, TRUE);
+		m_pRecEncl[0] = CPoint(P1.x-d,P1.y+d);
+		m_pRecEncl[1] = CPoint(P1.x+d,P1.y-d);
+		m_pRecEncl[2] = CPoint(P2.x+d,P2.y-d);
+		m_pRecEncl[3] = CPoint(P2.x-d,P2.y+d);
 	}
 	else if((P1.x == P2.x)&& (P1.y < P2.y))
 	{
-		m_pPoly->AddPoint(CPoint(P1.x-d,P1.y-d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P1.x+d,P1.y-d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x+d,P2.y+d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x-d,P2.y+d), TRUE, TRUE);
+		m_pRecEncl[0] = CPoint(P1.x-d,P1.y-d);
+		m_pRecEncl[1] = CPoint(P1.x+d,P1.y-d);
+		m_pRecEncl[2] = CPoint(P2.x+d,P2.y+d);
+		m_pRecEncl[3] = CPoint(P2.x-d,P2.y+d);
 	}
 	else if((P1.x == P2.x)&& (P1.y > P2.y))
 	{
-		m_pPoly->AddPoint(CPoint(P1.x-d,P1.y+d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P1.x+d,P1.y+d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x+d,P2.y-d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x-d,P2.y-d), TRUE, TRUE);
+		m_pRecEncl[0] = CPoint(P1.x-d,P1.y+d);
+		m_pRecEncl[1] = CPoint(P1.x+d,P1.y+d);
+		m_pRecEncl[2] = CPoint(P2.x+d,P2.y-d);
+		m_pRecEncl[3] = CPoint(P2.x-d,P2.y-d);
 	}
 	else if((P1.x > P2.x)&& (P1.y == P2.y))
 	{
-		m_pPoly->AddPoint(CPoint(P1.x+d,P1.y+d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P1.x+d,P1.y-d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x-d,P2.y-d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x-d,P2.y+d), TRUE, TRUE);
+		m_pRecEncl[0] = CPoint(P1.x+d,P1.y+d);
+		m_pRecEncl[1] = CPoint(P1.x+d,P1.y-d);
+		m_pRecEncl[2] = CPoint(P2.x-d,P2.y-d);
+		m_pRecEncl[3] = CPoint(P2.x-d,P2.y+d);
 	}
 	else if((P1.x < P2.x)&& (P1.y == P2.y))
 	{
-		m_pPoly->AddPoint(CPoint(P1.x-d,P1.y+d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P1.x-d,P1.y-d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x+d,P2.y-d), TRUE, TRUE);
-		m_pPoly->AddPoint(CPoint(P2.x+d,P2.y+d), TRUE, TRUE);
+		m_pRecEncl[0] = CPoint(P1.x-d,P1.y+d);
+		m_pRecEncl[1] = CPoint(P1.x-d,P1.y-d);
+		m_pRecEncl[2] = CPoint(P2.x+d,P2.y-d);
+		m_pRecEncl[3] = CPoint(P2.x+d,P2.y+d);
 	}
-	return m_pPoly->PointEnclosed(p);
+	return theApp.IsPointInPoly(m_pRecEncl,4,p);
 }
 
 Tokens CCadLine::Parse(
@@ -304,13 +306,12 @@ void CCadLine::Save(FILE *pO,  int Indent)
 
 CCadLine CCadLine::operator=(CCadLine &v)
 {
-	SetP1(v.GetP1());
-	SetP2(v.GetP2());
-	GetAttributes()->m_LineColor = v.GetAttributes()->m_LineColor;
-	GetAttributes()->m_LineWidth = v.GetAttributes()->m_LineWidth;
-	if((m_pPoly == NULL) && (v.m_pPoly != NULL))
-		m_pPoly = (CCadPolygon *)v.m_pPoly->Copy();
-	return *this;
+	CCadLine Line;
+
+	Line.SetP1(v.GetP1());
+	Line.SetP2(v.GetP2());
+	Line.GetAttributes()->CopyFrom(v.GetAttributes());
+	return Line;
 }
 
 void CCadLine::Move(CPoint p)

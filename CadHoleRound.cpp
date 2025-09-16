@@ -144,12 +144,12 @@ int CCadHoleRound::CheckSelected(CPoint p,CSize O)
 
 CCadHoleRound CCadHoleRound::operator=(CCadHoleRound &v)
 {
-	SetP1(v.GetP1());
-	SetP2(v.GetP2());
-	GetAttributes()->m_LineColor = v.GetAttributes()->m_LineColor;
-	GetAttributes()->m_Radius = v.GetAttributes()->m_Radius;
-	GetAttributes()->m_LineWidth = v.GetAttributes()->m_LineWidth;
-	return *this;
+	CCadHoleRound Hole;
+
+	Hole.SetP1(v.GetP1());
+	Hole.SetP2(v.GetP2());
+	Hole.GetAttributes()->CopyFrom(v.GetAttributes());
+	return Hole;
 }
 
 void CCadHoleRound::Move(CPoint p)

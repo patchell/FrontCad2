@@ -203,6 +203,9 @@
     <ClCompile Include="CadCircle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PotScaleWizAttributes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FrontCad.rc">
@@ -396,6 +399,9 @@
     <ClInclude Include="CadObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PotScaleWizAttributes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\FrontCad.ico">
@@ -409,23 +415,25 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="res\FrontCad.rc2">
       <Filter>Resource Files</Filter>
     </CustomBuild>
     <CustomBuild Include="FrontCad.reg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="readme.md">
-      <Filter>Readme</Filter>
-    </None>
     <None Include="packages.config" />
+    <None Include="Bin\FrontCad.exe">
+      <Filter>Bin</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Page Include="CadObject.xaml">
       <Filter>Header Files</Filter>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt">
+      <Filter>Readme</Filter>
+    </Text>
   </ItemGroup>
 </Project>

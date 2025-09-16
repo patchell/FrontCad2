@@ -127,7 +127,7 @@ void CCadPolygon::Draw(CDC* pDC, ObjectMode mode,CPoint Offset,CScale Scale)
 			pDC->Polygon(pP, GetAttributes()->m_Size);
 			pDC->SelectObject(&penPoint);
 			pDC->SelectObject(&brushPoint);	
-			for (i = 0; i < GetAttributes()->m_Size; ++i)
+			for (i = 0; i < GetAttributes()->m_Count; ++i)
 			{
 				CPoint p1, p2, p;
 				p = pP[i];
@@ -163,30 +163,39 @@ void CCadPolygon::Draw(CDC* pDC, ObjectMode mode,CPoint Offset,CScale Scale)
 
 }
 
-BOOL CCadPolygon::PointEnclosed(CPoint nP,CSize Off)
+BOOL CCadPolygon::PointEnclosed(CPoint nPoint,CSize Off)
 {
-	/*****************************************
-	** PointEnclosed
-	**	This function determines if a point
-	** is enclosed within a polygon.
-	**
-	** parameters:
-	**	nP....point to test
-	** Returns: TRUE if point inside
-	**          FALSE if point is outside
-	*****************************************/
+	//------------------------------------------------
+	// PointEnclosed
+	//	This function determines if a point
+	// is enclosed within a polygon.
+	//
+	// parameters:
+	//	nP....point to test
+	// Returns: TRUE if point inside
+	//          FALSE if point is outside
+	//------------------------------------------------
+	struct FPoint {
+		double x;
+		double y;
+		FPoint() { x = 0; y = 0; }
+		FPoint(double X, double Y) { x = X; y = Y; }	
+	};
+
 	int   i, j= GetAttributes()->m_Count-1 ;
 	BOOL  Enclosed=0      ;
-	int Xintercept;
-	CPoint *vert = new CPoint[GetAttributes()->m_Count];
+	double Xintercept;
+	FPoint *vert = new FPoint[GetAttributes()->m_Count];
+	FPoint nP = { (double)nPoint.x, (double)nPoint.y };
+
 	for(i=0;i< GetAttributes()->m_Count;++i)
-		vert[i] = GetAttributes()->m_pVertex[i] + Off;
+		vert[i] = FPoint(double(GetAttributes()->m_pVertex[i].x + Off.cx), double(GetAttributes()->m_pVertex[i].y + Off.cy));
 	//--------------------------------------------
 	// Do a precheck agains the rectangle that
 	// encloses the polygon
 	//--------------------------------------------
-	if(m_MinX < nP.x && m_MaxX > nP.x && m_MinY < nP.y && m_MaxY > nP.y)
-	{
+	//if(m_MinX < nP.x && m_MaxX > nP.x && m_MinY < nP.y && m_MaxY > nP.y)
+	//{
 		//----------------------------------
 		// very good chance now that point
 		// is in polygon, so make a
@@ -203,7 +212,7 @@ BOOL CCadPolygon::PointEnclosed(CPoint nP,CSize Off)
 			}
 			j=i;
 		}
-	}
+	//}
 	delete[] vert;
 	return Enclosed;
 }
@@ -314,17 +323,14 @@ void CCadPolygon::SetCurPoint(CPoint newPoint)
 
 CCadPolygon CCadPolygon::operator=(CCadPolygon &v)
 {
-	GetAttributes()->m_Size = v.GetAttributes()->m_Size;
-	GetAttributes()->m_Count = v.GetAttributes()->m_Count;
-	GetAttributes()->m_LineWidth = v.GetAttributes()->m_LineWidth;
-	GetAttributes()->m_LineColor = v.GetAttributes()->m_LineColor;
-	m_MaxY = v.m_MaxY;
-	m_MinY = v.m_MinY;
-	m_MaxX = v.m_MaxX;
-	m_MinX = v.m_MinX;
-	for(int i=0;i< GetAttributes()->m_Count	;++i)
-		GetAttributes()->m_pVertex[i] = v.GetAttributes()->m_pVertex[i];
-	return *this;
+	CCadPolygon Poly;
+
+	Poly.GetAttributes()->CopyFrom(v.GetAttributes());
+	Poly.m_MaxY = v.m_MaxY;
+	Poly.m_MinY = v.m_MinY;
+	Poly.m_MaxX = v.m_MaxX;
+	Poly.m_MinX = v.m_MinX;
+	return Poly;
 }
 
 int CCadPolygon::CheckSelected(CPoint p,CSize Offset)

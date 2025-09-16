@@ -2,12 +2,7 @@
 //
 ////////////////////////////////////////////////////
 
-#if !defined(AFX_FRONTCADDOC_H__A897E098_6F57_478C_952F_DF84F475B43E__INCLUDED_)
-#define AFX_FRONTCADDOC_H__A897E098_6F57_478C_952F_DF84F475B43E__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 class CFrontCadView;
 class CFileParser;
@@ -48,5 +43,3 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 };
-
-#endif // !defined(AFX_FRONTCADDOC_H__A897E098_6F57_478C_952F_DF84F475B43E__INCLUDED_)

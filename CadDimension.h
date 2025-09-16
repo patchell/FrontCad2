@@ -1,5 +1,7 @@
 #pragma once
 
+class CCadText;
+
 struct DimAttrib {
 	int m_LineWidth;
 	COLORREF m_Color;

@@ -211,11 +211,12 @@ void CCadPrintRect::Save(FILE *pO,  int Indent)
 
 CCadPrintRect CCadPrintRect::operator=(CCadPrintRect &v)
 {
-	SetP1(v.GetP1());
-	SetP2(v.GetP2());
-	m_Attrib.m_LineColor = v.m_Attrib.m_LineColor;
-	m_Attrib.m_LineWidth = v.m_Attrib.m_LineWidth;
-	return *this;
+	CCadPrintRect Rect;
+
+	Rect.SetP1(v.GetP1());
+	Rect.SetP2(v.GetP2());
+	Rect.GetAttributes()->CopyFrom(v.GetAttributes());
+	return Rect;
 }
 
 

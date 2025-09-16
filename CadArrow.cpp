@@ -429,15 +429,12 @@ void CCadArrow::CalcPoints(CPoint & a, CPoint & b, CPoint Offset, CScale Scale)
 
 CCadArrow CCadArrow::operator=(CCadArrow & Ca)
 {
+	CCadArrow Arrow;
 
-	m_Attrib.m_LineColor = Ca.m_Attrib.m_LineColor;
-	m_Attrib.m_FillColor = Ca.m_Attrib.m_FillColor;
-	GetAttributes()->m_bTransparent = Ca.GetAttributes()->m_bTransparent;
-	m_Attrib.m_Len = Ca.m_Attrib.m_Len;
-	m_Attrib.m_ArrowWidth = Ca.m_Attrib.m_ArrowWidth;
-	SetP1(Ca.GetP1());
-	SetP2(Ca.GetP2());
-	return *this;
+	Arrow.GetAttributes()->CopyFrom(Ca.GetAttributes());
+	Arrow.SetP1(Ca.GetP1());
+	Arrow.SetP2(Ca.GetP2());
+	return Arrow;
 }
 
 void CCadArrow::RenderEnable(int e)

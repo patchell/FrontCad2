@@ -17,7 +17,7 @@ class CScaleWizDialog : public CDialog
 	int m_RotateTextFlag;
 	int m_PrevLabel;
 public:
-	SCALEWIZattributes m_atrb;
+	SPotScaleWizAttributes m_atrb;
 	enum { IDD = IDD_DIALOG_SCALEWIZ };
 public:
 	CScaleWizDialog(CWnd* pParent = NULL);   // standard constructor

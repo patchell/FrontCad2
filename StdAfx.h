@@ -114,157 +114,6 @@ enum class Tokens {
 	WIZ_LABELS
 };
 
-//--------------------------------------------
-// Scale Wizard Attributes Class
-//--------------------------------------------
-
-constexpr auto SCALE_LABELS_SIZE = 40;
-constexpr auto SCALE_LABELS_STRING_SIZE = 32;
-
-class CFileParser;
-struct SCALEWIZattributes {
-	int m_ArcStart;
-	int m_ArcEnd;
-	int m_ArcLineWidth;
-	int m_ArcRadius;
-	COLORREF m_ArcColor;
-	int m_Divisions;
-	int m_DivisionLineWidth;
-	int m_DivisionLineLegnth;
-	COLORREF m_DivLineColor;
-	int m_SubDivisions;
-	int m_SubDivisionLineWidth;
-	int m_SubdivisionLengnth;
-	COLORREF m_SubDivColor;
-	int m_HoleSize;
-	int m_HoleType;
-	int m_FlatDist;
-	CPoint m_Ref;		//reference point for scale object
-	//scale labels
-	int m_FontSize;
-	int m_FontWeight;
-	int m_DistToTick;
-	COLORREF m_TextColor;
-	COLORREF m_BkColor;
-	char* m_pFont;		//name of font.
-	char* m_pLabels[SCALE_LABELS_SIZE];
-	SCALEWIZattributes() {
-		m_ArcStart = 135;
-		m_ArcEnd = 45;
-		m_ArcLineWidth = 2;
-		m_ArcRadius = 100;
-		m_ArcColor = RGB(0, 0, 0);
-		m_Divisions = 10;
-		m_DivisionLineWidth = 2;
-		m_DivisionLineLegnth = 10;
-		m_DivLineColor = RGB(0, 0, 0);
-		m_SubDivisions = 5;
-		m_SubDivisionLineWidth = 1;
-		m_SubdivisionLengnth = 5;
-		m_SubDivColor = RGB(0, 0, 0);
-		m_HoleSize = 5;
-		m_HoleType = 0;
-		m_FlatDist = 7;
-		m_Ref = CPoint(0, 0);
-		m_FontSize = 12;
-		m_FontWeight = 400;
-		m_DistToTick = 15;
-		m_TextColor = RGB(0, 0, 0);
-		m_BkColor = RGB(255, 255, 255);
-		m_pFont = new char[SCALE_LABELS_STRING_SIZE];
-		sprintf_s(m_pFont, SCALE_LABELS_STRING_SIZE, "%s", "Arial");
-		for (int i = 0; i < SCALE_LABELS_SIZE; i++) {
-			m_pLabels[i] = new char[SCALE_LABELS_STRING_SIZE];
-			sprintf_s(m_pLabels[i], SCALE_LABELS_STRING_SIZE, "%4.2f", double(i * 1.0));
-		}
-	}
-	~SCALEWIZattributes() {
-		if (m_pFont)
-			delete[] m_pFont;
-		for (int i = 0; i < SCALE_LABELS_SIZE; i++) {
-			if (m_pLabels[i])
-				delete[] m_pLabels[i];
-		}
-	}
-	void CopyTo(SCALEWIZattributes* pAttrDest) {
-		if (pAttrDest) {
-			pAttrDest->m_ArcStart = m_ArcStart;
-			pAttrDest->m_ArcEnd = m_ArcEnd;
-			pAttrDest->m_ArcLineWidth = m_ArcLineWidth;
-			pAttrDest->m_ArcRadius = m_ArcRadius;
-			pAttrDest->m_ArcColor = m_ArcColor;
-			pAttrDest->m_Divisions = m_Divisions;
-			pAttrDest->m_DivisionLineWidth = m_DivisionLineWidth;
-			pAttrDest->m_DivisionLineLegnth = m_DivisionLineLegnth;
-			pAttrDest->m_DivLineColor = m_DivLineColor;
-			pAttrDest->m_SubDivisions = m_SubDivisions;
-			pAttrDest->m_SubDivisionLineWidth = m_SubDivisionLineWidth;
-			pAttrDest->m_SubdivisionLengnth = m_SubdivisionLengnth;
-			pAttrDest->m_SubDivColor = m_SubDivColor;
-			pAttrDest->m_HoleSize = m_HoleSize;
-			pAttrDest->m_HoleType = m_HoleType;
-			pAttrDest->m_FlatDist = m_FlatDist;
-			pAttrDest->m_Ref = m_Ref;		//reference point for scale object
-											//scale labels
-			pAttrDest->m_FontSize = m_FontSize;
-			pAttrDest->m_FontWeight = m_FontWeight;
-			pAttrDest->m_DistToTick = m_DistToTick;
-			pAttrDest->m_TextColor = m_TextColor;
-			pAttrDest->m_BkColor = m_BkColor;
-			if (pAttrDest->m_pFont)
-				delete[] pAttrDest->m_pFont;
-			pAttrDest->m_pFont = new char[SCALE_LABELS_STRING_SIZE];
-			sprintf_s(pAttrDest->m_pFont, SCALE_LABELS_STRING_SIZE, "%s", m_pFont);
-			for (int i = 0; i < SCALE_LABELS_SIZE; i++) {
-				if (pAttrDest->m_pLabels[i])
-					delete[] pAttrDest->m_pLabels[i];
-				pAttrDest->m_pLabels[i] = new char[SCALE_LABELS_STRING_SIZE];
-				sprintf_s(pAttrDest->m_pLabels[i], SCALE_LABELS_STRING_SIZE, "%s", m_pLabels[i]);
-			}
-		}
-	}
-	void CopyFrom(SCALEWIZattributes* pAttrSource) {
-		if (pAttrSource) {
-			m_ArcStart = pAttrSource->m_ArcStart;
-			m_ArcEnd = pAttrSource->m_ArcEnd;
-			m_ArcLineWidth = pAttrSource->m_ArcLineWidth;
-			m_ArcRadius = pAttrSource->m_ArcRadius;
-			m_ArcColor = pAttrSource->m_ArcColor;
-			m_Divisions = pAttrSource->m_Divisions;
-			m_DivisionLineWidth = pAttrSource->m_DivisionLineWidth;
-			m_DivisionLineLegnth = pAttrSource->m_DivisionLineLegnth;
-			m_DivLineColor = pAttrSource->m_DivLineColor;
-			m_SubDivisions = pAttrSource->m_SubDivisions;
-			m_SubDivisionLineWidth = pAttrSource->m_SubDivisionLineWidth;
-			m_SubdivisionLengnth = pAttrSource->m_SubdivisionLengnth;
-			m_SubDivColor = pAttrSource->m_SubDivColor;
-			m_HoleSize = pAttrSource->m_HoleSize;
-			m_HoleType = pAttrSource->m_HoleType;
-			m_FlatDist = pAttrSource->m_FlatDist;
-			m_Ref = pAttrSource->m_Ref;		//reference point for scale object
-											//scale labels
-			m_FontSize = pAttrSource->m_FontSize;
-			m_FontWeight = pAttrSource->m_FontWeight;
-			m_DistToTick = pAttrSource->m_DistToTick;
-			m_TextColor = pAttrSource->m_TextColor;
-			m_BkColor = pAttrSource->m_BkColor;
-			if (m_pFont)
-				delete[] m_pFont;
-			m_pFont = new char[SCALE_LABELS_STRING_SIZE];
-			sprintf_s(m_pFont, SCALE_LABELS_STRING_SIZE, "%s", pAttrSource->m_pFont);
-			for (int i = 0; i < SCALE_LABELS_SIZE; i++) {
-				if (m_pLabels[i])
-					delete[] m_pLabels[i];
-				m_pLabels[i] = new char[SCALE_LABELS_STRING_SIZE];
-				sprintf_s(m_pLabels[i], SCALE_LABELS_STRING_SIZE, "%s", pAttrSource->m_pLabels[i]);
-			}
-		}
-	}
-	void Save(FILE* pO, int Indent, SCALEWIZattributes* pAttrSource);
-	Tokens Parse(FILE* pIN, Tokens LookAHeadToken, CFileParser* pParser, SCALEWIZattributes* pAttrSource);
-};
-
-
 
 #include "resource.h"       // main symbols
 
@@ -289,9 +138,9 @@ struct SCALEWIZattributes {
 #include "CadHoleRnd2Flat.h"
 #include "CadHoleRound.h"
 #include "CadLibObject.h"
+#include "CadLine.h"
 #include "CadOrigin.h"
 #include "CadPolygon.h"
-#include "CadLine.h"
 #include "CadPrintRect.h"
 #include "CadRect.h"
 #include "CadRectHole.h"
@@ -324,6 +173,7 @@ struct SCALEWIZattributes {
 #include "DialogRenderEnable.h"
 #include "NewLibDialog.h"
 
+#include "PotScaleWizAttributes.h"
 #include "MyTabCtrl.h"
 #include "ScaleWizTabOne.h"
 #include "WizTab2Dialog.h"
@@ -345,7 +195,7 @@ struct SCALEWIZattributes {
 #include "FrontCad.h"
 
 
-union ObjectTypes {
+union UObjectTypes {
 	CCadObject* pCadObj;
 	CCadArc* pArcObj;
 	CCadArcCentered* pArcCentObj;

@@ -108,10 +108,9 @@ struct TextAttributes {
 class CCadText : public CCadObject
 {
 	inline static int m_RenderEnable = 1;
-	TextAttributes m_atrb;
-	//BOOL m_FontChanged;
-	//CFont m_fontText;
 	inline static int BooBoo = 0;
+	TextAttributes m_atrb;
+	CPoint m_pTextRect[4];
 public:
 	CCadText();
 	CCadText(CCadText& v);
@@ -121,7 +120,7 @@ public:
 	static void SetRenderEnable(int e) { m_RenderEnable = e; }
 	static int IsRenderEnabled() { return m_RenderEnable; }
 	virtual CRect GetRect(void);
-	void GetTextRectangle(CDC* pDC, CScale Scale, CPoint* pSimplePoly);
+	void GetTextRectangle(CDC* pDC, BOOL bPrint = FALSE);
 	CSize GetTextSize(CDC* pDC);
 	virtual CPoint GetReference();
 	virtual void Move(CPoint p);
@@ -132,8 +131,8 @@ public:
 	virtual Tokens Parse(FILE* pIN, Tokens LookAHeadToken, CCadDrawing** ppDrawing, CFileParser* pParser);
 	virtual void Save(FILE *pO,  int Indent);
 	virtual void Draw(CDC* pDC, ObjectMode mode,CPoint Offset=CPoint(0,0),CScale Scale=CScale(0.1,0.1));
-	void CopyAttributes(TextAttributes *d,TextAttributes *s);
-	void Rotate(CDC* pDC, CPoint* pSimplePoly);
+	void RotateTextRectangle(BOOL bPrint = FALSE);
+	void ScaleTextRectangle(CScale Scale, BOOL bPrint = FALSE);
 	TextAttributes * GetAttributes(void);
 	void SetColor(COLORREF c){m_atrb.m_Color = c;}
 	COLORREF GetColor(void){return m_atrb.m_Color;}
@@ -169,6 +168,7 @@ public:
 	virtual void ChangeCenter(CSize p);
 	virtual CSize GetSize();
 	virtual void ChangeSize(CSize Sz);
+	void PrintRect();
 };
 
 #endif // !defined(AFX_CADTEXT_H__3158CE29_1A32_4EBA_941D_92BA4FD81C1B__INCLUDED_)

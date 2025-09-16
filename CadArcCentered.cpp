@@ -307,13 +307,12 @@ void CCadArcCentered::Save(FILE *pO,  int Indent)
 
 CCadArcCentered CCadArcCentered::operator=(CCadArcCentered &v)
 {
-	SetP1(v.GetP1());
-	SetP2(v.GetP2());
-	m_atrb.m_LineColor = v.m_atrb.m_LineColor;
-	m_atrb.m_End = v.m_atrb.m_End;
-	m_atrb.m_Start = v.m_atrb.m_Start;
-	m_atrb.m_LineWidth = v.m_atrb.m_LineWidth;
-	return *this;
+	CCadArcCentered Arc;
+
+	Arc.SetP1(v.GetP1());
+	Arc.SetP2(v.GetP2());
+	Arc.GetAttributes()->CopyFrom(v.GetAttributes());
+	return Arc;
 }
 
 int CCadArcCentered::CheckSelected(CPoint p,CSize Offset)

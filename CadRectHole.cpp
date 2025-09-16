@@ -138,13 +138,12 @@ int CCadRectHole::CheckSelected(CPoint p,CSize O)
 
 CCadRectHole CCadRectHole::operator=(CCadRectHole &v)
 {
-	SetP1(v.GetP1());
-	SetP2(v.GetP2());
-	GetAttributes()->m_H = v.GetAttributes()->m_H;
-	GetAttributes()->m_W = v.GetAttributes()->m_W;
-	GetAttributes()->m_LineColor = v.GetAttributes()->m_LineColor;
-	GetAttributes()->m_LineWidth = v.GetAttributes()->m_LineWidth;
-	return *this;
+	CCadRectHole Hole;
+
+	Hole.SetP1(v.GetP1());
+	Hole.SetP2(v.GetP2());
+	Hole.GetAttributes()->CopyFrom(v.GetAttributes());
+	return Hole;
 }
 
 

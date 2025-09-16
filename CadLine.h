@@ -38,7 +38,7 @@ class CCadLine : public CCadObject
 	friend CFileParser;
 	inline static int m_RenderEnable = 1;
 	LineAttrib m_atrb;
-	CCadPolygon* m_pPoly;	//encloses like a polygon for selection purposes
+	CPoint* m_pRecEncl;	//encloses like a polygon for selection purposes
 public:
 	CCadLine();
 	CCadLine(CCadLine &line);
