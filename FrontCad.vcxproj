@@ -283,7 +283,9 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Bin\FrontCad.exe" />
+    <None Include="Bin\FrontCad.exe">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
