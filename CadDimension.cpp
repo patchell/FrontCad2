@@ -467,15 +467,16 @@ void CCadDimension::AddText(CPoint Org)
 void CCadDimension::UpdateText(CPoint Org)
 {
 	CPoint P1, P2;
-	P1 = GetP1();
-	P2 = GetP2();
 	int Dim,ofx;
-	CRect rect;
+	CSize szRect;
 	CSize off;
 	CCadText* pText = 0;
 	CCadObject* pObj = 0;
 	char* s = new char[256];
+	CDC* pDC = theApp.GetMainView()->GetDC();
 
+	P1 = GetP1();	// P1 and P2 has the units of mils
+	P2 = GetP2();
 	pObj = GetHead();
 	while (pObj)
 	{
@@ -492,26 +493,33 @@ void CCadDimension::UpdateText(CPoint Org)
 		{
 			Dim = P1.x - Org.x;
 			SetValue(Dim, 3, s, 256);
-			rect = pText->GetRect();
+			pText->SetText(s);
+			//-----------------------------
+			// the rect object needs units
+			// of mils
+			//-----------------------------
+			szRect = pText->GetSize(pDC);
 			if (P1.y > P2.y)
-				ofx = -(rect.Width() + 60);
+				ofx = -(szRect.cx + 60);
 			else
 				ofx = 60;
-			off = CSize(-rect.Height() / 2, -ofx);
+			off = CSize(-szRect.cy / 2, -ofx);
 		}
 		else if (P1.y == P2.y)	//horizontal facing dimension
 		{
 			Dim = -(P2.y - Org.y);
 			SetValue(Dim, 3, s, 256);
-			rect = pText->GetRect();
+			pText->SetText(s);
+			szRect = pText->GetSize(pDC);
 			if (P1.x > P2.x)
-				ofx = rect.Width() + 60;
+				ofx = szRect.cx + 60;
 			else
 				ofx = -60;
-			off = CSize(ofx, rect.Height() / 2);
+			off = CSize(ofx, szRect.cy / 2);
 		}
 		pText->SetP1(P2 - off);
 	}
+	theApp.GetMainView()->ReleaseDC(pDC);
 	delete[] s;
 }
 

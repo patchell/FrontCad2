@@ -601,11 +601,6 @@ void CCadText::AdjustRefernce(CPoint p)
 }
 
 
-CRect CCadText::GetRect()
-{
-	return CRect();
-}
-
 void CCadText::RenderEnable(int e)
 {
 	CCadText::m_RenderEnable = e;
@@ -634,10 +629,31 @@ void CCadText::ChangeCenter(CSize p)
 }
 
 
-CSize CCadText::GetSize()
+CSize CCadText::GetSize(CDC* pDC)
 {
-	CRect rect = GetRect();
-	return rect.Size();
+	CFont Font, * pOldFont;
+	CSize szTxtRect;
+
+	Font.CreateFontA(
+		m_atrb.m_FontHeight,
+		m_atrb.m_FontWidth,
+		0,
+		0,
+		m_atrb.m_Weight,
+		FALSE,
+		FALSE,
+		0,
+		DEFAULT_CHARSET,
+		OUT_CHARACTER_PRECIS,
+		CLIP_CHARACTER_PRECIS,
+		PROOF_QUALITY,
+		DEFAULT_PITCH,
+		m_atrb.m_pFontName
+	);
+	pOldFont = pDC->SelectObject(&Font);
+	szTxtRect = pDC->GetTextExtent(m_atrb.m_pText, strlen(m_atrb.m_pText));
+	pDC->SelectObject(pOldFont);
+	return szTxtRect;
 }
 
 
