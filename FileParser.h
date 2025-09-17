@@ -45,6 +45,7 @@ private:
 		{"HOLE1FLAT",Tokens::HOLE_1FLAT},
 		{"HOLE2FLAT",Tokens::HOLE_2FLAT},
 		{"LIBPART",Tokens::LIBPART},
+		{"PART",Tokens::LIBPART},
 		{"TEXT",Tokens::TEXT},
 		{"POINT", Tokens::POINT},
 		{"POINT_1",Tokens::POINT_1},

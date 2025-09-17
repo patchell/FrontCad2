@@ -3,10 +3,6 @@
 ////////////////////////////////////////////////////
 // CLibFormView form view
 
-#ifndef __AFXEXT_H__
-#include <afxext.h>
-#endif
-
 class CLibFormView : public CFormView
 {
 public:
@@ -30,7 +26,7 @@ public:
 	void AddLibrary(CCadLibrary *pL);
 	CCadLibrary *GetLibraryList(void){return m_pHead;}
 	virtual void OnInitialUpdate();
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 protected:

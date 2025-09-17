@@ -98,7 +98,7 @@ void CLibFormView::AddLibrary(CCadLibrary *pL)
 	CCadLibObject *pPart = GetCurrentPart();
 	if(pPart)
 	{
-		m_Static_Preview.m_pLibObj = pPart;
+		m_Static_Preview.SetLibObj(pPart);
 		m_Static_Preview.Invalidate();
 	}
 }
@@ -169,14 +169,14 @@ void CLibFormView::OnButtonLibviewDeletepart()
 void CLibFormView::OnInitialUpdate() 
 {
 	CFormView::OnInitialUpdate();
-	
-	
+	m_Static_Preview.SetScale(CScale(0.2, 0.2));
+
 }
 
 void CLibFormView::OnSelchangeComboLibviewComponent() 
 {
 	CCadLibObject *pPart = GetCurrentPart();
-	this->m_Static_Preview.m_pLibObj = pPart;
+	m_Static_Preview.SetLibObj(pPart);
 	m_Static_Preview.Invalidate();
 }
 
@@ -193,7 +193,7 @@ void CLibFormView::OnSelchangeComboLibviewLibrary()
 	CCadLibObject *pPart = GetCurrentPart();
 	if(pPart)
 	{
-		this->m_Static_Preview.m_pLibObj = pPart;
+		m_Static_Preview.SetLibObj(pPart);
 		m_Static_Preview.Invalidate();
 	}
 }
@@ -207,7 +207,7 @@ void CLibFormView::AddPartToCurLib(CCadLibObject *pObj)
 	CCadLibObject *pPart = GetCurrentPart();
 	if(pPart)
 	{
-		this->m_Static_Preview.m_pLibObj = pPart;
+		m_Static_Preview.SetLibObj(pPart);
 		m_Static_Preview.Invalidate();
 	}
 }

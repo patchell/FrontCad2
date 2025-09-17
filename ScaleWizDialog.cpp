@@ -71,7 +71,7 @@ BOOL CScaleWizDialog::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
-	CLibFormView *pLVF = ((CFrontCadApp *)AfxGetApp())->GetLibView();
+	CLibFormView *pLVF = theApp.GetLibView();
 	CCadLibrary *pLib = pLVF->GetLibraryList();
 	if(pLib)
 	{
@@ -152,7 +152,7 @@ BOOL CScaleWizDialog::OnInitDialog()
 	CCadLibObject *pLO;
 
 	pLO = CreateLibObject("POTSCALE");
-	m_Static_Preview.m_pLibObj = pLO;
+	m_Static_Preview.SetLibObj(pLO);
 	m_Static_Preview.Invalidate();
 
 	CWizTab2Dialog *pWT2 = (CWizTab2Dialog *)m_Tab_Settings.m_tabPages[1];
@@ -278,11 +278,10 @@ LRESULT CScaleWizDialog::OnTab1Message(WPARAM wP, LPARAM lP)
 			m_atrb.m_ArcColor = lP;
 			break;
 	}
-	delete m_Static_Preview.m_pLibObj;
-	m_Static_Preview.m_pLibObj = 0;
+	m_Static_Preview.DestroyLibObj();
 	char *s = new char[256];
 	this->m_Edit_PartName.GetWindowText(s,255);
-	m_Static_Preview.m_pLibObj = CreateLibObject(s);
+	m_Static_Preview.SetLibObj(CreateLibObject(s));
 	delete[] s;
 	m_Static_Preview.Invalidate();
 	return 0;
@@ -333,11 +332,10 @@ LRESULT CScaleWizDialog::OnTab2Message(WPARAM wP, LPARAM lP)
 			m_RotateTextFlag = lP;
 			break;
 	}
-	delete m_Static_Preview.m_pLibObj;
-	m_Static_Preview.m_pLibObj = 0;
+	m_Static_Preview.DestroyLibObj();
 	char *s = new char[256];
 	this->m_Edit_PartName.GetWindowText(s,255);
-	m_Static_Preview.m_pLibObj = CreateLibObject(s);
+	m_Static_Preview.SetLibObj(CreateLibObject(s));
 	delete[] s;
 	m_Static_Preview.Invalidate();
 	return 0;
@@ -591,7 +589,7 @@ void CScaleWizDialog::OnButtonWizSavetolib()
 	if(cursel >= 0)
 	{
 		CLibFormView *pLFV = ((CFrontCadApp *)AfxGetApp())->GetLibView();
-		CCadLibObject *pLib = this->m_Static_Preview.m_pLibObj;
+		CCadLibObject *pLib = m_Static_Preview.GetLibObj();
 		CCadLibObject *pLP = new CCadLibObject(pLib->GetHead());
 		char *libname = (char *)m_Combo_SelLib.GetItemDataPtr(cursel);
 		char *s = new char[256];

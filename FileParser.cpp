@@ -242,6 +242,7 @@ Tokens CFileParser::Parse(FILE *pIN)
 	int loop = 1;
 	Tokens Token;
 	CCadLibrary *pLib=0;
+	int x = 0;
 
 	try
 	{
@@ -250,6 +251,9 @@ Tokens CFileParser::Parse(FILE *pIN)
 		{
 			switch (Token)
 			{
+				case Tokens(0):
+					x++;
+					break;
 			case Tokens::DRAWFILE:
 				Token = DrawFile(pIN, Token, m_pDoc);
 				break;
@@ -269,7 +273,17 @@ Tokens CFileParser::Parse(FILE *pIN)
 				if (pLib)
 					this->m_pLib = pLib;
 				break;
+			default:
+				sprintf_s(Exception.ErrorString, 256, "Syntax Error:Line %d Col %d  UnExpected Token %s\n",
+					GetLine(),
+					GetCol(),
+					CFileParser::LookupKeyword(Token)
+				);
+				throw Exception;
+
+				break;
 			}
+
 		}
 	}
 	catch(SException& XCept)
@@ -296,6 +310,13 @@ Tokens CFileParser::LibFile(FILE *pIN, Tokens Token,CCadLibrary *pLib)
 			case Tokens('}'):
 				loop = 0;
 				break;
+			default:
+				sprintf_s(Exception.ErrorString, 256, "LibPart:Syntax Error:Line %d Col %d  UnExpected Token %s\n",
+					GetLine(),
+					GetCol(),
+					CFileParser::LookupKeyword(Token)
+				);
+				throw Exception;
 		}
 	}
 	return Token;
@@ -379,6 +400,13 @@ Tokens CFileParser::DrawFileAttributes3(FILE* pIN, Tokens Token, CCadObject* pO)
 		Token = Expect(Tokens::NUM, Token, pIN);
 		Token = Expect(Tokens(')'), Token, pIN);
 		break;
+	default:
+		sprintf_s(Exception.ErrorString, 256, "DrawFileAttributes:Syntax Error:Line %d Col %d  UnExpected Token %s\n",
+			GetLine(),
+			GetCol(),
+			CFileParser::LookupKeyword(Token)
+		);
+		throw Exception;
 	}
 	return Token;
 }
@@ -512,7 +540,7 @@ Tokens CFileParser::DrawObjects(FILE* pIN, Tokens Token, CCadObject* pO)
 			Loop = 0;
 			break;
 		default:
-			sprintf_s(Exception.ErrorString, 256, "Syntax Error:Line %d Col %d  UnExpected Token %s\n",
+			sprintf_s(Exception.ErrorString, 256, "LibPart:Syntax Error:Line %d Col %d  UnExpected Token %s\n",
 				GetLine(),
 				GetCol(),
 				CFileParser::LookupKeyword(Token)
@@ -544,21 +572,54 @@ Tokens CFileParser::Point(Tokens TargeToken, FILE* pIN, CPoint& Point, Tokens To
 	return Token;
 }
 
-Tokens CFileParser::LibPart(FILE *pIN, Tokens Token,CCadLibObject *pLO)
+Tokens CFileParser::LibPart(FILE *pIN, Tokens LookaHeadToken,CCadLibObject *pLO)
 {
-	Token = Expect(Tokens::LIBPART,Token,pIN);
-	Token = Expect(Tokens('('),Token,pIN);
-	pLO->SetName(m_LexBuff);
-	Token = Expect(Tokens::STRING,Token,pIN);
-	Token = Expect(Tokens(','),Token,pIN);
-	Token = Point(Tokens::REFERENCE, pIN,pLO->GetRef(), Token);
-	Token = Expect(Tokens(','),Token,pIN);
-	Token = Point(Tokens::POINT_1, pIN,pLO->GetP1(), Token);
-	Token = Expect(Tokens(')'),Token,pIN);
-	Token = Expect(Tokens('{'),Token,pIN);
-	Token = DrawObjects(pIN,Token,pLO);
-	Token = Expect(Tokens('}'),Token,pIN);
-	return Token;
+	BOOL Loop = TRUE;
+
+	LookaHeadToken = Expect(Tokens::LIBPART, LookaHeadToken, pIN);
+	LookaHeadToken = Expect(Tokens('('), LookaHeadToken, pIN);
+	while (Loop)
+	{
+		switch (LookaHeadToken)
+		{
+		case Tokens::STRING:
+			pLO->SetName(m_LexBuff);
+			LookaHeadToken = Expect(Tokens::STRING, LookaHeadToken, pIN);
+			break;
+		case Tokens::REFERENCE:
+			LookaHeadToken = Point(Tokens::REFERENCE, pIN, pLO->GetRef(), LookaHeadToken);
+			break;
+		case Tokens::POINT_1:
+			LookaHeadToken = Point(Tokens::POINT_1, pIN, pLO->GetP1(), LookaHeadToken);
+			break;
+		case Tokens(')'):
+			LookaHeadToken = Expect(Tokens(')'), LookaHeadToken, pIN);
+			break;
+		case Tokens::POINT:
+			LookaHeadToken = Point(Tokens::POINT, pIN, pLO->GetP1(), LookaHeadToken);
+			break;
+		case Tokens('{'):
+			LookaHeadToken = Expect(Tokens('{'), LookaHeadToken, pIN);
+			LookaHeadToken = DrawObjects(pIN, LookaHeadToken, pLO);
+			break;
+		case Tokens(','):
+			LookaHeadToken = Expect(Tokens(','), LookaHeadToken, pIN);
+			break;
+		case Tokens('}'):
+			LookaHeadToken = Expect(Tokens('}'), LookaHeadToken, pIN);
+			Loop = FALSE;
+			break;
+		default:
+			sprintf_s(Exception.ErrorString, 256, "Syntax Error:Line %d Col %d  UnExpected Token %s\n",
+				GetLine(),
+				GetCol(),
+				CFileParser::LookupKeyword(LookaHeadToken)
+			);
+			throw Exception;
+			break;
+		}
+	}
+	return LookaHeadToken;
 }
 
 Tokens CFileParser::Color(Tokens TargetToken, FILE *pIN, COLORREF& ColorParam, Tokens Token)

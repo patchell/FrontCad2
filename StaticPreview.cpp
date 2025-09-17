@@ -3,18 +3,13 @@
 
 #include "stdafx.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 ////////////////////////////////////////////////////
 // CStaticPreview
 
 CStaticPreview::CStaticPreview()
 {
 	m_pLibObj = 0;
+	m_Scale = CScale(0.3, 0.3);
 }
 
 CStaticPreview::~CStaticPreview()
@@ -46,8 +41,9 @@ void CStaticPreview::OnPaint()
 	CPoint Offset = rect.CenterPoint();
 	if(m_pLibObj)
 	{
-		m_pLibObj->Draw(&dc,ObjectMode::None,Offset,CScale(0.3,0.3));
+		m_pLibObj->Draw(&dc,ObjectMode::Final,Offset,m_Scale);
 	}
+	ReleaseDC(&dc);
 }
 
 void CStaticPreview::OnLButtonDown(UINT nFlags, CPoint point) 
