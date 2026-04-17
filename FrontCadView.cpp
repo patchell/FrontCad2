@@ -94,10 +94,10 @@ BEGIN_MESSAGE_MAP(CFrontCadView, CView)
 	ON_COMMAND(ID_BUTTON_PRINT_RECTANGLE, &CFrontCadView::OnButtonPrintRectangle)
 	ON_COMMAND(ID_TOOLBAR_CIRCLE, &CFrontCadView::OnToolbarCircle)
 //	ON_UPDATE_COMMAND_UI(ID_TOOLBAR_CIRCLE, &CFrontCadView::OnUpdateToolbarCircle)
-ON_WM_SYSCHAR()
-ON_WM_SYSKEYDOWN()
-ON_WM_SYSKEYUP()
-END_MESSAGE_MAP()
+	ON_WM_SYSCHAR()
+	ON_WM_SYSKEYDOWN()
+	ON_WM_SYSKEYUP()
+	END_MESSAGE_MAP()
 
 ///////////////////////////////////
 // CFrontCadView construction/destruction
@@ -2234,10 +2234,13 @@ void CFrontCadView::OnContextMenu(CWnd* pWnd, CPoint point)
 	CFrontCadDoc *pDoc = GetDocument();
 	CMenu ConTexMenu;
 	int id;
+	CCadObject* pObj = 0;
+
 	m_MousePos = point;
 	ScreenToClient(&m_MousePos);
 	m_MousePos = CorrectMousePosition(m_MousePos);
-	CCadObject *pObj = GetTopSelection();;
+	// Get the head of the selected objects
+	pObj = GetTopSelection();;
 	ConTexMenu.CreatePopupMenu();
 	ConTexMenu.AppendMenu(MF_STRING,ID_CM_FORWARD,"Send Obj Forward");
 	ConTexMenu.AppendMenu(MF_STRING,ID_CM_BACKWARD,"Send Obj Back");
@@ -2287,13 +2290,47 @@ void CFrontCadView::OnContextMenu(CWnd* pWnd, CPoint point)
 	switch(id)
 	{
 		case ID_CM_FORWARD:
-			pDoc->RemoveObject(pObj);
-			pDoc->AddObject(pObj);
+			//---------------------------------------
+			// Send SelectedObject Forward
+			//---------------------------------------
+			while(pObj)
+			{
+				CCadObject* pTemp = 0;
+				if (pObj->GetSelected())
+				{
+					//--------------------------------
+					// to send an object forward we
+					// remove it and add it back to
+					// the drawing
+					//--------------------------------
+
+					pDoc->RemoveObject(pObj);
+					pDoc->AddObject(pObj);
+				}
+				pObj->SetSelected(0);
+				pObj = pObj->GetNextSelection();
+			}
+			RemoveUnselected();
 			Invalidate();
 			break;
 		case ID_CM_BACKWARD:
-			pDoc->RemoveObject(pObj);
-			pDoc->InsertObject(pObj);
+			while (pObj)
+			{
+				CCadObject* pTemp = 0;
+				if (pObj->GetSelected())
+				{
+					//--------------------------------
+					// to send an object backward we
+					// remove it and insert it back to
+					// the drawing
+					//--------------------------------
+					pDoc->RemoveObject(pObj);
+					pDoc->InsertObject(pObj);
+				}
+				pObj->SetSelected(0);
+				pObj = pObj->GetNextSelection();
+			}
+			RemoveUnselected();
 			Invalidate();
 			break;
 		case ID_CM_DELETE:
