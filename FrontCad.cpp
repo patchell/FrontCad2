@@ -709,9 +709,9 @@ void CFrontCadApp::UpdateOriginAttrib(CUtilView* pUV)
 void CAboutDlg::SetVersion()
 {
 	char* s = new char[256];
-	static const char* pVersion = "Simple and Down Right Crude Cad\nFor Designing Front Panel\nArtwork\nVersion 1.6.2.0";
-	static const char* pBuildDate = "Build Date April 17, 2026";
-	static const char* pCopyright = "Copyright (c) 2015, 2025";
+	static const char* pVersion = "Simple and Down Right Crude Cad\nFor Designing Front Panel\nArtwork\nVersion 1.6.3.0";
+	static const char* pBuildDate = "Build Date April 24, 2026";
+	static const char* pCopyright = "Copyright (c) 2015, 2026";
 
 	sprintf_s(s, 256, "%s\n%s\n%s",
 		pVersion,
