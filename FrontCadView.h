@@ -139,7 +139,7 @@ private:
 	//------------------------------------
 	CCadObject* m_pDrawObject;
 	CCadObject* m_pSelObjList, * m_pSelObjEnd;
-	int m_Drawmode;
+	int m_DrawMode;
 	int m_MouseState;
 	int m_DrawState;
 	//	CPoint m_CurPos;
@@ -161,6 +161,10 @@ private:
 	CBitmap* m_pDCbm;
 	CDC* m_pMemDC;
 	int m_SnapGrid;
+	//-------------------------------
+	bool m_bControlKeyDown;
+	bool m_bShiftKeyDown;
+	bool m_bAltKeyDown;
 protected: // create from serialization only
 	CFrontCadView();
 	virtual ~CFrontCadView();
@@ -228,6 +232,9 @@ public:
 	CScale GetScale(void) const {
 		return CScale(ZF[m_ZoomLevel], ZF[m_ZoomLevel]);
 	}
+	bool ControlKeyIsDown() const { return m_bControlKeyDown; }
+	bool ShiftKeyIsDown() const { return m_bShiftKeyDown; }
+	bool AltKeyIsDown() const { return m_bAltKeyDown; }
 #ifdef _DEBUG
 	CFrontCadDoc* GetDocument();
 	virtual void AssertValid() const;
@@ -312,6 +319,8 @@ protected:
 	afx_msg void OnSysKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 
 	DECLARE_MESSAGE_MAP()
+public:
+    afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 };
 
 #ifndef _DEBUG  // debug version in FrontCadView.cpp

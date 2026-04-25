@@ -97,13 +97,17 @@ BEGIN_MESSAGE_MAP(CFrontCadView, CView)
 	ON_WM_SYSCHAR()
 	ON_WM_SYSKEYDOWN()
 	ON_WM_SYSKEYUP()
-	END_MESSAGE_MAP()
+	ON_WM_MOUSEWHEEL()
+END_MESSAGE_MAP()
 
 ///////////////////////////////////
 // CFrontCadView construction/destruction
 
 CFrontCadView::CFrontCadView()
 {
+	m_bControlKeyDown = false;
+	m_bShiftKeyDown = false;
+	m_bAltKeyDown = false;
 	m_VScrollPos = 0;
 	m_HScrollPos = 0;
 	m_HPageSize = 0;
@@ -121,7 +125,7 @@ CFrontCadView::CFrontCadView()
 	m_ZoomLevel = 3;
 	m_GrabbedVertex = -1;
 	m_DragObject = 0;
-	m_Drawmode = 0;
+	m_DrawMode = 0;
 	m_DrawState = 0;
 	m_pDrawObject = 0;
 	m_SnapOff = 0;		//snap grid is on
@@ -256,7 +260,7 @@ void CFrontCadView::OnDraw(CDC* pDC)
 	{
 		m_pMoveObj->Draw(&DCm, SnapToScreen(m_SnapPos) - Off, CScale(ZF[m_ZoomLevel], ZF[m_ZoomLevel]));
 	}
-	if ((m_Drawmode == DrawMode::SELECTREGION) && ((m_MouseState == MOUSESTATE_DOWN)|| (m_nSelRegionLock) ) )
+	if ((m_DrawMode == DrawMode::SELECTREGION) && ((m_MouseState == MOUSESTATE_DOWN)|| (m_nSelRegionLock) ) )
 	{
 		int bkm = DCm.SetBkMode(TRANSPARENT);
 		CRect RRect;
@@ -429,18 +433,25 @@ void CFrontCadView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	switch(nChar)	//check the key press
 	{
 	case VK_CONTROL:	//control key
+		m_bControlKeyDown = true;
 		m_SnapOff = 1;	//turn of snapo grid
-			break;
-		case VK_DELETE:
-			break;
-		case VK_LEFT:
-			break;
-		case VK_RIGHT:
-			break;
-		case VK_UP:
-			break;
-		case VK_DOWN:
-			break;
+		break;
+	case VK_MENU:	//alt key
+		m_bAltKeyDown = true;
+		break;
+	case VK_SHIFT:	//shift key
+		m_bShiftKeyDown = true;
+		break;
+	case VK_DELETE:
+		break;
+	case VK_LEFT:
+		break;
+	case VK_RIGHT:
+		break;
+	case VK_UP:
+		break;
+	case VK_DOWN:
+		break;
 	}
 	CView::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -457,7 +468,14 @@ void CFrontCadView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	switch(nChar)	//check released character
 	{
 		case VK_CONTROL:	//control key
+			m_bControlKeyDown = false;
 			m_SnapOff = 0;	//turn snap back on
+			break;
+		case VK_SHIFT:	//shift key
+			m_bShiftKeyDown = false;
+			break;
+		case VK_MENU: //alt key
+			m_bAltKeyDown = false;
 			break;
 		case VK_DELETE:	//delete selected objects
 			{
@@ -521,11 +539,11 @@ void CFrontCadView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 			this->m_SnapOff ^= 1;
 			break;
 		case VK_ESCAPE:	//escape key
-			m_Drawmode = DrawMode::SELECT;
+			m_DrawMode = DrawMode::SELECT;
 			break;
-		case VK_MENU: //alt key
+/*		case VK_MENU: //alt key
 			m_SnapOff = 0; //turn off snap grid
-			break;
+			break;*/
 	}
 	CView::OnKeyUp(nChar, nRepCnt, nFlags);
 }
@@ -555,7 +573,7 @@ void CFrontCadView::OnLButtonDown(UINT nFlags, CPoint point)
 	m_SnapPos = Snap(m_MousePos,m_SnapGrid);
 	this->m_MouseState = MOUSESTATE_DOWN;
 	//do actions depending of Drawmode state
-	switch(m_Drawmode)
+	switch(m_DrawMode)
 	{
 	case DrawMode::NONE:
 		break;
@@ -795,7 +813,7 @@ void CFrontCadView::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 		else
 		{
-			m_Drawmode = DrawMode::SELECT;
+			m_DrawMode = DrawMode::SELECT;
 			MessageBox("No Libraries or Parts Selected","Oppsie",MB_OK | MB_ICONHAND);
 		}
 		break;
@@ -894,7 +912,7 @@ void CFrontCadView::OnLButtonDown(UINT nFlags, CPoint point)
 		if (m_nSelRegionLock)
 		{
 			m_nSelRegionLock = 0;
-			m_Drawmode = DrawMode::SELECT;
+			m_DrawMode = DrawMode::SELECT;
 		}
 		else
 		{
@@ -1004,7 +1022,7 @@ void CFrontCadView::OnLButtonUp(UINT nFlags, CPoint point)
 	m_SnapPos = Snap(m_MousePos,m_SnapGrid);
 	CFrontCadDoc *pDoc = GetDocument();
 	m_MouseState = MOUSESTATE_UP;
-	switch(m_Drawmode)
+	switch(m_DrawMode)
 	{
 		case DrawMode::NONE:	//L Button Up
 			theApp.GetMainFrame()->UpdateStatusBar("Select Object");
@@ -1285,7 +1303,7 @@ void CFrontCadView::OnLButtonUp(UINT nFlags, CPoint point)
 			m_pDrawObject = 0;
 			break;
 		case DrawMode::GETREF:
-			m_Drawmode = 0;	// no draw mode
+			m_DrawMode = 0;	// no draw mode
 			{
 				CPoint Ref = m_SnapPos;
 				((CFrontCadApp *)AfxGetApp())->GetLibView()->PostMessageA(WM_MAINVIEW_GOTREF, Ref.x, Ref.y);
@@ -1312,7 +1330,7 @@ void CFrontCadView::OnLButtonUp(UINT nFlags, CPoint point)
 					}
 					delete m_pMoveObj;
 					m_pMoveObj = 0;
-					m_Drawmode = DrawMode::SELECT;
+					m_DrawMode = DrawMode::SELECT;
 					theApp.GetMainFrame()->UpdateStatusBar("Select Object");
 					Invalidate();
 					break;
@@ -1322,7 +1340,7 @@ void CFrontCadView::OnLButtonUp(UINT nFlags, CPoint point)
 			switch(this->m_DrawState)
 			{
 				case DRAWSTATE_GETREFEREMCE:
-					m_Drawmode = DrawMode::SELECT;
+					m_DrawMode = DrawMode::SELECT;
 					theApp.GetMainFrame()->UpdateStatusBar("Select Object");
 					Invalidate();
 					break;
@@ -1355,7 +1373,7 @@ void CFrontCadView::OnLButtonUp(UINT nFlags, CPoint point)
 						m_pMoveObj = 0;
 						Invalidate();
 					}
-					m_Drawmode = DrawMode::SELECT;
+					m_DrawMode = DrawMode::SELECT;
 					m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 					theApp.GetMainFrame()->UpdateStatusBar("Select Object");
 					break;
@@ -1365,7 +1383,7 @@ void CFrontCadView::OnLButtonUp(UINT nFlags, CPoint point)
 			switch (m_DrawState)
 			{
 				case DRAWSTATE_GETREFEREMCE:
-					m_Drawmode = DrawMode::SELECT;
+					m_DrawMode = DrawMode::SELECT;
 					theApp.GetMainFrame()->UpdateStatusBar("Select Object");
 					break;
 				case DRAWSTATE_DRAG:
@@ -1397,9 +1415,9 @@ void CFrontCadView::OnLButtonUp(UINT nFlags, CPoint point)
 				}
 			}
 			m_nSelRegionLock = 0;
-			m_Drawmode = DrawMode::SELECT;
+			m_DrawMode = DrawMode::SELECT;
 			Invalidate();
-//			m_Drawmode = DrawMode::SELECT;
+//			m_DrawMode = DrawMode::SELECT;
 			break;
 		case DrawMode::BITMAPIMAGE:	//mouse button up
 			if(m_pDrawObject)
@@ -1524,7 +1542,7 @@ void CFrontCadView::OnLButtonUp(UINT nFlags, CPoint point)
 								
 							}
 							Invalidate();
-							m_Drawmode = DrawMode::SELECT;
+							m_DrawMode = DrawMode::SELECT;
 							theApp.GetMainFrame()->UpdateStatusBar("Select Object");
 						}
 					}
@@ -1542,7 +1560,7 @@ void CFrontCadView::OnLButtonUp(UINT nFlags, CPoint point)
 				m_pDrawObject->SetP1(m_SnapPos);
 				pDoc->InsertObject(m_pDrawObject);
 				m_pDrawObject = 0;
-				m_Drawmode = DrawMode::SELECT;
+				m_DrawMode = DrawMode::SELECT;
 				m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 				theApp.GetMainFrame()->UpdateStatusBar("Select::Select an Object");
 				Invalidate();
@@ -1566,7 +1584,7 @@ void CFrontCadView::OnMouseMove(UINT nFlags, CPoint point)
 	CMainFrame *pMF = (CMainFrame *)((CFrontCadApp *)AfxGetApp())->m_pMainWnd;
 	pMF->SetXYPos(m_SnapPos.x,m_SnapPos.y);
     UpdateRulerInfo(RW_POSITION, CPoint(m_HScrollPos,m_VScrollPos), SnapToScreen(m_SnapPos));
-	switch(m_Drawmode)
+	switch(m_DrawMode)
 	{
 		case DrawMode::NONE:	// OnMouseMove
 			break;
@@ -2010,7 +2028,7 @@ void CFrontCadView::OnToolbarZoomin()
 	m_ZoomLevel--;
 	if(m_ZoomLevel < 0)
 		m_ZoomLevel = 0;
-	this->m_fZoomFactor = (float)(ZF[m_ZoomLevel] * 10.0);
+	m_fZoomFactor = (float)(ZF[m_ZoomLevel] * 10.0);
 	UpdateRulerInfo(RW_ZOOM,CPoint(m_HScrollPos,m_VScrollPos), SnapToScreen(m_SnapPos));
 	UpdateScrollbarInfo();
 	CFrontCadDoc *pDoc = GetDocument();
@@ -2048,7 +2066,7 @@ void CFrontCadView::OnToolbarSelect()
 	//		This function put us into
 	// the Select Mode
 	//--------------------------------
-	m_Drawmode = DrawMode::SELECT;
+	m_DrawMode = DrawMode::SELECT;
 	theApp.GetMainFrame()->UpdateStatusBar("Select Object");
 }
 
@@ -2074,10 +2092,10 @@ void CFrontCadView::OnButtonDimension()
 	pUV->m_Button_Font.SetWindowText(pA->m_DimAttrib.m_TextAtrib.m_pFontName);
 	pUV->m_Combo_FontWeight.SetFontWeight(pA->m_DimAttrib.m_TextAtrib.m_Weight);
 
-	m_Drawmode = DrawMode::DIMENSION;
+	m_DrawMode = DrawMode::DIMENSION;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 
-	pUV->ShowHide(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
 	theApp.GetMainFrame()->UpdateStatusBar("Dimension:Place First Point");
 }
 
@@ -2086,11 +2104,11 @@ void CFrontCadView::OnButtonOrigin()
 {
 	CUtilView *pUV = GetUtilityView();
 	CFrontCadApp *pA = (CFrontCadApp *)AfxGetApp();
-	m_Drawmode = DrawMode::ORIGIN;
+	m_DrawMode = DrawMode::ORIGIN;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 	pUV->m_Edit_LineThickness.SetValue(pA->m_OriginAttrib.m_LineWidth);
 	pUV->m_Static_LineColor.SetColor(pA->m_OriginAttrib.m_Color);
-	pUV->ShowHide(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
 	theApp.GetMainFrame()->UpdateStatusBar("Origin:Place Location of Point");
 }
 
@@ -2103,14 +2121,14 @@ void CFrontCadView::OnToolbarRect()
 	//----------------------------------------
 	CUtilView *pUV = GetUtilityView();
 	CFrontCadApp *pA = (CFrontCadApp *)AfxGetApp();
-	m_Drawmode = DrawMode::RECTANGLE;
+	m_DrawMode = DrawMode::RECTANGLE;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 	pUV->m_Edit_LineThickness.SetValue(pA->m_RectAttributes.m_LineWidth);
 	pUV->m_Static_FillColor.SetColor(pA->m_RectAttributes.m_FillColor);
 	pUV->m_Static_LineColor.SetColor(pA->m_RectAttributes.m_LineColor);
 	pUV->m_Check_TransparentFill.SetCheck(pA->m_RectAttributes.m_bTransparentFill);
-	pUV->ShowHide(m_Drawmode);
-	pUV->SetUpText(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
+	pUV->SetUpText(m_DrawMode);
 	theApp.GetMainFrame()->UpdateStatusBar("Rectangle:Place First Corner");
 }
 
@@ -2123,7 +2141,7 @@ void CFrontCadView::OnToolbarBitmap()
 	// the program into the Draw Bitmap mode.
 	//----------------------------------------
 	if(this->m_pTempCadBitmap) delete m_pTempCadBitmap;
-	m_Drawmode = DrawMode::BITMAPIMAGE;
+	m_DrawMode = DrawMode::BITMAPIMAGE;
 	CFileDialog dlg(TRUE);
 	theApp.GetMainFrame()->UpdateStatusBar("Bitmap:Choose Bitmap File");
 
@@ -2142,7 +2160,7 @@ void CFrontCadView::OnButtonArrowobj()
 	// object in the tool bar.  We will put FrontCAD into
 	// the mode fro drawing an arrow
 	//-------------------------------------------------------
-	m_Drawmode = DrawMode::ARROW;
+	m_DrawMode = DrawMode::ARROW;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 	CUtilView *pUV = GetUtilityView();
 	CFrontCadApp *pA = (CFrontCadApp *)AfxGetApp();
@@ -2154,36 +2172,36 @@ void CFrontCadView::OnButtonArrowobj()
 	pUV->m_Check_TransparentFill.SetCheck(pA->m_ArrowAttrib.m_bTransparent, 0);
 	pUV->m_Edit_LineThickness.SetValue(pA->m_ArrowAttrib.m_LineWidth);
 	//------------------------------------------------
-	pUV->ShowHide(m_Drawmode);
-	pUV->SetUpText(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
+	pUV->SetUpText(m_DrawMode);
 	theApp.GetMainFrame()->UpdateStatusBar("Arrow:Place Location of Point");
 }
 
 void CFrontCadView::OnToolbarLine()
 {
 	CFrontCadApp *pA = (CFrontCadApp *)AfxGetApp();
-	m_Drawmode = DrawMode::LINE;
+	m_DrawMode = DrawMode::LINE;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 	CUtilView *pUV = GetUtilityView();
 	pUV->m_Edit_LineThickness.SetValue(pA->m_LineAttrib.m_LineWidth);
 	pUV->m_Static_LineColor.SetColor(pA->m_LineAttrib.m_LineColor );
-	pUV->ShowHide(m_Drawmode);
-	pUV->SetUpText(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
+	pUV->SetUpText(m_DrawMode);
 	theApp.GetMainFrame()->UpdateStatusBar("Line:Place First Point");
 }
 
 void CFrontCadView::OnToolbarEllipse()
 {
 	CFrontCadApp *pA = (CFrontCadApp *)AfxGetApp();
-	m_Drawmode = DrawMode::ELIPSE;
+	m_DrawMode = DrawMode::ELIPSE;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 	CUtilView *pUV = GetUtilityView();
 	pUV->m_Edit_LineThickness.SetValue(pA->m_EllipseAttributes.m_LineWidth);
 	pUV->m_Static_FillColor.SetColor(pA->m_EllipseAttributes.m_FillColor);
 	pUV->m_Static_LineColor.SetColor(pA->m_EllipseAttributes.m_LineColor);
 	pUV->m_Check_TransparentFill.SetCheck(pA->m_EllipseAttributes.m_Transparent);
-	pUV->ShowHide(m_Drawmode);
-	pUV->SetUpText(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
+	pUV->SetUpText(m_DrawMode);
 	theApp.GetMainFrame()->UpdateStatusBar("Ellipse:Place First Corner");
 }
 
@@ -2191,14 +2209,14 @@ void CFrontCadView::OnToolbarEllipse()
 void CFrontCadView::OnToolbarCircle()
 {
 	CFrontCadApp* pA = (CFrontCadApp*)AfxGetApp();
-	m_Drawmode = DrawMode::CIRCLE;
+	m_DrawMode = DrawMode::CIRCLE;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 	CUtilView* pUV = GetUtilityView();
 	pUV->m_Edit_LineThickness.SetValue(pA->m_CircleAttributs.m_LineWidth);
 	pUV->m_Static_FillColor.SetColor(pA->m_CircleAttributs.m_FillColor);
 	pUV->m_Static_LineColor.SetColor(pA->m_CircleAttributs.m_LineColor);
-	pUV->ShowHide(m_Drawmode);
-	pUV->SetUpText(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
+	pUV->SetUpText(m_DrawMode);
 	pA->GetMainFrame()->UpdateStatusBar("Circle:Place Center Point");
 }
 
@@ -2212,10 +2230,10 @@ void CFrontCadView::OnToolbarRndrect()
 	pUV->m_Static_FillColor.SetColor(pA->m_RndRectAttributes.m_FillColor);
 	pUV->m_Static_LineColor.SetColor(pA->m_RndRectAttributes.m_LineColor);
 	pUV->m_Check_TransparentFill.SetCheck(pA->m_RndRectAttributes.m_bTransparent);
-	m_Drawmode = DrawMode::RNDRECT;
+	m_DrawMode = DrawMode::RNDRECT;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
-	pUV->ShowHide(m_Drawmode);
-	pUV->SetUpText(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
+	pUV->SetUpText(m_DrawMode);
 	theApp.GetMainFrame()->UpdateStatusBar("Round Rect:Place First Corner");
 }
 
@@ -2340,14 +2358,14 @@ void CFrontCadView::OnContextMenu(CWnd* pWnd, CPoint point)
 			Invalidate();
 			break;
 		case ID_CM_MOVE:
-			m_Drawmode = DrawMode::MOVE;
+			m_DrawMode = DrawMode::MOVE;
 			m_DrawState = DRAWSTATE_GETREFEREMCE;
 			break;
 		case ID_CM_RESTOREASPECTRATIO:
 			((CCadBitmap *)pObj)->RestoreAspectRatio();
 			break;
 		case ID_CM_ALIGHN_DIM_TO_HOLE:
-			m_Drawmode = DrawMode::ALIGN_DIM_TO_HOLE;
+			m_DrawMode = DrawMode::ALIGN_DIM_TO_HOLE;
 			m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 			theApp.GetMainFrame()->UpdateStatusBar("Align Dimension:Select Object To Align to");
 			break;
@@ -2480,22 +2498,22 @@ void CFrontCadView::OnToolbarGridsettings()
 
 void CFrontCadView::OnToolbarLibpart()
 {
-	m_Drawmode = DrawMode::LIBPART;
+	m_DrawMode = DrawMode::LIBPART;
 	theApp.GetMainFrame()->UpdateStatusBar("Library Part:Place");
 }
 
 void CFrontCadView::OnToolbarPolygon()
 {
 	CFrontCadApp *pA = (CFrontCadApp *)AfxGetApp();
-	this->m_Drawmode = DrawMode::POLYGON;
+	this->m_DrawMode = DrawMode::POLYGON;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 	CUtilView *pUV = GetUtilityView();
 	pUV->m_Edit_LineThickness.SetValue(pA->m_PolyAttributes.m_LineWidth);
 	pUV->m_Static_LineColor.SetColor(pA->m_PolyAttributes.m_LineColor);
 	pUV->m_Static_FillColor.SetColor(pA->m_PolyAttributes.m_FillColor);
 	pUV->m_Check_TransparentFill.SetCheck(pA->m_PolyAttributes.m_Transparent, 0);	
-	pUV->ShowHide(m_Drawmode);
-	pUV->SetUpText(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
+	pUV->SetUpText(m_DrawMode);
 	theApp.GetMainFrame()->UpdateStatusBar("Polygon:Place First Point");
 }
 
@@ -2576,13 +2594,13 @@ void CFrontCadView::DrawCrosshairs(CDC *pDC,CRect *pRect,CPoint pos)
 void CFrontCadView::OnToolbarArcCenter()
 {
 	CFrontCadApp *pA = (CFrontCadApp *)AfxGetApp();
-	m_Drawmode = DrawMode::ARC_CENTER;
+	m_DrawMode = DrawMode::ARC_CENTER;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 	CUtilView *pUV = GetUtilityView();
 	pUV->m_Edit_LineThickness.SetValue(pA->m_ArcAttributes.m_LineWidth);
 	pUV->m_Static_LineColor.SetColor(pA->m_ArcAttributes.m_LineColor);
-	pUV->ShowHide(m_Drawmode);
-	pUV->SetUpText(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
+	pUV->SetUpText(m_DrawMode);
 	theApp.GetMainFrame()->UpdateStatusBar("Arc:Place Center Point");
 
 }
@@ -2590,13 +2608,13 @@ void CFrontCadView::OnToolbarArcCenter()
 void CFrontCadView::OnToolbarArc()
 {
 	CFrontCadApp *pA = (CFrontCadApp *)AfxGetApp();
-	m_Drawmode = DrawMode::ARC;
+	m_DrawMode = DrawMode::ARC;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 	CUtilView *pUV = GetUtilityView();
 	pUV->m_Edit_LineThickness.SetValue(pA->m_ArcAttributes.m_LineWidth);
 	pUV->m_Static_LineColor.SetColor(pA->m_ArcAttributes.m_LineColor);
-	pUV->ShowHide(m_Drawmode);
-	pUV->SetUpText(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
+	pUV->SetUpText(m_DrawMode);
 	theApp.GetMainFrame()->UpdateStatusBar("Arc:Place First Corner");
 }
 
@@ -2604,13 +2622,13 @@ void CFrontCadView::OnToolbarHolernd()
 {
 	CFrontCadApp *pA = (CFrontCadApp *)AfxGetApp();
 	CUtilView *pUV = GetUtilityView();
-	m_Drawmode = DrawMode::HOLE_ROUND;
+	m_DrawMode = DrawMode::HOLE_ROUND;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 	pUV->m_Static_LineColor.SetColor(pA->m_HoleRoundAttributes.m_LineColor);
 	pUV->m_Edit_LineThickness.SetValue(pA->m_HoleRoundAttributes.m_LineWidth);
 	pUV->m_Edit_HoleRadius.SetValue(pA->m_HoleRoundAttributes.m_Radius);
-	pUV->ShowHide(m_Drawmode);
-	pUV->SetUpText(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
+	pUV->SetUpText(m_DrawMode);
 	theApp.GetMainFrame()->UpdateStatusBar("Round Hole:Place Center Point");
 }
 
@@ -2618,14 +2636,14 @@ void CFrontCadView::OnToolbarRecthole()
 {
 	CFrontCadApp *pA = (CFrontCadApp *)AfxGetApp();
 	CUtilView *pUV = GetUtilityView();
-	m_Drawmode = DrawMode::HOLE_RECT;
+	m_DrawMode = DrawMode::HOLE_RECT;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 	pUV->m_Edit_X2.SetValue(pA->m_RectHoleAttributes.m_H);
 	pUV->m_Edit_Y2.SetValue(pA->m_RectHoleAttributes.m_W);
 	pUV->m_Edit_LineThickness.SetValue(pA->m_RectHoleAttributes.m_LineWidth);
 	pUV->m_Static_LineColor.SetColor(pA->m_RectHoleAttributes.m_LineColor);
-	pUV->ShowHide(m_Drawmode);
-	pUV->SetUpText(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
+	pUV->SetUpText(m_DrawMode);
 	theApp.GetMainFrame()->UpdateStatusBar("Rectangular Hole:Place Center Point");
 }
 
@@ -2633,14 +2651,14 @@ void CFrontCadView::OnToolbarRnd1flat()
 {
 	CFrontCadApp *pA = (CFrontCadApp *)AfxGetApp();
 	CUtilView *pUV = GetUtilityView();
-	m_Drawmode = DrawMode::HOLE_RND1F;
+	m_DrawMode = DrawMode::HOLE_RND1F;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 	pUV->m_Static_LineColor.SetColor(pA->m_HoleRnd1FlatAttributes.m_LineColor);
 	pUV->m_Edit_LineThickness.SetValue(pA->m_HoleRnd1FlatAttributes.m_LineWidth);
 	pUV->m_Edit_HoleRadius.SetValue(pA->m_HoleRnd1FlatAttributes.m_Radius);
 	pUV->m_Edit_FlatToCenterDist.SetValue(pA->m_HoleRnd1FlatAttributes.m_FlatDist);
-	pUV->ShowHide(m_Drawmode);
-	pUV->SetUpText(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
+	pUV->SetUpText(m_DrawMode);
 	theApp.GetMainFrame()->UpdateStatusBar("Round Hole one Flat Side:Place Center Point");
 }
 
@@ -2648,14 +2666,14 @@ void CFrontCadView::OnToolbarTwoflats()
 {
 	CFrontCadApp *pA = (CFrontCadApp *)AfxGetApp();
 	CUtilView *pUV = GetUtilityView();
-	m_Drawmode = DrawMode::HOLE_RND2F;
+	m_DrawMode = DrawMode::HOLE_RND2F;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 	pUV->m_Static_LineColor.SetColor(pA->m_HoleRnd2FlatAttributes.m_LineColor);
 	pUV->m_Edit_LineThickness.SetValue(pA->m_HoleRnd2FlatAttributes.m_LineWidth);
 	pUV->m_Edit_HoleRadius.SetValue(pA->m_HoleRnd2FlatAttributes.m_Radius);
 	pUV->m_Edit_FlatToCenterDist.SetValue(pA->m_HoleRnd2FlatAttributes.m_FlatDist);
-	pUV->ShowHide(m_Drawmode);
-	pUV->SetUpText(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
+	pUV->SetUpText(m_DrawMode);
 	theApp.GetMainFrame()->UpdateStatusBar("Round Hole two flat sides:Place Center Point");
 }
 
@@ -2663,7 +2681,7 @@ void CFrontCadView::OnToolbarDrawtext()
 {
 	CFrontCadApp *pA = (CFrontCadApp *)AfxGetApp();
 	CUtilView *pUV = GetUtilityView();
-	m_Drawmode = DrawMode::TEXT;
+	m_DrawMode = DrawMode::TEXT;
 	pUV->m_Edit_TextAngle.SetValue(pA->m_TextAttributes.m_Angle);
 	pUV->m_Edit_FontHeight.SetValue(pA->m_TextAttributes.m_FontHeight);
 	pUV->m_Edit_FontWidth.SetValue(pA->m_TextAttributes.m_FontWidth);
@@ -2672,8 +2690,8 @@ void CFrontCadView::OnToolbarDrawtext()
 	pUV->m_Static_BkGrndColor.SetColor(pA->m_TextAttributes.m_BkColor);
 	pUV->m_Button_Font.SetWindowText(pA->m_TextAttributes.m_pFontName);
 	pUV->m_Combo_FontWeight.SetFontWeight(pA->m_TextAttributes.m_Weight);
-	pUV->ShowHide(m_Drawmode);
-	pUV->SetUpText(m_Drawmode);
+	pUV->ShowHide(m_DrawMode);
+	pUV->SetUpText(m_DrawMode);
 	theApp.GetMainFrame()->UpdateStatusBar("Text:Place Corner Point");
 }
 
@@ -3059,7 +3077,7 @@ void CFrontCadView::ChangeObject(CUtilView *pUV,CCadObject *pO)
 	if(pO == NULL) return;
 	CFrontCadDoc *pDoc = GetDocument();
 	char *s = new char[256];
-	if((m_Drawmode == DrawMode::SELECT) && pO)
+	if((m_DrawMode == DrawMode::SELECT) && pO)
 	{
 		pDoc->SetModifiedFlag(true);
 		switch(pO->GetType())
@@ -3237,7 +3255,7 @@ BOOL CFrontCadView::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD 
 
 LRESULT CFrontCadView::OnLibViewRequestReferencePoint(WPARAM wP, LPARAM lP)
 {
-	m_Drawmode = DrawMode::GETREF;
+	m_DrawMode = DrawMode::GETREF;
 	theApp.GetMainFrame()->UpdateStatusBar("Define Reference Point");
 	return 0;
 }
@@ -3383,7 +3401,7 @@ void CFrontCadView::UpdateScrollbarInfo()
 
 void CFrontCadView::OnEditCopy()
 {
-	m_Drawmode = DrawMode::COPY;
+	m_DrawMode = DrawMode::COPY;
 	m_DrawState = DRAWSTATE_GETREFEREMCE;
 	theApp.GetMainFrame()->UpdateStatusBar("Define Reference Point");
 }
@@ -3395,7 +3413,7 @@ void CFrontCadView::OnUpdateEditCopy(CCmdUI* pCmdUI)
 
 void CFrontCadView::OnEditCut()
 {
-	m_Drawmode = DrawMode::CUT;
+	m_DrawMode = DrawMode::CUT;
 	m_DrawState = DRAWSTATE_GETREFEREMCE;
 	theApp.GetMainFrame()->UpdateStatusBar("Define Reference Point");
 }
@@ -3407,7 +3425,7 @@ void CFrontCadView::OnUpdateEditCut(CCmdUI* pCmdUI)
 
 void CFrontCadView::OnEditPaste()
 {
-	m_Drawmode = DrawMode::PASTE;
+	m_DrawMode = DrawMode::PASTE;
 	m_DrawState = DRAWSTATE_PLACE;
 	theApp.GetMainFrame()->UpdateStatusBar("Select Paste Location");
 }
@@ -3419,7 +3437,7 @@ void CFrontCadView::OnUpdateEditPaste(CCmdUI* pCmdUI)
 
 void CFrontCadView::OnToolbarSelectregion()
 {
-	m_Drawmode = DrawMode::SELECTREGION;
+	m_DrawMode = DrawMode::SELECTREGION;
 	theApp.GetMainFrame()->UpdateStatusBar("Select Region:Select First Corner");
 }
 
@@ -3953,7 +3971,7 @@ void CFrontCadView::OnButtonPrintRectangle()
 	//-------------------------------------------
 	// Place a Print Rectangle on the Drawing
 	//-------------------------------------------
-	m_Drawmode = DrawMode::PRINTRECT;
+	m_DrawMode = DrawMode::PRINTRECT;
 	m_DrawState = DRAWSTATE_WAITMOUSE_DOWN;
 	theApp.GetMainFrame()->UpdateStatusBar("Print Rectangle:Place First Corner");
 }
@@ -4016,4 +4034,63 @@ void CFrontCadView::OnSysKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 		break;
 	}
 	CView::OnSysKeyUp(nChar, nRepCnt, nFlags);
+}
+
+BOOL CFrontCadView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+{
+	int Delta = 0;
+	if (zDelta)
+	{
+		if (zDelta > 0)
+			Delta = -20;
+		else
+			Delta = 20;
+		if (ControlKeyIsDown())
+		{
+			int ScrollPos = m_VScrollPos + Delta;
+			int MaxPos = m_DocSize.cy - m_VPageSize;
+			if (ScrollPos < 0)
+				Delta = -m_VScrollPos;
+			else if (ScrollPos > MaxPos)
+				Delta = MaxPos - m_VScrollPos;
+
+			if (Delta)
+			{
+				m_VScrollPos += Delta;
+				SetScrollPos(SB_VERT, m_VScrollPos, TRUE);
+			}
+			UpdateRulerInfo(RW_VSCROLL, CPoint(m_HScrollPos, m_VScrollPos));
+			Invalidate();
+		}
+		else if (ShiftKeyIsDown())
+		{
+			int ScrollPos = m_HScrollPos + Delta;
+			int MaxPos = m_DocSize.cx - m_HPageSize;
+			if (ScrollPos < 0)
+				Delta = -m_VScrollPos;
+			else if (ScrollPos > MaxPos)
+				Delta = MaxPos - m_HScrollPos;
+
+			if (Delta)
+			{
+				m_HScrollPos += Delta;
+				SetScrollPos(SB_HORZ, m_HScrollPos, TRUE);
+			}
+
+			UpdateRulerInfo(RW_HSCROLL, CPoint(m_HScrollPos, m_VScrollPos));
+			Invalidate();
+		}
+		else if (AltKeyIsDown())
+		{
+		}
+		else
+		{
+			if (zDelta > 0)
+				OnToolbarZoomin();
+			else
+				OnToolbarZoomout();
+
+		}
+	}
+	return CView::OnMouseWheel(nFlags, zDelta, pt);
 }
